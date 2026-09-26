@@ -1,0 +1,199 @@
+@import 'tailwindcss';
+
+/*
+ * ─── Design tokens — ADPVO ────────────────────────────────────────────────
+ *
+ * Direction : moderne et chaleureuse, fidèle au logo ADPVO. Rouge « VO » en couleur
+ * d'action, noir chaud pour le texte, neutres crème/sable ; le double trait bleu du
+ * contour du logo sert de filet signature.
+ * Les échelles par défaut de Tailwind sont remplacées : seules ces valeurs
+ * existent dans le projet (pas de couleur, d'ombre ou de rayon arbitraire).
+ * Référence complète : docs/DESIGN-SYSTEM.md
+ */
+@theme {
+  /* Couleurs — dérivées du logo ADPVO (rouge « VO », noir « ADP », bleu du contour)
+     et réchauffées par des neutres crème/sable, à la demande du client. ------ */
+  --color-*: initial;
+
+  --color-white: #ffffff;
+  --color-paper: #fbf7f0; /* fond de page, crème */
+  --color-surface: #ffffff; /* panneaux, formulaires */
+  --color-sunken: #f4ecdf; /* zones en retrait, sable */
+  --color-line: #e6dbca; /* filets et bordures */
+  --color-line-strong: #8f8270; /* bordures de champs (≥ 3:1) */
+
+  --color-ink: #1b1713; /* texte principal, noir chaud du logo */
+  --color-ink-muted: #5c5349; /* texte secondaire */
+
+  --color-night-900: #1f1a16; /* surfaces sombres (bandeaux, pied de page) */
+  --color-night-800: #2c251f;
+  --color-night-700: #3b332b;
+
+  --color-red-50: #fff1ec;
+  --color-red-100: #ffdcd2;
+  --color-red-500: #f4433b; /* rouge du logo — grands éléments uniquement */
+  --color-red-600: #d93128; /* couleur primaire */
+  --color-red-700: #b5251d; /* survol, texte rouge sur fond clair */
+  --color-red-800: #8c1c16;
+
+  --color-blue-50: #edf3ff;
+  --color-blue-500: #2f73f2; /* bleu du contour du logo */
+  --color-blue-700: #1c4fb5;
+
+  --color-amber-50: #fff5e3;
+  --color-amber-300: #ffc56a; /* accent chaleureux (économies, mises en avant) */
+  --color-amber-800: #7a4a00;
+
+  --color-success-800: #1b5e3a;
+  --color-success-50: #e7f3eb;
+  --color-warning-800: #7a4a00;
+  --color-warning-50: #fff5e3;
+  --color-danger-700: #a3201a;
+  --color-danger-50: #fdeceb;
+
+  /* Typographie ---------------------------------------------------------- */
+  --font-*: initial;
+  --font-sans: var(--font-source-sans), 'Source Sans 3', system-ui, sans-serif;
+  --font-display: var(--font-archivo), 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+
+  --text-*: initial;
+  --text-caption: 0.8125rem; /* 13px — mentions, métadonnées */
+  --text-caption--line-height: 1.4;
+  --text-sm: 0.9375rem; /* 15px — texte secondaire, tableaux */
+  --text-sm--line-height: 1.5;
+  --text-base: 1.0625rem; /* 17px — texte courant */
+  --text-base--line-height: 1.6;
+  --text-lead: 1.25rem; /* 20px — chapôs */
+  --text-lead--line-height: 1.5;
+  --text-h3: 1.375rem;
+  --text-h3--line-height: 1.25;
+  --text-h2: clamp(1.75rem, 1.45rem + 1vw, 2.25rem);
+  --text-h2--line-height: 1.12;
+  --text-h1: clamp(2.25rem, 1.7rem + 2.2vw, 3.5rem);
+  --text-h1--line-height: 1.04;
+  --text-display: clamp(5rem, 2.5rem + 12vw, 13rem);
+  --text-display--line-height: 0.82;
+
+  --tracking-label: 0.08em;
+
+  /* Formes ---------------------------------------------------------------- */
+  --radius-*: initial;
+  --radius-sm: 4px; /* champs, boutons, badges */
+  --radius-md: 8px; /* panneaux, cartes */
+  --radius-lg: 16px; /* grands blocs éditoriaux */
+  --radius-full: 9999px;
+
+  --shadow-*: initial;
+  --shadow-raised: 0 1px 2px rgb(31 26 22 / 0.06), 0 4px 12px -4px rgb(31 26 22 / 0.1);
+  --shadow-overlay: 0 16px 40px -12px rgb(31 26 22 / 0.28);
+
+  /* Mise en page ---------------------------------------------------------- */
+  --container-*: initial;
+  --container-narrow: 30rem; /* formulaires d'authentification */
+  --container-prose: 42rem; /* longueur de ligne de lecture */
+  --container-page: 76rem; /* largeur de contenu */
+
+  /* Mouvement ------------------------------------------------------------- */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --default-transition-duration: 150ms;
+  --default-transition-timing-function: var(--ease-standard);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    font-kerning: normal;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-stretch: 100%;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-red-100);
+    color: var(--color-ink);
+  }
+
+  /* Focus clavier toujours visible, jamais supprimé. */
+  :focus-visible {
+    outline: 2px solid var(--color-blue-500);
+    outline-offset: 2px;
+  }
+
+  [data-surface='dark'] :focus-visible {
+    outline-color: var(--color-white);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Utilitaires propres au design system (utilisables avec les variantes Tailwind). */
+
+/* Liens de texte courant : soulignés en rouge, trait épaissi au survol. */
+@utility link {
+  color: var(--color-ink);
+  text-decoration-line: underline;
+  text-decoration-color: var(--color-red-600);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-thickness 150ms var(--ease-standard);
+
+  &:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* Libellé : capitales condensées espacées (surtitres, métadonnées). */
+@utility label-caps {
+  font-family: var(--font-display);
+  font-stretch: 85%;
+  font-weight: 700;
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+/*
+ * Filet signature : un trait épais doublé d'un trait fin décalé,
+ * repris du contour bleu du logo ADPVO.
+ */
+@utility brand-rule {
+  height: 7px;
+  background:
+    linear-gradient(var(--color-blue-500), var(--color-blue-500)) top / 100% 4px no-repeat,
+    linear-gradient(var(--color-blue-500), var(--color-blue-500)) bottom / 100% 1px no-repeat;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}

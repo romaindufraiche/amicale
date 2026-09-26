@@ -1,0 +1,174 @@
+import { ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { site } from '@/config/site'
+import { ButtonLink } from '@/components/ui/button'
+import { Eyebrow } from '@/components/ui/page-header'
+import { NewsList } from '@/features/news/components/news-list'
+import { listPublishedNews } from '@/features/news/queries'
+import { getCurrentSession } from '@/server/auth/session'
+
+const BENEFITS = [
+  {
+    title: 'Billetterie à tarifs adhérents',
+    text: 'Cinéma, parcs de loisirs, spectacles, sport : commandez vos billets en ligne depuis votre espace, au prix négocié par l’Amicale.',
+  },
+  {
+    title: 'Sorties et événements',
+    text: 'Les sorties organisées par l’Amicale sont annoncées dans votre espace. Inscrivez-vous en quelques clics, dans la limite des places disponibles.',
+  },
+  {
+    title: 'Avantages partenaires',
+    text: 'Les réductions et conditions préférentielles obtenues auprès des partenaires de l’Amicale, réunies au même endroit et réservées aux adhérents.',
+  },
+] as const
+
+const STEPS = [
+  { title: 'Créez votre compte', text: 'Renseignez votre situation et votre service en quelques minutes.' },
+  { title: 'Confirmez votre email', text: 'Un lien de confirmation vous est envoyé immédiatement.' },
+  { title: 'Validation par le bureau', text: 'Le bureau examine votre demande et active votre adhésion.' },
+] as const
+
+export default async function HomePage() {
+  const [session, { rows: latestNews }] = await Promise.all([
+    getCurrentSession(),
+    listPublishedNews({ includeMembersOnly: false, limit: 3 }),
+  ])
+
+  return (
+    <>
+      {/* ─── Ouverture ─────────────────────────────────────────────── */}
+      <section className="overflow-hidden">
+        <div className="mx-auto grid max-w-page items-center gap-12 px-4 pt-14 pb-16 sm:px-6 md:pt-20 lg:grid-cols-[1.25fr_1fr] lg:px-8 lg:pb-24">
+          <div className="flex flex-col gap-7">
+            <Eyebrow>{site.legalName}</Eyebrow>
+            <h1 className="max-w-[16ch] text-h1">
+              L’amicale de celles et ceux qui veillent sur le Val d’Oise.
+            </h1>
+            <p className="max-w-prose text-lead text-ink-muted">
+              Billetterie à tarifs adhérents, sorties, avantages partenaires : l’{site.shortName} simplifie
+              les loisirs des personnels de police du département et fait vivre les liens entre collègues.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {session ? (
+                <ButtonLink href="/espace">Accéder à mon espace</ButtonLink>
+              ) : (
+                <>
+                  <ButtonLink href="/inscription">Devenir adhérent</ButtonLink>
+                  <ButtonLink href="/connexion" variant="secondary">
+                    Se connecter
+                  </ButtonLink>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Le « 95 » du département, souligné du double trait du logo. */}
+          <div aria-hidden className="relative hidden justify-self-end select-none lg:block">
+            <p className="font-display text-display font-black tracking-tighter text-red-500">95</p>
+            <div className="mt-5 brand-rule w-full" />
+            <p className="mt-3 text-right label-caps text-ink-muted">{site.department.name}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Ce que l'adhésion apporte ─────────────────────────────── */}
+      <section aria-labelledby="avantages-titre" className="bg-surface">
+        <div className="mx-auto grid max-w-page gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_2fr] lg:px-8">
+          <div className="flex flex-col gap-4 lg:sticky lg:top-8 lg:self-start">
+            <Eyebrow>L’adhésion</Eyebrow>
+            <h2 id="avantages-titre" className="text-h2">
+              Tout ce que l’Amicale vous ouvre, dans un seul espace.
+            </h2>
+          </div>
+          <ol className="flex flex-col">
+            {BENEFITS.map((benefit, index) => (
+              <li
+                key={benefit.title}
+                className="grid grid-cols-[3.5rem_1fr] gap-4 border-t border-line py-8 first:border-t-0 first:pt-0 sm:grid-cols-[5rem_1fr]"
+              >
+                <span aria-hidden className="font-display text-h2 font-black text-red-500 tabular">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <div className="flex max-w-prose flex-col gap-2">
+                  <h3 className="text-h3">{benefit.title}</h3>
+                  <p className="text-ink-muted">{benefit.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ─── Parcours d'adhésion ───────────────────────────────────── */}
+      <section aria-labelledby="etapes-titre" className="bg-sunken">
+        <div className="mx-auto flex max-w-page flex-col gap-12 px-4 py-20 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div className="flex max-w-prose flex-col gap-4">
+              <Eyebrow>Adhérer</Eyebrow>
+              <h2 id="etapes-titre" className="text-h2">
+                Trois étapes, entièrement en ligne.
+              </h2>
+            </div>
+            <Link href="/adherer" className="inline-flex items-center gap-2 font-semibold link">
+              Tout savoir sur l’adhésion <ArrowRight aria-hidden className="size-4" />
+            </Link>
+          </div>
+          <ol className="grid gap-10 md:grid-cols-3 md:gap-8">
+            {STEPS.map((step, index) => (
+              <li key={step.title} className="flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink font-display text-lead font-extrabold text-white tabular">
+                    {index + 1}
+                  </span>
+                  <span aria-hidden className="brand-rule flex-1" />
+                </div>
+                <h3 className="text-h3">{step.title}</h3>
+                <p className="text-ink-muted">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+          {!session ? (
+            <div>
+              <ButtonLink href="/inscription">Commencer mon adhésion</ButtonLink>
+            </div>
+          ) : null}
+        </div>
+      </section>
+
+      {/* ─── Actualités (affichées uniquement si des articles sont publiés) ─── */}
+      {latestNews.length > 0 ? (
+        <section aria-labelledby="actualites-titre">
+          <div className="mx-auto flex max-w-page flex-col gap-10 px-4 py-20 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div className="flex flex-col gap-4">
+                <Eyebrow>La vie de l’Amicale</Eyebrow>
+                <h2 id="actualites-titre" className="text-h2">
+                  Dernières actualités
+                </h2>
+              </div>
+              <Link href="/actualites" className="inline-flex items-center gap-2 font-semibold link">
+                Toutes les actualités <ArrowRight aria-hidden className="size-4" />
+              </Link>
+            </div>
+            <NewsList items={latestNews} headingLevel="h3" />
+          </div>
+        </section>
+      ) : null}
+
+      {/* ─── Contact ───────────────────────────────────────────────── */}
+      <section data-surface="dark" aria-labelledby="contact-titre" className="bg-red-600 text-white">
+        <div className="mx-auto flex max-w-page flex-col gap-6 px-4 py-16 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+          <div className="flex flex-col gap-2">
+            <h2 id="contact-titre" className="text-h2">
+              Une question ? Le bureau vous répond.
+            </h2>
+            <p className="text-lead">Adhésion, commande, partenariat : écrivez-nous.</p>
+          </div>
+          <ButtonLink href="/contact" variant="inverse">
+            Contacter le bureau
+          </ButtonLink>
+        </div>
+      </section>
+    </>
+  )
+}
