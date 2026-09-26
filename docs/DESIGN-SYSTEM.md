@@ -61,7 +61,7 @@ Longueur de ligne limitée à `max-w-prose` (42 rem) pour la lecture.
 - Rayons : `sm` 4 px (champs, boutons, badges) · `md` 8 px (cartes) · `lg` 16 px (grands blocs). Pas de boutons « pilule ».
 - Ombres : `raised` (cartes interactives) et `overlay` (menus, survol). Rien d'autre.
 - Espacements : échelle Tailwind (multiples de 4 px). Conteneurs : `narrow` 30 rem (formulaires de compte), `prose` 42 rem, `page` 76 rem.
-- Mouvement : transitions de 150 ms sur les couleurs et soulignements, uniquement en réponse à une interaction. Aucune animation d'apparition. `prefers-reduced-motion` respecté globalement.
+- Mouvement : transitions de 150 ms sur les couleurs et soulignements, uniquement en réponse à une interaction. Aucune animation d'apparition. Seule animation continue : le bandeau « À la une », demandé par le client, avec contrôle de pause. `prefers-reduced-motion` respecté globalement.
 
 ## Motifs de marque
 

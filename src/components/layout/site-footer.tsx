@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { site } from '@/config/site'
+import { whatsappUrl } from '@/lib/whatsapp'
 import { Logo } from './logo'
 
 const LINKS = [
@@ -38,6 +39,18 @@ export function SiteFooter() {
 
         <div>
           <p className="mb-4 label-caps text-amber-300">Nous joindre</p>
+          {contact.whatsapp ? (
+            <p className="mb-3 text-sm">
+              <a
+                href={whatsappUrl(contact.whatsapp)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4"
+              >
+                WhatsApp : {contact.whatsapp}
+              </a>
+            </p>
+          ) : null}
           {hasContact ? (
             <address className="flex flex-col gap-2 text-sm not-italic">
               {contact.postalAddress ? (

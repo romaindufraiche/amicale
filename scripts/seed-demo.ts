@@ -16,6 +16,7 @@ import { hashPassword } from '@/server/auth/password'
 import { db } from '@/server/db/client'
 import {
   contactMessages,
+  highlights,
   news,
   offers,
   offerTariffs,
@@ -363,7 +364,7 @@ async function main() {
   }
 
   await db.execute(
-    sql`truncate audit_logs, contact_messages, news, partners, order_lines, orders, offer_tariffs, offers, user_tokens, sessions, rate_limits, users restart identity cascade`,
+    sql`truncate audit_logs, contact_messages, highlights, news, partners, order_lines, orders, offer_tariffs, offers, user_tokens, sessions, rate_limits, users restart identity cascade`,
   )
 
   const passwordHash = await hashPassword(DEMO_PASSWORD)
@@ -526,6 +527,55 @@ async function main() {
     },
   ])
 
+  await db.insert(highlights).values([
+    {
+      title: 'Arbre de Noël : inscrivez vos enfants',
+      body: 'Spectacle, goûter et cadeaux : les inscriptions sont ouvertes dans la billetterie. (Post de démonstration.)',
+      linkUrl: '/espace/billetterie/arbre-de-noel-amicale',
+      linkLabel: 'Je m’inscris',
+      tone: 'RED',
+      published: true,
+      position: 1,
+    },
+    {
+      title: 'Grand parc : jusqu’à −41 %',
+      body: 'Billets adulte et enfant à tarif adhérent, dans la limite des stocks disponibles. (Post de démonstration.)',
+      linkUrl: '/espace/billetterie/grand-parc-attractions',
+      linkLabel: 'Voir l’offre',
+      tone: 'AMBER',
+      published: true,
+      position: 2,
+    },
+    {
+      title: 'Permanence du bureau',
+      body: 'Le bureau vous accueille chaque premier mardi du mois pour vos questions et le retrait des billets. (Post de démonstration.)',
+      linkUrl: '/contact',
+      linkLabel: 'Nous contacter',
+      tone: 'NIGHT',
+      published: true,
+      position: 3,
+    },
+    {
+      title: 'Match de football : 40 places',
+      body: 'Places en tribune latérale regroupées pour les adhérents. (Post de démonstration.)',
+      linkUrl: '/espace/billetterie/match-football-premiere-division',
+      linkLabel: 'Réserver',
+      tone: 'BLUE',
+      published: true,
+      position: 4,
+    },
+    {
+      title: 'Assemblée générale',
+      body: 'Les documents de l’assemblée générale sont disponibles pour les adhérents. (Post de démonstration.)',
+      linkUrl: '/actualites/assemblee-generale',
+      linkLabel: 'Lire',
+      tone: 'SAND',
+      visibility: 'MEMBERS',
+      published: true,
+      position: 5,
+    },
+  ])
+
   await db.insert(contactMessages).values({
     name: 'Visiteur démo',
     email: 'visiteur@demo.local',
@@ -534,7 +584,7 @@ async function main() {
   })
 
   console.log(
-    `Données de démonstration créées : ${DEMO_OFFERS.length} offres, ${DEMO_PARTNERS.length} partenaires, 4 actualités.`,
+    `Données de démonstration créées : ${DEMO_OFFERS.length} offres, ${DEMO_PARTNERS.length} partenaires, 4 actualités, 5 posts à la une.`,
   )
   console.log(
     `Comptes (mot de passe « ${DEMO_PASSWORD} ») : bureau@demo.local, adherent@demo.local, demande@demo.local, retraite@demo.local`,

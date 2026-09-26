@@ -28,6 +28,8 @@ export const site = {
   /** Coordonnées publiques (affichées sur la page Contact et les mentions légales). */
   contact: {
     email: null as string | null,
+    /** Numéro WhatsApp de l'Amicale, au format international. */
+    whatsapp: '+33 7 68 16 98 67' as string | null,
     phone: null as string | null,
     postalAddress: null as string | null,
     /** Horaires de permanence, en texte libre. */

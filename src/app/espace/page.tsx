@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { Alert } from '@/components/ui/alert'
 import { ButtonLink } from '@/components/ui/button'
 import { Eyebrow, PageHeader } from '@/components/ui/page-header'
+import { HighlightsMarquee } from '@/features/highlights/components/highlights-marquee'
+import { listActiveHighlights } from '@/features/highlights/queries'
 import { OfferCard } from '@/features/offers/components/offer-card'
 import { listPublishedOffers } from '@/features/offers/queries'
 import { offerAvailability } from '@/features/offers/rules'
@@ -62,7 +64,11 @@ export default async function DashboardPage() {
   const user = await requireUser('/espace')
   if (user.status !== 'ACTIVE') return <PendingRequest user={user} />
 
-  const [offers, orders] = await Promise.all([listPublishedOffers(), listOrdersForUser(user.id)])
+  const [offers, orders, highlights] = await Promise.all([
+    listPublishedOffers(),
+    listOrdersForUser(user.id),
+    listActiveHighlights({ includeMembersOnly: true }),
+  ])
   const now = new Date()
   const today = parisDay(now)
   const openOffers = offers
@@ -76,6 +82,8 @@ export default async function DashboardPage() {
   return (
     <>
       <PageHeader eyebrow="Tableau de bord" title={`Bonjour ${user.firstName}`} />
+
+      <HighlightsMarquee items={highlights} />
 
       <section aria-label="Mon adhésion" className="grid gap-6 lg:grid-cols-[22rem_1fr]">
         {/* Carte d'adhérent : bandeau sombre reprenant le sigle et le numéro. */}

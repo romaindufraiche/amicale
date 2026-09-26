@@ -311,6 +311,38 @@ export const news = pgTable(
   ],
 )
 
+// ─── Posts « À la une » ─────────────────────────────────────────────────────
+
+export const highlightTone = pgEnum('highlight_tone', ['RED', 'NIGHT', 'AMBER', 'BLUE', 'SAND'])
+
+/** Messages courts publiés par le bureau, affichés dans le bandeau défilant « À la une ». */
+export const highlights = pgTable(
+  'highlights',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    title: text().notNull(),
+    body: text().notNull(),
+    /** Lien facultatif : chemin interne (/espace/…) ou adresse https. */
+    linkUrl: text(),
+    linkLabel: text(),
+    tone: highlightTone().notNull().default('RED'),
+    visibility: newsVisibility().notNull().default('PUBLIC'),
+    published: boolean().notNull().default(false),
+    /** Période d'affichage facultative. */
+    startsAt: timestamp({ withTimezone: true }),
+    endsAt: timestamp({ withTimezone: true }),
+    position: integer().notNull().default(0),
+    ...timestamps,
+  },
+  (t) => [
+    index('highlights_published_idx').on(t.published, t.position),
+    check(
+      'highlights_period',
+      sql`${t.startsAt} is null or ${t.endsAt} is null or ${t.startsAt} < ${t.endsAt}`,
+    ),
+  ],
+)
+
 // ─── Contact ─────────────────────────────────────────────────────────────────
 
 export const contactMessages = pgTable(
@@ -363,4 +395,6 @@ export type OrderStatus = (typeof orderStatus.enumValues)[number]
 export type Partner = typeof partners.$inferSelect
 export type News = typeof news.$inferSelect
 export type NewsVisibility = (typeof newsVisibility.enumValues)[number]
+export type Highlight = typeof highlights.$inferSelect
+export type HighlightTone = (typeof highlightTone.enumValues)[number]
 export type ContactMessage = typeof contactMessages.$inferSelect

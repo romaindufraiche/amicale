@@ -2,9 +2,9 @@
 
 Plateforme web de l'Amicale, pensée comme un site de CSE :
 
-- **site public** : présentation, adhésion, actualités, contact, pages légales ;
+- **site public** : présentation, adhésion, actualités, contact (formulaire et bouton WhatsApp), pages légales ;
 - **espace adhérent** : billetterie à tarifs adhérents, sorties avec inscription, avantages partenaires, suivi des commandes, profil ;
-- **espace bureau** : validation des adhésions, gestion des cotisations, offres et tarifs, commandes (règlement, remise, export CSV), actualités, partenaires, messages, journal d'audit.
+- **espace bureau** : posts « À la une » (bandeau défilant sur l'accueil et le tableau de bord), validation des adhésions, gestion des cotisations, offres et tarifs, commandes (règlement, remise, export CSV), actualités, partenaires, messages, journal d'audit.
 
 Le règlement des commandes se fait **hors ligne** (virement, chèque, permanence) : le bureau enregistre la réception du règlement dans son espace. Aucun paiement en ligne n'est simulé. Voir « Évolutions possibles ».
 

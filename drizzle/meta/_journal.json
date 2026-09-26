@@ -15,6 +15,13 @@
       "when": 1790448248472,
       "tag": "0001_offer_image_featured",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790450050834,
+      "tag": "0002_highlights",
+      "breakpoints": true
     }
   ]
 }

@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { site } from '@/config/site'
 import { ButtonLink } from '@/components/ui/button'
 import { Eyebrow } from '@/components/ui/page-header'
+import { HighlightsMarquee } from '@/features/highlights/components/highlights-marquee'
+import { listActiveHighlights } from '@/features/highlights/queries'
 import { NewsList } from '@/features/news/components/news-list'
 import { OfferCard } from '@/features/offers/components/offer-card'
 import { listPublishedOffers } from '@/features/offers/queries'
@@ -33,12 +35,13 @@ const STEPS = [
 ] as const
 
 export default async function HomePage() {
-  const [session, { rows: latestNews }, offers] = await Promise.all([
-    getCurrentSession(),
+  const session = await getCurrentSession()
+  const isMember = session?.user.status === 'ACTIVE'
+  const [{ rows: latestNews }, offers, highlights] = await Promise.all([
     listPublishedNews({ includeMembersOnly: false, limit: 3 }),
     listPublishedOffers(),
+    listActiveHighlights({ includeMembersOnly: isMember }),
   ])
-  const isMember = session?.user.status === 'ACTIVE'
   const now = new Date()
   const today = parisDay(now)
   const showcase = offers
@@ -83,6 +86,13 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ─── À la une : posts du bureau, défilement automatique ─── */}
+      {highlights.length > 0 ? (
+        <div className="pb-16">
+          <HighlightsMarquee items={highlights} fullBleed />
+        </div>
+      ) : null}
 
       {/* ─── Ce que l'adhésion apporte ─────────────────────────────── */}
       <section aria-labelledby="avantages-titre" className="bg-surface">

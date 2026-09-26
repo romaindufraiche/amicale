@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { MessageCircle } from 'lucide-react'
 import { site } from '@/config/site'
+import { whatsappUrl } from '@/lib/whatsapp'
 import { Eyebrow, PageHeader } from '@/components/ui/page-header'
 import { ContactForm } from '@/features/contact/components/contact-form'
 import { getCurrentSession } from '@/server/auth/session'
@@ -31,6 +33,24 @@ export default async function ContactPage() {
 
       <aside className="flex flex-col gap-6 self-start rounded-lg bg-sunken p-8 lg:mt-40">
         <Eyebrow>Bon à savoir</Eyebrow>
+        {contact.whatsapp ? (
+          <div className="flex flex-col gap-3">
+            <p className="font-semibold">Une question rapide ? Écrivez-nous sur WhatsApp.</p>
+            <a
+              href={whatsappUrl(
+                contact.whatsapp,
+                `Bonjour, je vous contacte depuis le site de l’${site.shortName}.`,
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-12 items-center gap-2 self-start rounded-sm bg-whatsapp px-5 font-display font-bold text-white hover:bg-whatsapp-hover"
+            >
+              <MessageCircle aria-hidden className="size-5" />
+              {contact.whatsapp}
+              <span className="sr-only">(WhatsApp, nouvel onglet)</span>
+            </a>
+          </div>
+        ) : null}
         {hasDetails ? (
           <dl className="flex flex-col gap-4">
             {contact.postalAddress ? (

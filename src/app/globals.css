@@ -44,6 +44,10 @@
   --color-amber-300: #ffc56a; /* accent chaleureux (économies, mises en avant) */
   --color-amber-800: #7a4a00;
 
+  /* Vert WhatsApp assombri : texte blanc lisible (5,4:1), réservé au bouton WhatsApp. */
+  --color-whatsapp: #0f7a4f;
+  --color-whatsapp-hover: #0b6e4f;
+
   --color-success-800: #1b5e3a;
   --color-success-50: #e7f3eb;
   --color-warning-800: #7a4a00;
@@ -96,6 +100,17 @@
   /* Mouvement ------------------------------------------------------------- */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --default-transition-duration: 150ms;
+
+  /* Bandeau « À la une » : défilement continu de droite à gauche (contenu dupliqué). */
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
   --default-transition-timing-function: var(--ease-standard);
 }
 

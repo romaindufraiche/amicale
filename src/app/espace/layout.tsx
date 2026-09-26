@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import { ButtonLink } from '@/components/ui/button'
 import { AppShell, type AppNavItem } from '@/components/layout/app-shell'
+import { WhatsAppButton } from '@/components/layout/whatsapp-button'
 import { requireUser } from '@/server/auth/guards'
 import { can } from '@/server/auth/permissions'
 
@@ -27,19 +28,22 @@ export default async function MemberLayout({ children }: { children: ReactNode }
   const user = await requireUser('/espace')
   const isActive = user.status === 'ACTIVE'
   return (
-    <AppShell
-      user={user}
-      label="Espace adhérent"
-      nav={isActive ? MEMBER_NAV : PENDING_NAV}
-      aside={
-        isActive && can(user.role, 'admin:access') ? (
-          <ButtonLink href="/admin" variant="secondary" size="sm">
-            Espace bureau
-          </ButtonLink>
-        ) : null
-      }
-    >
-      {children}
-    </AppShell>
+    <>
+      <AppShell
+        user={user}
+        label="Espace adhérent"
+        nav={isActive ? MEMBER_NAV : PENDING_NAV}
+        aside={
+          isActive && can(user.role, 'admin:access') ? (
+            <ButtonLink href="/admin" variant="secondary" size="sm">
+              Espace bureau
+            </ButtonLink>
+          ) : null
+        }
+      >
+        {children}
+      </AppShell>
+      <WhatsAppButton />
+    </>
   )
 }

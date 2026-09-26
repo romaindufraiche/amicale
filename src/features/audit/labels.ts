@@ -17,6 +17,9 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   'partner.created': 'Partenaire ajouté',
   'partner.updated': 'Partenaire modifié',
   'contact.handled': 'Message traité',
+  'highlight.created': 'Post « À la une » créé',
+  'highlight.updated': 'Post « À la une » modifié',
+  'highlight.deleted': 'Post « À la une » supprimé',
 }
 
 const ENTITY_PATHS: Record<string, string> = {
@@ -24,6 +27,7 @@ const ENTITY_PATHS: Record<string, string> = {
   offer: '/admin/offres/',
   news: '/admin/actualites/',
   partner: '/admin/partenaires/',
+  highlight: '/admin/a-la-une/',
 }
 
 export function auditEntityHref(entityType: string, entityId: string | null): string | null {

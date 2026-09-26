@@ -16,6 +16,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     { href: '/admin', label: 'Vue d’ensemble', exact: true },
     { href: '/admin/adherents', label: 'Adhérents' },
     { href: '/admin/commandes', label: 'Commandes' },
+    { href: '/admin/a-la-une', label: 'À la une' },
     { href: '/admin/offres', label: 'Offres' },
     { href: '/admin/actualites', label: 'Actualités' },
     { href: '/admin/partenaires', label: 'Partenaires' },

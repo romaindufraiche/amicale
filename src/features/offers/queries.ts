@@ -109,6 +109,7 @@ export async function listOffersForAdmin(status?: PublicationStatus) {
       kind: offers.kind,
       category: offers.category,
       status: offers.status,
+      featured: offers.featured,
       eventStartsAt: offers.eventStartsAt,
       orderDeadline: offers.orderDeadline,
       updatedAt: offers.updatedAt,
