@@ -4,7 +4,8 @@ Le site n'invente aucune donnée métier. Les informations ci-dessous sont néce
 
 ## Identité
 
-- [ ] **Logo officiel** en fichier vectoriel (SVG) ou PNG haute définition, sur fond transparent, avec une variante pour fond sombre. À déposer dans `public/brand/` et déclarer dans `site.logo`.
+- [x] Logo officiel reçu (JPEG sur fond blanc), intégré dans l'en-tête.
+- [ ] Idéalement : version vectorielle (SVG) ou PNG transparent, et une variante pour fond sombre (pied de page, carte d'adhérent).
 - [ ] **Dénomination exacte** selon les statuts (actuellement « Amicale des Policiers du Val d'Oise », d'après le logo).
 - [ ] Forme juridique (actuellement « Association loi 1901 », à confirmer).
 

@@ -15,11 +15,15 @@ export const site = {
     "L'Amicale des Policiers du Val d'Oise : billetterie à tarifs adhérents, sorties, avantages partenaires et vie de l'association.",
 
   /**
-   * Logo officiel ADPVO. Déposer le fichier fourni par le client dans `public/brand/`
-   * puis renseigner ce champ (dimensions intrinsèques du fichier, en pixels).
-   * Tant qu'il vaut `null`, l'en-tête affiche le sigle en texte, sans imiter le logo.
+   * Logo officiel ADPVO (dimensions intrinsèques du fichier, en pixels).
+   * `logo-adpvo.png` est le fichier fourni (`logo-adpvo-original.jpeg`), marges blanches retirées.
+   * À `null`, l'en-tête afficherait le sigle en texte.
    */
-  logo: null as { src: string; width: number; height: number } | null,
+  logo: { src: '/brand/logo-adpvo.png', width: 1452, height: 806 } as {
+    src: string
+    width: number
+    height: number
+  } | null,
 
   /** Coordonnées publiques (affichées sur la page Contact et les mentions légales). */
   contact: {
