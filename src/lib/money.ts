@@ -5,6 +5,11 @@ export function formatEuros(cents: number): string {
   return euroFormatter.format(cents / 100)
 }
 
+/** Prix affiché à l'adhérent : « Gratuit » plutôt que « 0,00 € ». */
+export function formatPrice(cents: number): string {
+  return cents === 0 ? 'Gratuit' : formatEuros(cents)
+}
+
 /**
  * Convertit une saisie en euros (« 12 », « 12,5 », « 12.50 ») en centimes.
  * Retourne `null` si la saisie n'est pas un montant positif à deux décimales au plus.

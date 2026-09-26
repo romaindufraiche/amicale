@@ -7,6 +7,7 @@ import { cache, type ReactNode } from 'react'
 import { Alert } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { OrderForm } from '@/features/orders/components/order-form'
+import { OfferVisual } from '@/features/offers/components/offer-visual'
 import { OFFER_CATEGORY_LABELS, OFFER_KIND_LABELS } from '@/features/offers/labels'
 import { getPublishedOfferBySlug, quantityOrderedBy } from '@/features/offers/queries'
 import { AVAILABILITY_LABELS, offerAvailability } from '@/features/offers/rules'
@@ -70,6 +71,12 @@ export default async function OfferPage({ params }: Props) {
 
       <div className="grid gap-12 lg:grid-cols-[1fr_24rem] lg:items-start">
         <article className="flex flex-col gap-8">
+          <OfferVisual
+            category={offer.category}
+            imagePath={offer.imagePath}
+            sizes="(min-width: 1024px) 800px, 100vw"
+            className="aspect-[21/9] rounded-lg"
+          />
           <header className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone={offer.kind === 'EVENT' ? 'info' : 'neutral'}>

@@ -164,6 +164,10 @@ export const offers = pgTable(
     orderDeadline: timestamp({ withTimezone: true }),
     /** Quantité totale maximale par adhérent pour cette offre, tous tarifs confondus. */
     maxPerMember: integer(),
+    /** Visuel de l'offre (fichier de `public/offres/`) ; à défaut, un visuel de catégorie est affiché. */
+    imagePath: text(),
+    /** Mise en avant dans la rubrique « À la une ». */
+    featured: boolean().notNull().default(false),
     status: publicationStatus().notNull().default('DRAFT'),
     publishedAt: timestamp({ withTimezone: true }),
     ...timestamps,
@@ -171,6 +175,10 @@ export const offers = pgTable(
   (t) => [
     uniqueIndex('offers_slug_key').on(t.slug),
     index('offers_status_idx').on(t.status),
+    check(
+      'offers_image_path_local',
+      sql`${t.imagePath} is null or ${t.imagePath} ~ '^/offres/[A-Za-z0-9_-]+\\.(jpg|jpeg|png|webp)$'`,
+    ),
     check('offers_max_per_member_positive', sql`${t.maxPerMember} is null or ${t.maxPerMember} > 0`),
     check('offers_event_has_date', sql`${t.kind} <> 'EVENT' or ${t.eventStartsAt} is not null`),
   ],

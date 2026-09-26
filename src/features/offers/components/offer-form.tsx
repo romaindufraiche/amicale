@@ -24,6 +24,8 @@ export type OfferFormValues = {
   validUntil: string
   orderDeadline: string
   maxPerMember: string
+  imagePath: string
+  featured: boolean
   tariffs: TariffRow[]
 }
 
@@ -98,7 +100,8 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
     setRows(rowsFromValues(v, rows))
   }
 
-  const value = (name: keyof OfferFormValues) => v?.[name] ?? String(initial[name] ?? '')
+  const value = (name: Exclude<keyof OfferFormValues, 'tariffs' | 'featured'>) =>
+    v?.[name] ?? initial[name] ?? ''
 
   return (
     <form action={formAction} className="flex flex-col gap-10" noValidate>
@@ -150,6 +153,20 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
           rows={8}
           defaultValue={value('description')}
           error={e?.description}
+          className="md:col-span-2"
+        />
+        <TextField
+          name="imagePath"
+          label="Visuel"
+          hint="Déposez l’image (format paysage, 1600 px de large conseillés) dans public/offres/, puis indiquez son chemin : /offres/nom-du-fichier.jpg. Sans image, un visuel de catégorie est affiché."
+          defaultValue={value('imagePath')}
+          error={e?.imagePath}
+          className="md:col-span-2"
+        />
+        <CheckboxField
+          name="featured"
+          label="Mettre à la une (en tête du catalogue et sur la page d’accueil)"
+          defaultChecked={v ? v.featured === 'on' : initial.featured}
           className="md:col-span-2"
         />
         <TextField

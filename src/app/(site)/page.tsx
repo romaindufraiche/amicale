@@ -4,6 +4,10 @@ import { site } from '@/config/site'
 import { ButtonLink } from '@/components/ui/button'
 import { Eyebrow } from '@/components/ui/page-header'
 import { NewsList } from '@/features/news/components/news-list'
+import { OfferCard } from '@/features/offers/components/offer-card'
+import { listPublishedOffers } from '@/features/offers/queries'
+import { offerAvailability } from '@/features/offers/rules'
+import { parisDay } from '@/lib/dates'
 import { listPublishedNews } from '@/features/news/queries'
 import { getCurrentSession } from '@/server/auth/session'
 
@@ -29,10 +33,19 @@ const STEPS = [
 ] as const
 
 export default async function HomePage() {
-  const [session, { rows: latestNews }] = await Promise.all([
+  const [session, { rows: latestNews }, offers] = await Promise.all([
     getCurrentSession(),
     listPublishedNews({ includeMembersOnly: false, limit: 3 }),
+    listPublishedOffers(),
   ])
+  const isMember = session?.user.status === 'ACTIVE'
+  const now = new Date()
+  const today = parisDay(now)
+  const showcase = offers
+    .map((offer) => ({ offer, availability: offerAvailability(offer, offer.tariffs, now, today) }))
+    .filter(({ availability }) => availability.open)
+    .sort((a, b) => Number(b.offer.featured) - Number(a.offer.featured))
+    .slice(0, 4)
 
   return (
     <>
@@ -98,6 +111,49 @@ export default async function HomePage() {
           </ol>
         </div>
       </section>
+
+      {/* ─── Offres du moment (visibles de tous, tarifs réservés aux adhérents) ─── */}
+      {showcase.length > 0 ? (
+        <section aria-labelledby="offres-titre">
+          <div className="mx-auto flex max-w-page flex-col gap-10 px-4 py-20 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div className="flex max-w-prose flex-col gap-4">
+                <Eyebrow>Billetterie</Eyebrow>
+                <h2 id="offres-titre" className="text-h2">
+                  Les offres du moment
+                </h2>
+                {!isMember ? (
+                  <p className="text-ink-muted">
+                    Les tarifs adhérents s’affichent une fois connecté à votre espace.
+                  </p>
+                ) : null}
+              </div>
+              <Link
+                href={isMember ? '/espace/billetterie' : '/connexion?next=/espace/billetterie'}
+                className="inline-flex items-center gap-2 font-semibold link"
+              >
+                Toute la billetterie <ArrowRight aria-hidden className="size-4" />
+              </Link>
+            </div>
+            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {showcase.map(({ offer, availability }) => (
+                <li key={offer.id}>
+                  <OfferCard
+                    offer={offer}
+                    availability={availability}
+                    audience={isMember ? 'member' : 'public'}
+                    href={
+                      isMember
+                        ? `/espace/billetterie/${offer.slug}`
+                        : `/connexion?next=/espace/billetterie/${offer.slug}`
+                    }
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
 
       {/* ─── Parcours d'adhésion ───────────────────────────────────── */}
       <section aria-labelledby="etapes-titre" className="bg-sunken">

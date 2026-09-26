@@ -4,7 +4,7 @@ import { useActionState, useState } from 'react'
 import { FormMessage } from '@/components/ui/form-message'
 import { SubmitButton } from '@/components/ui/submit-button'
 import { idleState } from '@/lib/form-state'
-import { formatEuros } from '@/lib/money'
+import { formatEuros, formatPrice } from '@/lib/money'
 import { createOrderAction } from '../actions'
 import { MAX_QUANTITY_PER_LINE } from '../schemas'
 
@@ -66,7 +66,7 @@ export function OrderForm({ offerId, idempotencyKey, tariffs, remainingAllowance
                 </label>
                 <p className="flex flex-wrap items-baseline gap-x-2 text-sm">
                   <span className="font-display text-lead font-extrabold tabular">
-                    {formatEuros(tariff.memberPriceCents)}
+                    {formatPrice(tariff.memberPriceCents)}
                   </span>
                   {tariff.publicPriceCents && tariff.publicPriceCents > tariff.memberPriceCents ? (
                     <span className="text-ink-muted">

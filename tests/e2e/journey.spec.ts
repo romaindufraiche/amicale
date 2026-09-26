@@ -48,7 +48,7 @@ test('de la demande d’adhésion à la commande réglée', async ({ page }) => 
   // 5. L'adhérent commande deux billets adulte
   await login(page, email, password)
   await page.getByRole('link', { name: 'Billetterie & sorties' }).first().click()
-  await page.getByRole('link', { name: 'Parc de loisirs (démo)' }).click()
+  await page.getByRole('link', { name: 'Grand parc d’attractions' }).click()
   await page.getByLabel('Adulte').fill('2')
   await expect(page.getByText('78,00 €')).toBeVisible()
   const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze()
@@ -76,7 +76,7 @@ test('de la demande d’adhésion à la commande réglée', async ({ page }) => 
 
 test('un adhérent ne voit pas la commande d’un autre', async ({ page }) => {
   await login(page, 'bureau@demo.local')
-  await page.goto('/espace/billetterie/cinema-demo-e-billets')
+  await page.goto('/espace/billetterie/cinema-e-billet')
   await page.getByLabel('Place de cinéma').fill('1')
   await page.getByRole('button', { name: 'Commander' }).click()
   await expect(page).toHaveURL(/\/espace\/commandes\/[0-9a-f-]+/)

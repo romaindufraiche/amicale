@@ -17,6 +17,8 @@ export const EMPTY_OFFER: OfferFormValues = {
   validUntil: '',
   orderDeadline: '',
   maxPerMember: '',
+  imagePath: '',
+  featured: false,
   tariffs: [],
 }
 
@@ -36,6 +38,8 @@ export function offerToFormValues(offer: OfferWithTariffs, lockedTariffIds: Set<
     validUntil: offer.validUntil ?? '',
     orderDeadline: toParisDateTimeInput(offer.orderDeadline),
     maxPerMember: offer.maxPerMember?.toString() ?? '',
+    imagePath: offer.imagePath ?? '',
+    featured: offer.featured,
     tariffs: offer.tariffs.map((tariff) => ({
       key: tariff.id,
       id: tariff.id,

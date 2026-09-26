@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Alert } from '@/components/ui/alert'
 import { ButtonLink } from '@/components/ui/button'
 import { Eyebrow, PageHeader } from '@/components/ui/page-header'
-import { OfferTicket } from '@/features/offers/components/offer-ticket'
+import { OfferCard } from '@/features/offers/components/offer-card'
 import { listPublishedOffers } from '@/features/offers/queries'
 import { offerAvailability } from '@/features/offers/rules'
 import { OrderSummaryRow } from '@/features/orders/components/order-summary'
@@ -68,6 +68,7 @@ export default async function DashboardPage() {
   const openOffers = offers
     .map((offer) => ({ offer, availability: offerAvailability(offer, offer.tariffs, now, today) }))
     .filter(({ availability }) => availability.open)
+    .sort((a, b) => Number(b.offer.featured) - Number(a.offer.featured))
     .slice(0, 3)
   const pendingPayment = orders.filter((order) => order.status === 'PENDING_PAYMENT')
   const valid = isMembershipValid(user)
@@ -158,10 +159,14 @@ export default async function DashboardPage() {
               Toutes les offres <ArrowRight aria-hidden className="size-4" />
             </Link>
           </div>
-          <ul className="flex flex-col gap-5">
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {openOffers.map(({ offer, availability }) => (
               <li key={offer.id}>
-                <OfferTicket offer={offer} availability={availability} />
+                <OfferCard
+                  offer={offer}
+                  availability={availability}
+                  href={`/espace/billetterie/${offer.slug}`}
+                />
               </li>
             ))}
           </ul>

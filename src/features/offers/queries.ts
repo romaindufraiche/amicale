@@ -1,5 +1,5 @@
 import 'server-only'
-import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm'
 import { db } from '@/server/db/client'
 import {
   offers,
@@ -32,15 +32,48 @@ async function tariffsFor(offerIds: string[]) {
 
 export type OfferTariffView = Awaited<ReturnType<typeof tariffsFor>>[number]
 
-/** Offres en ligne pour le catalogue adhérent, les sorties datées en premier. */
-export async function listPublishedOffers(category?: OfferCategory) {
+export type OfferSort = 'date' | 'prix' | 'recent'
+
+export type CatalogFilters = { category?: OfferCategory; search?: string; sort?: OfferSort }
+
+/**
+ * Offres en ligne du catalogue. Par défaut, les sorties datées d'abord puis les plus récentes.
+ * Le tri par prix se fait après chargement (le prix d'appel dépend des tarifs actifs).
+ */
+export async function listPublishedOffers(filters: CatalogFilters = {}) {
+  const search = filters.search?.trim()
+  const pattern = search ? `%${search.replace(/[\\%_]/g, (char) => `\\${char}`)}%` : null
   const rows = await db
     .select()
     .from(offers)
-    .where(and(eq(offers.status, 'PUBLISHED'), category ? eq(offers.category, category) : undefined))
-    .orderBy(sql`${offers.eventStartsAt} asc nulls last`, desc(offers.publishedAt))
+    .where(
+      and(
+        eq(offers.status, 'PUBLISHED'),
+        filters.category ? eq(offers.category, filters.category) : undefined,
+        pattern
+          ? or(ilike(offers.title, pattern), ilike(offers.summary, pattern), ilike(offers.location, pattern))
+          : undefined,
+      ),
+    )
+    .orderBy(
+      ...(filters.sort === 'recent'
+        ? [desc(offers.publishedAt)]
+        : [sql`${offers.eventStartsAt} asc nulls last`, desc(offers.publishedAt)]),
+    )
   const tariffs = await tariffsFor(rows.map((row) => row.id))
-  return rows.map((offer) => ({ ...offer, tariffs: tariffs.filter((tariff) => tariff.offerId === offer.id) }))
+  const result = rows.map((offer) => ({
+    ...offer,
+    tariffs: tariffs.filter((tariff) => tariff.offerId === offer.id),
+  }))
+  if (filters.sort === 'prix') {
+    const price = (offer: (typeof result)[number]) =>
+      Math.min(
+        ...offer.tariffs.filter((tariff) => tariff.active).map((tariff) => tariff.memberPriceCents),
+        Infinity,
+      )
+    result.sort((a, b) => price(a) - price(b))
+  }
+  return result
 }
 
 export type OfferWithTariffs = Awaited<ReturnType<typeof listPublishedOffers>>[number]

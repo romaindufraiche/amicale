@@ -23,6 +23,8 @@ function offerColumns(input: OfferInput) {
     validUntil: input.kind === 'TICKET' ? input.validUntil : null,
     orderDeadline: input.orderDeadline,
     maxPerMember: input.maxPerMember,
+    imagePath: input.imagePath,
+    featured: input.featured,
   }
 }
 

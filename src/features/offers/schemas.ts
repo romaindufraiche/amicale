@@ -92,6 +92,18 @@ export const offerSchema = z
     validUntil: optionalDate,
     orderDeadline: optionalDateTime,
     maxPerMember: optionalPositiveInt('Limite par adhérent'),
+    imagePath: z
+      .string()
+      .optional()
+      .transform((value) => (value ?? '').trim())
+      .refine((value) => value === '' || /^\/offres\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/.test(value), {
+        error: 'Chemin invalide : /offres/nom-du-fichier.jpg (fichier déposé dans public/offres/).',
+      })
+      .transform((value) => (value === '' ? null : value)),
+    featured: z
+      .string()
+      .optional()
+      .transform((value) => value === 'on'),
     tariffs: z.array(tariffSchema).min(1, { error: 'Ajoutez au moins un tarif.' }).max(12),
   })
   .transform((data) => ({ ...data, slug: slugify(data.slug || data.title) }))

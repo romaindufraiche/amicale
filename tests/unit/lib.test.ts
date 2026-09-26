@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { toCsv } from '@/lib/csv'
 import { formatDate, fromParisDateTimeInput, parisDay, toParisDateTimeInput } from '@/lib/dates'
-import { centsToInput, formatEuros, parseEurosToCents } from '@/lib/money'
+import { centsToInput, formatEuros, formatPrice, parseEurosToCents } from '@/lib/money'
 import { safeRedirectPath } from '@/lib/safe-redirect'
 import { slugify } from '@/lib/slug'
 import { toParagraphs } from '@/lib/text'
@@ -23,6 +23,7 @@ describe('money', () => {
     expect(formatEuros(1250).replace(/\s/g, ' ')).toBe('12,50 €')
     expect(centsToInput(1250)).toBe('12,50')
     expect(centsToInput(null)).toBe('')
+    expect(formatPrice(0)).toBe('Gratuit')
   })
 })
 
