@@ -1,0 +1,42 @@
+# Déploiement autonome : application + PostgreSQL.
+# Les secrets sont lus depuis le fichier .env (jamais versionné) — voir .env.example.
+#
+#   docker compose run --rm migrate   # à chaque nouvelle version
+#   docker compose up -d app
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: amicale
+      POSTGRES_USER: amicale
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD doit être défini}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U amicale -d amicale']
+      interval: 10s
+      retries: 5
+
+  migrate:
+    build: { context: ., target: migrator }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://amicale:${POSTGRES_PASSWORD}@db:5432/amicale
+    depends_on:
+      db: { condition: service_healthy }
+    profiles: [tools]
+
+  app:
+    build: { context: ., target: runner }
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://amicale:${POSTGRES_PASSWORD}@db:5432/amicale
+    ports:
+      - '127.0.0.1:3000:3000'
+    depends_on:
+      db: { condition: service_healthy }
+
+volumes:
+  db-data:
