@@ -9,10 +9,10 @@ Aucune charte graphique formelle n'a été fournie. La direction artistique déc
 
 D'où la direction retenue : le rouge du logo comme couleur d'action, un noir chaud pour le texte, des neutres crème et sable pour la chaleur, et le double trait bleu du contour comme filet signature. Le logo n'est ni redessiné ni imité.
 
-> **Logo** : le fichier officiel doit être déposé dans `public/brand/` puis déclaré dans
-> `src/config/site.ts` (`logo`). En attendant, le sigle est composé en texte dans les couleurs
-> du logo. Pour les fonds sombres (pied de page), une version du logo sur fond transparent
-> ou en réserve blanche sera nécessaire.
+> **Logo** : fichier fourni par le client (`public/brand/logo-adpvo-original.jpeg`), marges blanches
+> retirées dans `logo-adpvo.png`, déclaré dans `src/config/site.ts`. Fourni sur fond blanc, il est fondu
+> dans le fond crème (`mix-blend-multiply`). Sur fond sombre (pied de page, carte d'adhérent), le sigle
+> est composé en texte en attendant une version « négatif » du logo.
 
 Tous les tokens sont définis dans `src/app/globals.css` (`@theme`). Les échelles par défaut de Tailwind sont **supprimées** : une couleur, une ombre ou un rayon qui n'est pas un token n'existe pas.
 
