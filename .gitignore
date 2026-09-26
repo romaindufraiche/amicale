@@ -1,0 +1,27 @@
+# dépendances
+node_modules/
+
+# build
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# environnement — ne jamais versionner de secrets
+.env
+.env.*
+!.env.example
+
+# tests
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# boîte d'envoi locale des emails (développement / tests)
+.outbox/
+
+# divers
+.DS_Store
+*.log
