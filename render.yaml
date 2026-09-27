@@ -16,12 +16,15 @@ services:
     plan: free
     region: frankfurt
     branch: claude/vigilant-shannon-r078sb
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
-    startCommand: pnpm db:migrate && pnpm db:seed:demo --if-empty && pnpm start
+    # pnpm installé directement : le corepack des anciennes versions de Node échoue
+    # (« Cannot find matching keyid »).
+    buildCommand: npm install -g pnpm@10.33.0 && pnpm install --frozen-lockfile && pnpm build
+    # npm run : toujours disponible au démarrage, sans dépendre d'un outil installé au build.
+    startCommand: npm run db:migrate && npm run db:seed:demo -- --if-empty && npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_VERSION
-        value: 22.12.0
+        value: '22'
       - key: DATABASE_URL
         fromDatabase:
           name: adpvo-db
