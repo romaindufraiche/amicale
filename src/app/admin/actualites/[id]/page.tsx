@@ -74,6 +74,7 @@ export default async function EditNewsPage({ params, searchParams }: Props) {
           excerpt: item.excerpt,
           body: item.body,
           visibility: item.visibility,
+          imageId: item.imageId,
         }}
       />
     </>

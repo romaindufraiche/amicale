@@ -73,6 +73,7 @@ Choix justifiés dans [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) : organisation du code, flux de données, modèle de données, sécurité.
 - [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) : identité visuelle, tokens, composants, règles d'usage.
+- [`docs/DEMO-EN-LIGNE.md`](docs/DEMO-EN-LIGNE.md) : mettre le site en ligne gratuitement (Vercel + Neon) pour le faire tester.
 - [`docs/EXPLOITATION.md`](docs/EXPLOITATION.md) : déploiement, variables d'environnement, sauvegardes, supervision.
 - [`docs/CONTENU.md`](docs/CONTENU.md) : informations à fournir par le bureau avant la mise en ligne.
 

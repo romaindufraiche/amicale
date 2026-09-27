@@ -10,7 +10,13 @@ declare global {
 }
 
 function createDatabase() {
-  const sql = postgres(env.DATABASE_URL, { max: 10, idle_timeout: 30 })
+  const sql = postgres(env.DATABASE_URL, {
+    max: env.DB_POOL_MAX,
+    idle_timeout: 30,
+    // Sans requêtes préparées : compatible avec les pools de connexions en mode
+    // transaction (Neon, Supabase, PgBouncer) utilisés par les hébergeurs serverless.
+    prepare: false,
+  })
   return drizzle(sql, { schema, casing: 'snake_case' })
 }
 

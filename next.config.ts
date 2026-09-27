@@ -24,8 +24,9 @@ const nextConfig: NextConfig = {
   agentRules: false,
   serverExternalPackages: ['@node-rs/argon2', 'sharp'],
   experimental: {
-    // Téléversement d'images par le bureau : 8 Mo maximum par fichier (+ marge du multipart).
-    serverActions: { bodySizeLimit: '9mb' },
+    // Téléversement d'images : 4 Mo maximum par fichier après réduction dans le navigateur
+    // (compatible avec la limite de 4,5 Mo des hébergeurs serverless comme Vercel).
+    serverActions: { bodySizeLimit: '4.4mb' },
   },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }]

@@ -32,6 +32,13 @@ const schema = z
       .enum(['true', 'false'])
       .default('false')
       .transform((value) => value === 'true'),
+    /** Connexions simultanées à la base par instance (3 conseillé en serverless). */
+    DB_POOL_MAX: z.coerce.number().int().min(1).max(50).default(10),
+    /** Affiche un bandeau « version de démonstration » sur toutes les pages. */
+    DEMO_MODE: z
+      .enum(['true', 'false'])
+      .default('false')
+      .transform((value) => value === 'true'),
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   })
   .superRefine((env, ctx) => {

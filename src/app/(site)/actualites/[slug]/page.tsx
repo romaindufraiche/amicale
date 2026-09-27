@@ -7,6 +7,7 @@ import { site } from '@/config/site'
 import { Alert } from '@/components/ui/alert'
 import { ButtonLink } from '@/components/ui/button'
 import { Eyebrow } from '@/components/ui/page-header'
+import { mediaUrl } from '@/features/media/constants'
 import { getPublishedNews } from '@/features/news/queries'
 import { formatDate } from '@/lib/dates'
 import { toParagraphs } from '@/lib/text'
@@ -25,7 +26,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: isPublic ? item.excerpt : undefined,
     alternates: { canonical: `/actualites/${item.slug}` },
     robots: isPublic ? undefined : { index: false },
-    openGraph: isPublic ? { type: 'article', title: item.title, description: item.excerpt } : undefined,
+    openGraph: isPublic
+      ? {
+          type: 'article',
+          title: item.title,
+          description: item.excerpt,
+          images: item.imageId ? [mediaUrl(item.imageId)] : undefined,
+        }
+      : undefined,
   }
 }
 
@@ -70,7 +78,12 @@ export default async function NewsPage({ params }: Props) {
         <h1 className="text-h1">{item.title}</h1>
         <p className="text-lead text-ink-muted">{item.excerpt}</p>
       </header>
-      <div className="brand-rule w-24" aria-hidden />
+      {item.imageId ? (
+        // eslint-disable-next-line @next/next/no-img-element -- image déjà optimisée au téléversement
+        <img src={mediaUrl(item.imageId)} alt="" className="aspect-[16/9] w-full rounded-lg object-cover" />
+      ) : (
+        <div className="brand-rule w-24" aria-hidden />
+      )}
       {canRead ? (
         <div className="flex flex-col gap-5">
           {toParagraphs(item.body).map((paragraph, index) => (

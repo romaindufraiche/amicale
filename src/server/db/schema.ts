@@ -326,6 +326,8 @@ export const news = pgTable(
     excerpt: text().notNull(),
     body: text().notNull(),
     visibility: newsVisibility().notNull().default('PUBLIC'),
+    /** Photo d'illustration, affichée en tête de l'article et dans les listes. */
+    imageId: uuid().references(() => media.id, { onDelete: 'set null' }),
     status: publicationStatus().notNull().default('DRAFT'),
     publishedAt: timestamp({ withTimezone: true }),
     authorId: uuid().references(() => users.id, { onDelete: 'set null' }),

@@ -10,6 +10,7 @@ const listColumns = {
   title: news.title,
   excerpt: news.excerpt,
   visibility: news.visibility,
+  imageId: news.imageId,
   publishedAt: news.publishedAt,
 }
 

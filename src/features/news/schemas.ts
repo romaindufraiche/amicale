@@ -12,6 +12,10 @@ export const newsSchema = z
       .max(280, { error: '280 caractères maximum.' }),
     body: z.string().trim().min(20, { error: 'Texte requis (20 caractères minimum).' }).max(20000),
     visibility: z.enum(['PUBLIC', 'MEMBERS'], { error: 'Visibilité invalide.' }),
+    imageId: z
+      .union([z.uuid(), z.literal('')], { error: 'Image invalide.' })
+      .optional()
+      .transform((value) => value || null),
   })
   .transform((data) => ({ ...data, slug: slugify(data.slug || data.title) }))
   .refine((data) => data.slug.length >= 3, { path: ['slug'], error: 'Adresse de page trop courte.' })

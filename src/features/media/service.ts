@@ -19,7 +19,8 @@ export type UploadResult =
  */
 export async function storeImage(file: File, actorId: string): Promise<UploadResult> {
   if (file.size === 0) return { ok: false, message: 'Le fichier est vide.' }
-  if (file.size > MAX_UPLOAD_BYTES) return { ok: false, message: 'Image trop lourde : 8 Mo maximum.' }
+  if (file.size > MAX_UPLOAD_BYTES)
+    return { ok: false, message: 'Image trop lourde : 4 Mo maximum après réduction.' }
   if (!(ACCEPTED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
     return { ok: false, message: 'Format non pris en charge : utilisez une image JPEG, PNG ou WebP.' }
   }
@@ -61,13 +62,14 @@ export async function getMedia(id: string) {
   return row ?? null
 }
 
-/** Supprime les images téléversées mais jamais rattachées à une offre ou un post (après 24 h). */
+/** Supprime les images téléversées mais rattachées à aucun contenu (après 24 h). */
 export async function purgeOrphanMedia(): Promise<number> {
   const deleted = await db.execute<{ id: string }>(sql`
     delete from media m
     where m.created_at < now() - interval '1 day'
       and not exists (select 1 from offers o where o.image_id = m.id)
       and not exists (select 1 from highlights h where h.image_id = m.id)
+      and not exists (select 1 from news n where n.image_id = m.id)
     returning m.id`)
   return deleted.length
 }

@@ -5,7 +5,8 @@ import { type DragEvent, useId, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/cn'
 import { uploadImageAction } from '../actions'
-import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_BYTES, mediaUrl } from '../constants'
+import { ACCEPTED_IMAGE_TYPES, MAX_SOURCE_BYTES, MAX_UPLOAD_BYTES, mediaUrl } from '../constants'
+import { isAcceptedImage, prepareImage } from '../prepare-image'
 
 type Status = { state: 'idle' } | { state: 'uploading' } | { state: 'error'; message: string }
 
@@ -35,22 +36,30 @@ export function ImageDropzone({
   const hintId = `${id}-hint`
   const statusId = `${id}-status`
 
-  async function upload(file: File) {
-    if (!(ACCEPTED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
+  async function upload(source: File) {
+    if (!isAcceptedImage(source)) {
       setStatus({
         state: 'error',
         message: 'Format non pris en charge : utilisez une image JPEG, PNG ou WebP.',
       })
       return
     }
-    if (file.size > MAX_UPLOAD_BYTES) {
-      setStatus({ state: 'error', message: 'Image trop lourde : 8 Mo maximum.' })
+    if (source.size > MAX_SOURCE_BYTES) {
+      setStatus({ state: 'error', message: 'Image trop lourde : 30 Mo maximum.' })
       return
     }
     setStatus({ state: 'uploading' })
-    const data = new FormData()
-    data.append('file', file)
     try {
+      const file = await prepareImage(source)
+      if (file.size > MAX_UPLOAD_BYTES) {
+        setStatus({
+          state: 'error',
+          message: 'Image trop lourde, même après réduction. Essayez une image plus petite.',
+        })
+        return
+      }
+      const data = new FormData()
+      data.append('file', file)
       const result = await uploadImageAction(data)
       if (result.ok) {
         setMediaId(result.id)
@@ -147,7 +156,7 @@ export function ImageDropzone({
             <ImageUp aria-hidden className="size-10 text-ink-muted" />
             <p className="font-semibold">Glissez-déposez une image ici</p>
             <p className="text-sm text-ink-muted">
-              JPEG, PNG ou WebP · 8 Mo maximum · format paysage conseillé
+              JPEG, PNG ou WebP · format paysage conseillé · photos lourdes réduites automatiquement
             </p>
             <Button
               variant="secondary"

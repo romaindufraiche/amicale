@@ -44,10 +44,10 @@ describe('storeImage', () => {
     const admin = await createMember({ role: 'BUREAU' })
     const svg = new File(['<svg/>'], 'logo.svg', { type: 'image/svg+xml' })
     expect((await storeImage(svg, admin.id)).ok).toBe(false)
-    const huge = new File([new Uint8Array(9 * 1024 * 1024)], 'grande.jpg', { type: 'image/jpeg' })
+    const huge = new File([new Uint8Array(5 * 1024 * 1024)], 'grande.jpg', { type: 'image/jpeg' })
     expect(await storeImage(huge, admin.id)).toEqual({
       ok: false,
-      message: 'Image trop lourde : 8 Mo maximum.',
+      message: 'Image trop lourde : 4 Mo maximum après réduction.',
     })
   })
 

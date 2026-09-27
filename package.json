@@ -23,7 +23,8 @@
     "db:seed:demo": "tsx --conditions=react-server scripts/seed-demo.ts",
     "admin:create": "tsx --conditions=react-server scripts/create-admin.ts",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
-    "maintenance:cleanup": "tsx --conditions=react-server scripts/cleanup.ts"
+    "maintenance:cleanup": "tsx --conditions=react-server scripts/cleanup.ts",
+    "vercel-build": "pnpm db:migrate && next build"
   },
   "dependencies": {
     "@node-rs/argon2": "2.2.1",

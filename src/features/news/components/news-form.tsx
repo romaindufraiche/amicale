@@ -4,6 +4,7 @@ import { useActionState } from 'react'
 import { SelectField, TextareaField, TextField } from '@/components/ui/fields'
 import { FormMessage } from '@/components/ui/form-message'
 import { SubmitButton } from '@/components/ui/submit-button'
+import { ImageDropzone } from '@/features/media/components/image-dropzone'
 import { idleState } from '@/lib/form-state'
 import { saveNewsAction } from '../actions'
 
@@ -14,6 +15,7 @@ export type NewsFormValues = {
   excerpt: string
   body: string
   visibility: string
+  imageId: string | null
 }
 
 const VISIBILITY_OPTIONS = [
@@ -23,7 +25,8 @@ const VISIBILITY_OPTIONS = [
 
 export function NewsForm({ initial }: { initial: NewsFormValues }) {
   const [state, formAction] = useActionState(saveNewsAction, idleState)
-  const value = (name: keyof NewsFormValues) => state.values?.[name] ?? initial[name] ?? ''
+  const value = (name: Exclude<keyof NewsFormValues, 'imageId'>) =>
+    state.values?.[name] ?? initial[name] ?? ''
   const e = state.fieldErrors
   return (
     <form action={formAction} className="flex max-w-prose flex-col gap-6" noValidate>
@@ -39,6 +42,13 @@ export function NewsForm({ initial }: { initial: NewsFormValues }) {
         maxLength={280}
         defaultValue={value('excerpt')}
         error={e?.excerpt}
+      />
+      <ImageDropzone
+        name="imageId"
+        label="Photo"
+        hint="Affichée en tête de l’article et dans la liste des actualités."
+        defaultMediaId={state.values ? state.values.imageId || null : initial.imageId}
+        error={e?.imageId}
       />
       <TextareaField
         name="body"
