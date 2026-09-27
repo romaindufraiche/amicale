@@ -15,6 +15,7 @@ export async function listActiveHighlights(options: { includeMembersOnly: boolea
       linkUrl: highlights.linkUrl,
       linkLabel: highlights.linkLabel,
       tone: highlights.tone,
+      imageId: highlights.imageId,
     })
     .from(highlights)
     .where(

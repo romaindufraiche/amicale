@@ -73,7 +73,7 @@ export default async function OfferPage({ params }: Props) {
         <article className="flex flex-col gap-8">
           <OfferVisual
             category={offer.category}
-            imagePath={offer.imagePath}
+            imageId={offer.imageId}
             sizes="(min-width: 1024px) 800px, 100vw"
             className="aspect-[21/9] rounded-lg"
           />

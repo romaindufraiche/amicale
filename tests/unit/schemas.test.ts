@@ -115,3 +115,35 @@ describe('adhésion', () => {
     expect(formatMemberNumber(2026, 7)).toBe('95-2026-0007')
   })
 })
+
+describe('offerSchema — champs propres au type d’offre', () => {
+  it('accepte un billet sans les champs réservés aux sorties (date, lieu)', () => {
+    const data = new FormData()
+    const entries: Record<string, string> = {
+      title: 'Cinéma',
+      slug: '',
+      kind: 'TICKET',
+      category: 'CINEMA',
+      summary: 'Place de cinéma toutes séances.',
+      description: 'Description suffisamment longue pour passer.',
+      pickupInfo: '',
+      validUntil: '2027-06-30',
+      orderDeadline: '',
+      maxPerMember: '',
+      'tariffs.0.id': '',
+      'tariffs.0.label': 'Place',
+      'tariffs.0.memberPrice': '7,50',
+      'tariffs.0.publicPrice': '',
+      'tariffs.0.stock': '',
+      'tariffs.0.active': 'on',
+    }
+    for (const [key, value] of Object.entries(entries)) data.append(key, value)
+    const parsed = offerSchema.parse(offerFormToObject(data))
+    expect(parsed).toMatchObject({
+      kind: 'TICKET',
+      eventStartsAt: null,
+      location: null,
+      validUntil: '2027-06-30',
+    })
+  })
+})

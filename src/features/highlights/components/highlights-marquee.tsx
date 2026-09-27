@@ -4,6 +4,7 @@ import { ArrowRight, Pause, Play } from 'lucide-react'
 import Link from 'next/link'
 import { type CSSProperties, useId, useState } from 'react'
 import { Eyebrow } from '@/components/ui/page-header'
+import { mediaUrl } from '@/features/media/constants'
 import { cn } from '@/lib/cn'
 import { HIGHLIGHT_TONES } from '../labels'
 import type { ActiveHighlight } from '../queries'
@@ -14,34 +15,45 @@ function HighlightCard({ item, hidden }: { item: ActiveHighlight; hidden: boolea
   return (
     <article
       className={cn(
-        'group relative flex h-full w-72 flex-col gap-3 rounded-md p-6 sm:w-96',
+        'group relative flex h-full w-72 flex-col overflow-hidden rounded-md sm:w-96',
         HIGHLIGHT_TONES[item.tone].classes,
       )}
     >
-      <h3 className="font-display text-h3 font-extrabold">{item.title}</h3>
-      <p className="line-clamp-3">{item.body}</p>
-      {item.linkUrl ? (
-        external ? (
-          <a
-            href={item.linkUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            tabIndex={hidden ? -1 : undefined}
-            className="mt-auto inline-flex items-center gap-1.5 font-semibold underline-offset-4 group-hover:underline after:absolute after:inset-0"
-          >
-            {label} <ArrowRight aria-hidden className="size-4" />
-            <span className="sr-only">(nouvel onglet)</span>
-          </a>
-        ) : (
-          <Link
-            href={item.linkUrl}
-            tabIndex={hidden ? -1 : undefined}
-            className="mt-auto inline-flex items-center gap-1.5 font-semibold underline-offset-4 group-hover:underline after:absolute after:inset-0"
-          >
-            {label} <ArrowRight aria-hidden className="size-4" />
-          </Link>
-        )
+      {item.imageId ? (
+        // eslint-disable-next-line @next/next/no-img-element -- image déjà optimisée au téléversement
+        <img
+          src={mediaUrl(item.imageId)}
+          alt=""
+          loading="lazy"
+          className="aspect-[16/9] w-full object-cover"
+        />
       ) : null}
+      <div className="flex flex-1 flex-col gap-3 p-6">
+        <h3 className="font-display text-h3 font-extrabold">{item.title}</h3>
+        <p className="line-clamp-3">{item.body}</p>
+        {item.linkUrl ? (
+          external ? (
+            <a
+              href={item.linkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              tabIndex={hidden ? -1 : undefined}
+              className="mt-auto inline-flex items-center gap-1.5 font-semibold underline-offset-4 group-hover:underline after:absolute after:inset-0"
+            >
+              {label} <ArrowRight aria-hidden className="size-4" />
+              <span className="sr-only">(nouvel onglet)</span>
+            </a>
+          ) : (
+            <Link
+              href={item.linkUrl}
+              tabIndex={hidden ? -1 : undefined}
+              className="mt-auto inline-flex items-center gap-1.5 font-semibold underline-offset-4 group-hover:underline after:absolute after:inset-0"
+            >
+              {label} <ArrowRight aria-hidden className="size-4" />
+            </Link>
+          )
+        ) : null}
+      </div>
     </article>
   )
 }

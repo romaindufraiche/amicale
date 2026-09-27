@@ -18,20 +18,20 @@ Tous les tokens sont définis dans `src/app/globals.css` (`@theme`). Les échell
 
 ## Couleurs
 
-| Token                      | Valeur                | Rôle                                                                 |
-| -------------------------- | --------------------- | -------------------------------------------------------------------- |
-| `paper`                    | `#fbf7f0`             | fond de page (crème)                                                 |
-| `surface`                  | `#ffffff`             | panneaux, formulaires, cartes                                        |
-| `sunken`                   | `#f4ecdf`             | zones en retrait (sable), talons de billets                          |
-| `line` / `line-strong`     | `#e6dbca` / `#8f8270` | filets / bordures de champs (≥ 3:1)                                  |
-| `ink` / `ink-muted`        | `#1b1713` / `#5c5349` | texte (16,7:1) / texte secondaire (7:1)                              |
-| `night-900…700`            | `#1f1a16`…            | surfaces sombres (pied de page, carte d'adhérent)                    |
-| `red-600`                  | `#d93128`             | **couleur d'action** (boutons : blanc 4,75:1)                        |
-| `red-700`                  | `#b5251d`             | survol, texte rouge sur fond clair (6:1)                             |
-| `red-500`                  | `#f4433b`             | rouge du logo, **grands éléments uniquement** (« 95 », « VO »)       |
-| `blue-500`                 | `#2f73f2`             | bleu du contour du logo : filet signature, focus clavier             |
-| `amber-300`                | `#ffc56a`             | accent chaleureux : économies, surtitres sur fond sombre             |
-| `success/warning/danger-*` |                       | états fonctionnels, toujours accompagnés d'une icône ou d'un libellé |
+| Token                      | Valeur                | Rôle                                                                                                                                       |
+| -------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `paper`                    | `#fbf7f0`             | fond de page (crème)                                                                                                                       |
+| `surface`                  | `#ffffff`             | panneaux, formulaires, cartes                                                                                                              |
+| `sunken`                   | `#f4ecdf`             | zones en retrait (sable), talons de billets                                                                                                |
+| `line` / `line-strong`     | `#e6dbca` / `#8f8270` | filets / bordures de champs (≥ 3:1)                                                                                                        |
+| `ink` / `ink-muted`        | `#1b1713` / `#5c5349` | texte (16,7:1) / texte secondaire (7:1)                                                                                                    |
+| `night-900…700`            | `#1f1a16`…            | surfaces sombres (pied de page, carte d'adhérent)                                                                                          |
+| `red-600`                  | `#d93128`             | **couleur d'action** (boutons : blanc 4,75:1)                                                                                              |
+| `red-700`                  | `#b5251d`             | survol, texte rouge sur fond clair (6:1)                                                                                                   |
+| `red-500`                  | `#f4433b`             | rouge du logo, **grands éléments uniquement** (« 95 », « VO »)                                                                             |
+| `blue-500` / `blue-700`    | `#3a6ea5` / `#24466f` | bleu denim (filet signature, focus clavier) / bleu encre (aplats) — adoucis par rapport au bleu électrique du logo, à la demande du client |
+| `amber-300`                | `#ffc56a`             | accent chaleureux : économies, surtitres sur fond sombre                                                                                   |
+| `success/warning/danger-*` |                       | états fonctionnels, toujours accompagnés d'une icône ou d'un libellé                                                                       |
 
 Contrastes vérifiés (WCAG AA) et contrôlés automatiquement par axe-core dans les tests de bout en bout.
 

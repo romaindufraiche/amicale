@@ -4,6 +4,7 @@ import { useActionState } from 'react'
 import { CheckboxField, SelectField, TextareaField, TextField } from '@/components/ui/fields'
 import { FormMessage } from '@/components/ui/form-message'
 import { SubmitButton } from '@/components/ui/submit-button'
+import { ImageDropzone } from '@/features/media/components/image-dropzone'
 import { idleState } from '@/lib/form-state'
 import { saveHighlightAction } from '../actions'
 import { HIGHLIGHT_TONES, HIGHLIGHT_TONE_VALUES } from '../labels'
@@ -15,6 +16,7 @@ export type HighlightFormValues = {
   linkUrl: string
   linkLabel: string
   tone: string
+  imageId: string | null
   visibility: string
   startsAt: string
   endsAt: string
@@ -32,7 +34,8 @@ export function HighlightForm({ initial }: { initial: HighlightFormValues }) {
   const [state, formAction] = useActionState(saveHighlightAction, idleState)
   const v = state.values
   const e = state.fieldErrors
-  const value = (name: Exclude<keyof HighlightFormValues, 'published' | 'id'>) => v?.[name] ?? initial[name]
+  const value = (name: Exclude<keyof HighlightFormValues, 'published' | 'id' | 'imageId'>) =>
+    v?.[name] ?? initial[name]
 
   return (
     <form action={formAction} className="flex max-w-prose flex-col gap-6" noValidate>
@@ -55,6 +58,13 @@ export function HighlightForm({ initial }: { initial: HighlightFormValues }) {
         maxLength={220}
         defaultValue={value('body')}
         error={e?.body}
+      />
+      <ImageDropzone
+        name="imageId"
+        label="Image"
+        hint="Affichée en haut du post. Sans image, le post garde sa couleur de fond."
+        defaultMediaId={v ? v.imageId || null : initial.imageId}
+        error={e?.imageId}
       />
       <div className="grid gap-6 sm:grid-cols-2">
         <TextField

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { CheckboxField, SelectField, TextareaField, TextField } from '@/components/ui/fields'
 import { FormMessage } from '@/components/ui/form-message'
 import { SubmitButton } from '@/components/ui/submit-button'
+import { ImageDropzone } from '@/features/media/components/image-dropzone'
 import { idleState } from '@/lib/form-state'
 import { saveOfferAction } from '../actions'
 import { OFFER_CATEGORIES, OFFER_CATEGORY_LABELS, OFFER_KIND_LABELS } from '../labels'
@@ -24,7 +25,7 @@ export type OfferFormValues = {
   validUntil: string
   orderDeadline: string
   maxPerMember: string
-  imagePath: string
+  imageId: string | null
   featured: boolean
   tariffs: TariffRow[]
 }
@@ -155,14 +156,15 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
           error={e?.description}
           className="md:col-span-2"
         />
-        <TextField
-          name="imagePath"
-          label="Visuel"
-          hint="Déposez l’image (format paysage, 1600 px de large conseillés) dans public/offres/, puis indiquez son chemin : /offres/nom-du-fichier.jpg. Sans image, un visuel de catégorie est affiché."
-          defaultValue={value('imagePath')}
-          error={e?.imagePath}
-          className="md:col-span-2"
-        />
+        <div className="md:col-span-2">
+          <ImageDropzone
+            name="imageId"
+            label="Visuel de l’offre"
+            hint="Sans image, un visuel de la catégorie est affiché."
+            defaultMediaId={v ? v.imageId || null : initial.imageId}
+            error={e?.imageId}
+          />
+        </div>
         <CheckboxField
           name="featured"
           label="Mettre à la une (en tête du catalogue et sur la page d’accueil)"

@@ -34,7 +34,7 @@ Comptes de démonstration (mot de passe `demo-mot-de-passe`) :
 | `demande@demo.local`  | demande d'adhésion en attente          |
 | `retraite@demo.local` | seconde demande d'adhésion en attente  |
 
-Le jeu de démonstration contient 17 offres **fictives** (cinéma, parcs, spectacles, sport, voyages, sorties de l'Amicale), 5 partenaires, 4 actualités et quelques commandes. Aucune enseigne réelle n'est citée. Sans photo, chaque offre affiche un visuel de sa catégorie ; pour ajouter une vraie photo, déposez-la dans `public/offres/` et indiquez son chemin dans le formulaire de l'offre (espace bureau).
+Le jeu de démonstration contient 17 offres **fictives** (cinéma, parcs, spectacles, sport, voyages, sorties de l'Amicale), 5 partenaires, 4 actualités et quelques commandes. Aucune enseigne réelle n'est citée. Sans photo, chaque offre affiche un visuel de sa catégorie ; pour ajouter une vraie photo, glissez-déposez-la dans le formulaire de l'offre (espace bureau).
 
 En développement, les emails ne sont pas envoyés : ils sont écrits en JSON dans `.outbox/` (liens de confirmation, de réinitialisation, etc.).
 

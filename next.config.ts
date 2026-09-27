@@ -22,7 +22,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // La documentation du projet (README, docs/) tient lieu de consignes pour les agents.
   agentRules: false,
-  serverExternalPackages: ['@node-rs/argon2'],
+  serverExternalPackages: ['@node-rs/argon2', 'sharp'],
+  experimental: {
+    // Téléversement d'images par le bureau : 8 Mo maximum par fichier (+ marge du multipart).
+    serverActions: { bodySizeLimit: '9mb' },
+  },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }]
   },

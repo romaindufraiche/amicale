@@ -4,29 +4,32 @@ import { parseEurosToCents } from '@/lib/money'
 import { slugify } from '@/lib/slug'
 import { OFFER_CATEGORIES } from './labels'
 
-const optionalText = (max: number) =>
+/**
+ * Champs facultatifs : absents du formulaire selon le type d'offre (une sortie n'a pas
+ * de date de validité, un billet n'a ni date ni lieu), ils valent alors « vide ».
+ */
+const text = () =>
   z
     .string()
-    .trim()
-    .max(max, { error: `${max} caractères maximum.` })
+    .optional()
+    .transform((value) => (value ?? '').trim())
+
+const optionalText = (max: number) =>
+  text()
+    .refine((value) => value.length <= max, { error: `${max} caractères maximum.` })
     .transform((value) => (value === '' ? null : value))
 
-const optionalDateTime = z
-  .string()
-  .trim()
-  .transform((value, ctx) => {
-    if (value === '') return null
-    const date = fromParisDateTimeInput(value)
-    if (!date) {
-      ctx.addIssue({ code: 'custom', message: 'Date et heure invalides.' })
-      return z.NEVER
-    }
-    return date
-  })
+const optionalDateTime = text().transform((value, ctx) => {
+  if (value === '') return null
+  const date = fromParisDateTimeInput(value)
+  if (!date) {
+    ctx.addIssue({ code: 'custom', message: 'Date et heure invalides.' })
+    return z.NEVER
+  }
+  return date
+})
 
-const optionalDate = z
-  .string()
-  .trim()
+const optionalDate = text()
   .refine((value) => value === '' || /^\d{4}-\d{2}-\d{2}$/.test(value), { error: 'Date invalide.' })
   .transform((value) => (value === '' ? null : value))
 
@@ -92,14 +95,10 @@ export const offerSchema = z
     validUntil: optionalDate,
     orderDeadline: optionalDateTime,
     maxPerMember: optionalPositiveInt('Limite par adhérent'),
-    imagePath: z
-      .string()
+    imageId: z
+      .union([z.uuid(), z.literal('')], { error: 'Image invalide.' })
       .optional()
-      .transform((value) => (value ?? '').trim())
-      .refine((value) => value === '' || /^\/offres\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/.test(value), {
-        error: 'Chemin invalide : /offres/nom-du-fichier.jpg (fichier déposé dans public/offres/).',
-      })
-      .transform((value) => (value === '' ? null : value)),
+      .transform((value) => value || null),
     featured: z
       .string()
       .optional()

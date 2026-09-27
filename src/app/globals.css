@@ -36,9 +36,9 @@
   --color-red-700: #b5251d; /* survol, texte rouge sur fond clair */
   --color-red-800: #8c1c16;
 
-  --color-blue-50: #edf3ff;
-  --color-blue-500: #2f73f2; /* bleu du contour du logo */
-  --color-blue-700: #1c4fb5;
+  --color-blue-50: #eef3f8;
+  --color-blue-500: #3a6ea5; /* bleu denim, adouci depuis le bleu du logo à la demande du client */
+  --color-blue-700: #24466f; /* bleu encre : aplats, texte bleu */
 
   --color-amber-50: #fff5e3;
   --color-amber-300: #ffc56a; /* accent chaleureux (économies, mises en avant) */

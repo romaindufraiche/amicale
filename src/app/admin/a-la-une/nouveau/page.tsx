@@ -17,6 +17,7 @@ export default async function NewHighlightPage() {
           linkUrl: '',
           linkLabel: '',
           tone: 'RED',
+          imageId: null,
           visibility: 'PUBLIC',
           startsAt: '',
           endsAt: '',

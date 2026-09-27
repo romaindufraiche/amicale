@@ -43,6 +43,10 @@ export const highlightSchema = z
       .max(40, { error: '40 caractères maximum.' })
       .transform((value) => (value === '' ? null : value)),
     tone: z.enum(HIGHLIGHT_TONE_VALUES, { error: 'Couleur invalide.' }),
+    imageId: z
+      .union([z.uuid(), z.literal('')], { error: 'Image invalide.' })
+      .optional()
+      .transform((value) => value || null),
     visibility: z.enum(['PUBLIC', 'MEMBERS'], { error: 'Visibilité invalide.' }),
     startsAt: optionalDateTime,
     endsAt: optionalDateTime,

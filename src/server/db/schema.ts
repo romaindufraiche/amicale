@@ -3,6 +3,7 @@ import {
   type AnyPgColumn,
   boolean,
   check,
+  customType,
   date,
   index,
   integer,
@@ -124,6 +125,35 @@ export const rateLimits = pgTable('rate_limits', {
   resetAt: timestamp({ withTimezone: true }).notNull(),
 })
 
+// ─── Médias ─────────────────────────────────────────────────────────────────
+
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType: () => 'bytea',
+})
+
+/**
+ * Images téléversées par le bureau. Elles sont ré-encodées à l'envoi (WebP, 1600 px max,
+ * métadonnées supprimées) et stockées en base : aucun fichier à gérer sur le serveur,
+ * sauvegardées avec le reste des données.
+ */
+export const media = pgTable(
+  'media',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    mimeType: text().notNull(),
+    data: bytea().notNull(),
+    width: integer().notNull(),
+    height: integer().notNull(),
+    sizeBytes: integer().notNull(),
+    createdById: uuid().references(() => users.id, { onDelete: 'set null' }),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index('media_created_at_idx').on(t.createdAt),
+    check('media_mime_type', sql`${t.mimeType} in ('image/webp')`),
+  ],
+)
+
 // ─── Billetterie & sorties ───────────────────────────────────────────────────
 
 export const offerKind = pgEnum('offer_kind', [
@@ -164,8 +194,8 @@ export const offers = pgTable(
     orderDeadline: timestamp({ withTimezone: true }),
     /** Quantité totale maximale par adhérent pour cette offre, tous tarifs confondus. */
     maxPerMember: integer(),
-    /** Visuel de l'offre (fichier de `public/offres/`) ; à défaut, un visuel de catégorie est affiché. */
-    imagePath: text(),
+    /** Visuel de l'offre ; à défaut, un visuel de catégorie est affiché. */
+    imageId: uuid().references(() => media.id, { onDelete: 'set null' }),
     /** Mise en avant dans la rubrique « À la une ». */
     featured: boolean().notNull().default(false),
     status: publicationStatus().notNull().default('DRAFT'),
@@ -175,10 +205,6 @@ export const offers = pgTable(
   (t) => [
     uniqueIndex('offers_slug_key').on(t.slug),
     index('offers_status_idx').on(t.status),
-    check(
-      'offers_image_path_local',
-      sql`${t.imagePath} is null or ${t.imagePath} ~ '^/offres/[A-Za-z0-9_-]+\\.(jpg|jpeg|png|webp)$'`,
-    ),
     check('offers_max_per_member_positive', sql`${t.maxPerMember} is null or ${t.maxPerMember} > 0`),
     check('offers_event_has_date', sql`${t.kind} <> 'EVENT' or ${t.eventStartsAt} is not null`),
   ],
@@ -326,6 +352,7 @@ export const highlights = pgTable(
     linkUrl: text(),
     linkLabel: text(),
     tone: highlightTone().notNull().default('RED'),
+    imageId: uuid().references(() => media.id, { onDelete: 'set null' }),
     visibility: newsVisibility().notNull().default('PUBLIC'),
     published: boolean().notNull().default(false),
     /** Période d'affichage facultative. */
@@ -397,4 +424,5 @@ export type News = typeof news.$inferSelect
 export type NewsVisibility = (typeof newsVisibility.enumValues)[number]
 export type Highlight = typeof highlights.$inferSelect
 export type HighlightTone = (typeof highlightTone.enumValues)[number]
+export type Media = typeof media.$inferSelect
 export type ContactMessage = typeof contactMessages.$inferSelect

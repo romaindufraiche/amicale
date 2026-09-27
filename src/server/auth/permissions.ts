@@ -13,6 +13,7 @@ const PERMISSIONS = {
   'news:manage': ['BUREAU', 'ADMIN'],
   'partners:manage': ['BUREAU', 'ADMIN'],
   'messages:manage': ['BUREAU', 'ADMIN'],
+  'media:upload': ['BUREAU', 'ADMIN'],
   'audit:read': ['ADMIN'],
 } as const satisfies Record<string, readonly UserRole[]>
 

@@ -44,7 +44,7 @@ export function OfferCard({
       <div className="relative">
         <OfferVisual
           category={offer.category}
-          imagePath={offer.imagePath}
+          imageId={offer.imageId}
           sizes={
             size === 'large'
               ? '(min-width: 1024px) 600px, 100vw'

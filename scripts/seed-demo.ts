@@ -364,7 +364,7 @@ async function main() {
   }
 
   await db.execute(
-    sql`truncate audit_logs, contact_messages, highlights, news, partners, order_lines, orders, offer_tariffs, offers, user_tokens, sessions, rate_limits, users restart identity cascade`,
+    sql`truncate audit_logs, contact_messages, highlights, media, news, partners, order_lines, orders, offer_tariffs, offers, user_tokens, sessions, rate_limits, users restart identity cascade`,
   )
 
   const passwordHash = await hashPassword(DEMO_PASSWORD)

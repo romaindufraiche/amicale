@@ -9,6 +9,7 @@ import {
   Users,
 } from 'lucide-react'
 import Image from 'next/image'
+import { mediaUrl } from '@/features/media/constants'
 import { cn } from '@/lib/cn'
 import type { OfferCategory } from '@/server/db/schema'
 
@@ -40,19 +41,20 @@ const CATEGORY_TONES: Record<OfferCategory, string> = {
  */
 export function OfferVisual({
   category,
-  imagePath,
+  imageId,
   sizes,
   className,
 }: {
   category: OfferCategory
-  imagePath: string | null
+  imageId: string | null
   sizes: string
   className?: string
 }) {
-  if (imagePath) {
+  if (imageId) {
     return (
       <div className={cn('relative overflow-hidden bg-sunken', className)}>
-        <Image src={imagePath} alt="" fill sizes={sizes} className="object-cover" />
+        {/* Image déjà redimensionnée et convertie en WebP au téléversement. */}
+        <Image src={mediaUrl(imageId)} alt="" fill sizes={sizes} unoptimized className="object-cover" />
       </div>
     )
   }

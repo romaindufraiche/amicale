@@ -29,7 +29,7 @@ src/
 └── instrumentation.ts   Journalisation des erreurs serveur non gérées
 ```
 
-Domaines : `auth`, `members`, `offers`, `orders`, `news`, `partners`, `contact`, `audit`.
+Domaines : `auth`, `members`, `offers`, `orders`, `news`, `highlights`, `media`, `partners`, `contact`, `audit`.
 
 ## Flux d'une action
 
@@ -49,18 +49,20 @@ FormData → Zod (validation) → requireUser / requirePermission (authentificat
 
 Défini dans `src/server/db/schema.ts`, migrations SQL versionnées dans `drizzle/`.
 
-| Table                      | Rôle                                                                            |
-| -------------------------- | ------------------------------------------------------------------------------- |
-| `users`                    | comptes : identité, situation, rôle, statut d'adhésion, fin de cotisation       |
-| `sessions`                 | sessions (empreinte SHA-256 du jeton, expiration glissante de 14 jours)         |
-| `user_tokens`              | liens de confirmation d'email et de réinitialisation (empreintes, usage unique) |
-| `rate_limits`              | compteurs de limitation de débit (partagés entre instances)                     |
-| `offers` / `offer_tariffs` | offres (billetterie ou sortie) et leurs tarifs, prix adhérent/public, stock     |
-| `orders` / `order_lines`   | commandes, lignes avec libellé et prix **copiés** au moment de la commande      |
-| `partners`                 | avantages partenaires                                                           |
-| `news`                     | actualités (publiques ou réservées aux adhérents)                               |
-| `contact_messages`         | messages du formulaire de contact                                               |
-| `audit_logs`               | journal des actions du bureau                                                   |
+| Table                      | Rôle                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------- |
+| `users`                    | comptes : identité, situation, rôle, statut d'adhésion, fin de cotisation                   |
+| `sessions`                 | sessions (empreinte SHA-256 du jeton, expiration glissante de 14 jours)                     |
+| `user_tokens`              | liens de confirmation d'email et de réinitialisation (empreintes, usage unique)             |
+| `rate_limits`              | compteurs de limitation de débit (partagés entre instances)                                 |
+| `offers` / `offer_tariffs` | offres (billetterie ou sortie) et leurs tarifs, prix adhérent/public, stock                 |
+| `orders` / `order_lines`   | commandes, lignes avec libellé et prix **copiés** au moment de la commande                  |
+| `media`                    | images téléversées (ré-encodées en WebP, métadonnées supprimées), servies par `/media/<id>` |
+| `highlights`               | posts « À la une » du bandeau défilant                                                      |
+| `partners`                 | avantages partenaires                                                                       |
+| `news`                     | actualités (publiques ou réservées aux adhérents)                                           |
+| `contact_messages`         | messages du formulaire de contact                                                           |
+| `audit_logs`               | journal des actions du bureau                                                               |
 
 Conventions : montants en centimes (entiers), horodatages `timestamptz`, dates calendaires `YYYY-MM-DD` interprétées à l'heure de Paris, contraintes `CHECK` sur prix, stocks et quantités, clés étrangères `restrict` sur l'historique des commandes.
 
@@ -96,6 +98,7 @@ Ces garanties sont couvertes par des tests d'intégration concurrents (`tests/in
 | En-têtes               | HSTS, `X-Frame-Options: DENY`, `frame-ancestors 'none'`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`                                                                                           |
 | Export CSV             | protection contre l'injection de formules                                                                                                                                                             |
 | Données personnelles   | aucune liste d'adhérents publique, pas de traceur tiers, polices auto-hébergées, logs sans secret ni jeton (y compris dans les URL)                                                                   |
+| Téléversement d'images | réservé au bureau, 8 Mo max, JPEG/PNG/WebP ; fichier décodé puis ré-encodé (un faux fichier image est rejeté, EXIF et GPS supprimés), 60 envois par heure au plus                                     |
 | Anti-spam              | champ piège + limitation par IP sur le formulaire de contact                                                                                                                                          |
 
 ## Choix techniques

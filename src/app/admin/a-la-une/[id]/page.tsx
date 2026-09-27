@@ -53,6 +53,7 @@ export default async function EditHighlightPage({ params, searchParams }: Props)
           linkUrl: item.linkUrl ?? '',
           linkLabel: item.linkLabel ?? '',
           tone: item.tone,
+          imageId: item.imageId,
           visibility: item.visibility,
           startsAt: toParisDateTimeInput(item.startsAt),
           endsAt: toParisDateTimeInput(item.endsAt),
