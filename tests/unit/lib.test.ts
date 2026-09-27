@@ -76,3 +76,19 @@ describe('toParagraphs', () => {
   it('découpe sur les lignes vides', () =>
     expect(toParagraphs('Un\r\n\r\nDeux\nsuite\n\n\n')).toEqual(['Un', 'Deux\nsuite']))
 })
+
+describe('resolveDatabaseUrl', () => {
+  it('préfère DATABASE_URL puis POSTGRES_URL pour l’application', async () => {
+    const { resolveDatabaseUrl } = await import('@/lib/database-url')
+    expect(resolveDatabaseUrl({ DATABASE_URL: 'a', POSTGRES_URL: 'b' })).toBe('a')
+    expect(resolveDatabaseUrl({ DATABASE_URL: '', POSTGRES_URL: 'b' })).toBe('b')
+    expect(resolveDatabaseUrl({})).toBeUndefined()
+  })
+  it('préfère une connexion directe pour les migrations', async () => {
+    const { resolveDatabaseUrl } = await import('@/lib/database-url')
+    expect(resolveDatabaseUrl({ DATABASE_URL: 'pool', DATABASE_URL_UNPOOLED: 'direct' }, 'migration')).toBe(
+      'direct',
+    )
+    expect(resolveDatabaseUrl({ DATABASE_URL: 'pool' }, 'migration')).toBe('pool')
+  })
+})

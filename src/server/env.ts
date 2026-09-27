@@ -1,5 +1,6 @@
 import 'server-only'
 import { z } from 'zod'
+import { MISSING_DATABASE_URL, resolveDatabaseUrl } from '@/lib/database-url'
 
 /**
  * Variables d'environnement validées par un schéma : toute valeur manquante ou
@@ -9,7 +10,7 @@ const schema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     APP_URL: z.url().transform((url) => url.replace(/\/$/, '')),
-    DATABASE_URL: z.string().min(1),
+    DATABASE_URL: z.string({ error: MISSING_DATABASE_URL }).min(1, { error: MISSING_DATABASE_URL }),
     TRUST_PROXY: z
       .enum(['true', 'false'])
       .default('false')
@@ -53,7 +54,7 @@ const schema = z
 export type Env = z.infer<typeof schema>
 
 function loadEnv(): Env {
-  const parsed = schema.safeParse(process.env)
+  const parsed = schema.safeParse({ ...process.env, DATABASE_URL: resolveDatabaseUrl(process.env) })
   if (!parsed.success) {
     const details = parsed.error.issues
       .map((issue) => `  - ${issue.path.join('.')}: ${issue.message}`)

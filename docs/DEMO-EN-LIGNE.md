@@ -23,7 +23,14 @@ Durée : environ 15 minutes, sans ligne de commande sauf l'étape 4.
 
 Dans le projet Vercel : **Storage → Create Database → Neon (Serverless Postgres)** → région
 **Europe (Frankfurt)** → **Create** → **Connect** au projet.
-Vercel ajoute alors automatiquement la variable `DATABASE_URL`.
+
+Dans la fenêtre de connexion, **cocher les trois environnements : Development, Preview et
+Production**. Tant que la branche n'est pas la branche de production, Vercel construit le site en
+mode _Preview_ : sans la base sur cet environnement, le déploiement échoue avec le message
+« Aucune base de données configurée (DATABASE_URL) ».
+
+Vercel ajoute alors automatiquement `DATABASE_URL` (et `DATABASE_URL_UNPOOLED`, utilisée pour les
+migrations). Vérification : **Settings → Environment Variables** doit lister `DATABASE_URL`.
 
 ## 3. Variables d'environnement
 
