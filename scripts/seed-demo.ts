@@ -1,6 +1,7 @@
 /**
  * Données de DÉMONSTRATION pour le développement local, les présentations et les captures.
- * Refuse de s'exécuter en production ou sur une base contenant de vrais comptes.
+ * Refuse de s'exécuter en production (sauf site de démonstration, DEMO_MODE=true) ou sur une
+ * base contenant de vrais comptes. Option --if-empty : ne fait rien si la base contient déjà des comptes.
  *
  * Tout est fictif : offres, prix, lieux, partenaires et actualités. Aucune enseigne réelle
  * n'est citée, pour ne laisser croire à aucun partenariat existant. Chaque description
@@ -353,8 +354,18 @@ const DEMO_PARTNERS: (typeof partners.$inferInsert)[] = [
 ]
 
 async function main() {
-  if (process.env.NODE_ENV === 'production')
-    throw new Error('Le jeu de démonstration est interdit en production.')
+  // Autorisé en production uniquement sur un site de démonstration déclaré (DEMO_MODE=true).
+  if (process.env.NODE_ENV === 'production' && process.env.DEMO_MODE !== 'true') {
+    throw new Error('Le jeu de démonstration est interdit en production (hors DEMO_MODE=true).')
+  }
+  // --if-empty : utilisé au démarrage d'un site de démonstration, ne fait rien si la base contient déjà des comptes.
+  if (process.argv.includes('--if-empty')) {
+    const [existing] = await db.execute<{ count: number }>(sql`select count(*)::int as count from users`)
+    if (existing && existing.count > 0) {
+      console.log('Base déjà initialisée : données de démonstration conservées.')
+      return
+    }
+  }
   // Garde-fou : la base est vidée. On refuse si elle contient un vrai compte.
   const [real] = await db.execute<{ count: number }>(
     sql`select count(*)::int as count from users where email not like '%@demo.local'`,

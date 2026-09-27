@@ -12,6 +12,10 @@ Le règlement des commandes se fait **hors ligne** (virement, chèque, permanenc
 > [`docs/CONTENU.md`](docs/CONTENU.md) : logo en fichier, coordonnées, mentions légales,
 > modalités de règlement, etc. Aucune de ces informations n'a été inventée.
 
+## Démonstration en ligne
+
+[Déployer une démonstration sur Render](https://render.com/deploy?repo=https://github.com/romaindufraiche/amicale) : site et base créés automatiquement, données de démonstration chargées au premier démarrage (voir `docs/DEMO-EN-LIGNE.md`).
+
 ## Démarrage rapide
 
 Prérequis : Node.js 22.12 ou plus, pnpm 10, PostgreSQL 16.

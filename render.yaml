@@ -1,0 +1,48 @@
+# Déploiement de démonstration en un clic sur Render (site + base PostgreSQL).
+# Bouton : https://render.com/deploy?repo=https://github.com/romaindufraiche/amicale
+# Les données de démonstration sont chargées automatiquement au premier démarrage.
+# ⚠️ Site de TEST uniquement : identifiants de démo publics, aucune donnée réelle.
+databases:
+  - name: adpvo-db
+    plan: free
+    region: frankfurt
+    databaseName: adpvo
+    user: adpvo
+
+services:
+  - type: web
+    name: adpvo
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: claude/vigilant-shannon-r078sb
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm db:migrate && pnpm db:seed:demo --if-empty && pnpm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: adpvo-db
+          property: connectionString
+      - key: HOSTNAME
+        value: 0.0.0.0
+      - key: DEMO_MODE
+        value: 'true'
+      - key: TRUST_PROXY
+        value: 'true'
+      - key: DB_POOL_MAX
+        value: '5'
+      - key: MAIL_FROM
+        value: ADPVO <no-reply@example.org>
+      - key: BUREAU_EMAIL
+        value: bureau@example.org
+      - key: MAIL_TRANSPORT
+        value: outbox
+      - key: MAIL_OUTBOX_IN_PRODUCTION
+        value: 'true'
+      - key: MAIL_OUTBOX_DIR
+        value: /tmp/outbox
+      - key: NEXT_TELEMETRY_DISABLED
+        value: '1'

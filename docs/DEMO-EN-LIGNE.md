@@ -1,5 +1,20 @@
 # Mettre le site en ligne pour le faire tester
 
+## Solution la plus simple : Render (un seul bouton)
+
+1. Ouvrir ce lien : <https://render.com/deploy?repo=https://github.com/romaindufraiche/amicale>
+2. Se connecter avec **GitHub** (et autoriser Render à accéder au dépôt `amicale` si demandé).
+3. Donner un nom au « Blueprint » (ex. `adpvo`), puis cliquer sur **Deploy Blueprint** (ou **Apply**).
+4. Attendre 5 à 10 minutes : Render crée la base, construit le site, applique les migrations et
+   charge les données de démonstration tout seul.
+5. L'adresse du site s'affiche sur le service `adpvo` (ex. `https://adpvo.onrender.com`).
+
+Tout est décrit dans `render.yaml`. Limites de l'offre gratuite : le site se met en veille après
+15 minutes sans visite (premier chargement ensuite ≈ 1 minute) et la base gratuite expire au bout
+de 30 jours (il suffit alors de recommencer).
+
+## Autre solution : Vercel + Neon
+
 Objectif : obtenir une adresse du type `https://adpvo.vercel.app` à envoyer aux testeurs, qui n'ont
 rien à installer. Deux services gratuits suffisent :
 

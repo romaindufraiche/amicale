@@ -1,6 +1,6 @@
 import 'server-only'
 import { z } from 'zod'
-import { MISSING_DATABASE_URL, resolveDatabaseUrl } from '@/lib/database-url'
+import { MISSING_DATABASE_URL, resolveAppUrl, resolveDatabaseUrl } from '@/lib/database-url'
 
 /**
  * Variables d'environnement validées par un schéma : toute valeur manquante ou
@@ -54,7 +54,11 @@ const schema = z
 export type Env = z.infer<typeof schema>
 
 function loadEnv(): Env {
-  const parsed = schema.safeParse({ ...process.env, DATABASE_URL: resolveDatabaseUrl(process.env) })
+  const parsed = schema.safeParse({
+    ...process.env,
+    DATABASE_URL: resolveDatabaseUrl(process.env),
+    APP_URL: resolveAppUrl(process.env),
+  })
   if (!parsed.success) {
     const details = parsed.error.issues
       .map((issue) => `  - ${issue.path.join('.')}: ${issue.message}`)

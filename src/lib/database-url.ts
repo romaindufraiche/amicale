@@ -19,6 +19,17 @@ export function resolveDatabaseUrl(
   return candidates.find((value) => value && value.trim() !== '')
 }
 
+/**
+ * URL publique du site : `APP_URL`, sinon celle fournie par l'hébergeur
+ * (Render : RENDER_EXTERNAL_URL ; Vercel : VERCEL_PROJECT_PRODUCTION_URL, sans protocole).
+ */
+export function resolveAppUrl(source: Record<string, string | undefined>): string | undefined {
+  if (source.APP_URL) return source.APP_URL
+  if (source.RENDER_EXTERNAL_URL) return source.RENDER_EXTERNAL_URL
+  if (source.VERCEL_PROJECT_PRODUCTION_URL) return `https://${source.VERCEL_PROJECT_PRODUCTION_URL}`
+  return undefined
+}
+
 export const MISSING_DATABASE_URL =
   'Aucune base de données configurée (DATABASE_URL). En local : renseignez-la dans .env. ' +
   'Sur Vercel : Storage → connectez la base Neon au projet pour les environnements Production ET Preview, puis redéployez.'
