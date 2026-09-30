@@ -67,13 +67,13 @@ Longueur de ligne limitée à `max-w-prose` (42 rem) pour la lecture.
 
 ## Motifs de marque
 
-| Motif                              | Où                                                   | Pourquoi                                                 |
-| ---------------------------------- | ---------------------------------------------------- | -------------------------------------------------------- |
-| `brand-rule`                       | sous les en-têtes, au-dessus du pied de page, étapes | double trait du contour bleu du logo                     |
-| Le « 95 »                          | accueil, 404                                         | identité départementale, en rouge du logo                |
-| Billet perforé                     | catalogue de billetterie                             | fonctionnel : talon = prix, distingue ce qui se commande |
-| Surtitre à trait rouge (`Eyebrow`) | en-têtes de sections                                 | repère de lecture constant                               |
-| Carte d'adhérent                   | tableau de bord                                      | numéro et validité de cotisation d'un coup d'œil         |
+| Motif                              | Où                                               | Pourquoi                                                                                                 |
+| ---------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `brand-rule`                       | pied de page, étapes, carte d'adhérent, articles | liseré tricolore dégradé (bleu, blanc, rouge du drapeau) ; l'en-tête n'en a plus, à la demande du client |
+| Le « 95 »                          | accueil, 404                                     | identité départementale, en rouge du logo                                                                |
+| Billet perforé                     | catalogue de billetterie                         | fonctionnel : talon = prix, distingue ce qui se commande                                                 |
+| Surtitre à trait rouge (`Eyebrow`) | en-têtes de sections                             | repère de lecture constant                                                                               |
+| Carte d'adhérent                   | tableau de bord                                  | numéro et validité de cotisation d'un coup d'œil                                                         |
 
 ## Composants
 

@@ -7,6 +7,8 @@ import { HighlightsMarquee } from '@/features/highlights/components/highlights-m
 import { listActiveHighlights } from '@/features/highlights/queries'
 import { NewsList } from '@/features/news/components/news-list'
 import { OfferCard } from '@/features/offers/components/offer-card'
+import { CATEGORY_ICONS, CATEGORY_TONES } from '@/features/offers/components/offer-visual'
+import { OFFER_CATEGORY_LABELS } from '@/features/offers/labels'
 import { listPublishedOffers } from '@/features/offers/queries'
 import { offerAvailability } from '@/features/offers/rules'
 import { parisDay } from '@/lib/dates'
@@ -27,6 +29,9 @@ const BENEFITS = [
     text: 'Les réductions et conditions préférentielles obtenues auprès des partenaires de l’Amicale, réunies au même endroit et réservées aux adhérents.',
   },
 ] as const
+
+/** Catégories proposées en accès rapide sous le bandeau d'accueil. */
+const QUICK_CATEGORIES = ['CINEMA', 'PARCS', 'SPECTACLES', 'SPORT', 'VOYAGES', 'FAMILLE'] as const
 
 const STEPS = [
   { title: 'Créez votre compte', text: 'Renseignez votre situation et votre service en quelques minutes.' },
@@ -54,7 +59,7 @@ export default async function HomePage() {
     <>
       {/* ─── Ouverture : bandeau tricolore (dégradé bleu, blanc, rouge) ─── */}
       <section data-surface="dark" className="relative overflow-hidden text-white hero-tricolore">
-        <div className="relative mx-auto grid max-w-page items-center gap-12 px-4 pt-14 pb-20 sm:px-6 md:pt-20 lg:grid-cols-2 lg:px-8 lg:pb-24">
+        <div className="relative mx-auto grid max-w-page items-center gap-12 px-4 pt-14 pb-20 sm:px-6 md:pt-20 md:pb-28 lg:grid-cols-2 lg:px-8 lg:pb-32">
           <div className="flex flex-col gap-7">
             <Eyebrow tone="onDark">{site.legalName}</Eyebrow>
             <h1 className="max-w-[16ch] text-h1">
@@ -92,6 +97,41 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ─── Accès rapide aux catégories, à cheval sur le bandeau ─── */}
+      <nav
+        aria-labelledby="acces-rapide"
+        className="relative z-10 mx-auto max-w-page px-4 pt-8 sm:px-6 md:-mt-16 md:pt-0 lg:px-8"
+      >
+        <div className="rounded-lg bg-surface p-5 shadow-overlay sm:p-6">
+          <h2 id="acces-rapide" className="mb-4 font-display text-lead font-extrabold">
+            Que cherchez-vous ?
+          </h2>
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {QUICK_CATEGORIES.map((category) => {
+              const Icon = CATEGORY_ICONS[category]
+              const target = `/espace/billetterie?categorie=${category}`
+              return (
+                <li key={category}>
+                  <Link
+                    href={isMember ? target : `/connexion?next=${encodeURIComponent(target)}`}
+                    className="group flex h-full items-center gap-3 rounded-md border border-line p-3 transition-colors hover:border-blue-600 hover:bg-blue-50"
+                  >
+                    <span
+                      className={`grid size-11 shrink-0 place-items-center rounded-full ${CATEGORY_TONES[category]}`}
+                    >
+                      <Icon aria-hidden className="size-5" />
+                    </span>
+                    <span className="leading-tight font-semibold group-hover:text-blue-600">
+                      {OFFER_CATEGORY_LABELS[category]}
+                    </span>
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      </nav>
 
       {/* ─── À la une : posts du bureau, défilement automatique ─── */}
       {highlights.length > 0 ? (

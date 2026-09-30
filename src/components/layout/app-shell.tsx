@@ -28,7 +28,7 @@ export function AppShell({
 }) {
   return (
     <>
-      <header className="bg-paper">
+      <header className="border-b border-line bg-surface">
         <div className="mx-auto flex max-w-page items-center justify-between gap-4 px-4 pt-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
             <Link href="/" className="shrink-0 rounded-sm" aria-label={`${site.legalName} — accueil du site`}>
@@ -71,7 +71,6 @@ export function AppShell({
             ))}
           </ul>
         </nav>
-        <div className="brand-rule" aria-hidden />
       </header>
       <main id="contenu" tabIndex={-1} className="flex-1 focus:outline-none">
         <div className="mx-auto flex max-w-page flex-col gap-10 px-4 py-10 sm:px-6 md:py-14 lg:px-8">

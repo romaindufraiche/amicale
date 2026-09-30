@@ -212,15 +212,10 @@
   text-transform: uppercase;
 }
 
-/*
- * Filet signature : un trait épais doublé d'un trait fin décalé,
- * repris du contour bleu du logo ADPVO.
- */
+/* Liseré tricolore : bleu, blanc, rouge du drapeau, en dégradé. */
 @utility brand-rule {
-  height: 7px;
-  background:
-    linear-gradient(var(--color-blue-500), var(--color-blue-500)) top / 100% 4px no-repeat,
-    linear-gradient(var(--color-blue-500), var(--color-blue-500)) bottom / 100% 1px no-repeat;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-flag-blue) 0%, #ffffff 50%, var(--color-flag-red) 100%);
 }
 
 @utility tabular {

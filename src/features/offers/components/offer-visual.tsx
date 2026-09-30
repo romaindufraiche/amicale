@@ -24,7 +24,7 @@ export const CATEGORY_ICONS: Record<OfferCategory, LucideIcon> = {
 }
 
 /** Ambiance de chaque catégorie, tirée exclusivement de la palette de marque. */
-const CATEGORY_TONES: Record<OfferCategory, string> = {
+export const CATEGORY_TONES: Record<OfferCategory, string> = {
   CINEMA: 'bg-night-900 text-amber-300',
   PARCS: 'bg-amber-300 text-ink',
   SPECTACLES: 'bg-rose-600 text-white',

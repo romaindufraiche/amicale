@@ -30,7 +30,7 @@ export async function SiteHeader() {
   )
 
   return (
-    <header className="relative z-30 bg-paper">
+    <header className="relative z-30 border-b border-line bg-surface">
       <div className="mx-auto flex max-w-page items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
         <Link href="/" className="shrink-0 rounded-sm" aria-label={`${site.legalName} — accueil`}>
           <Logo />
@@ -43,7 +43,6 @@ export async function SiteHeader() {
         <div className="hidden items-center gap-2 lg:flex">{actions}</div>
         <MobileMenu items={PUBLIC_NAV} footer={actions} />
       </div>
-      <div className="brand-rule" aria-hidden />
     </header>
   )
 }
