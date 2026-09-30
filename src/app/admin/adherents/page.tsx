@@ -71,7 +71,7 @@ export default async function MembersPage({ searchParams }: Props) {
                     </Link>
                     <span className="block text-ink-muted">{member.email}</span>
                     {member.role !== 'MEMBER' ? (
-                      <span className="label-caps text-red-700">{USER_ROLE_LABELS[member.role]}</span>
+                      <span className="label-caps text-blue-700">{USER_ROLE_LABELS[member.role]}</span>
                     ) : null}
                   </Td>
                   <Td>{MEMBER_CATEGORY_LABELS[member.category]}</Td>

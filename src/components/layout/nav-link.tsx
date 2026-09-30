@@ -23,7 +23,7 @@ export function NavLink({
       href={href}
       aria-current={active ? 'page' : undefined}
       className={cn(
-        'relative inline-flex min-h-11 items-center font-display font-bold text-ink transition-colors hover:text-red-700',
+        'relative inline-flex min-h-11 items-center font-display font-bold text-ink transition-colors hover:text-blue-600',
         'after:absolute after:inset-x-0 after:bottom-1 after:h-0.5 after:scale-x-0 after:bg-red-600 after:transition-transform',
         'hover:after:scale-x-100 aria-[current=page]:after:scale-x-100',
         className,

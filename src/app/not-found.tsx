@@ -11,7 +11,7 @@ export default function NotFound() {
       <SiteHeader />
       <main id="contenu" tabIndex={-1} className="flex-1 focus:outline-none">
         <div className="mx-auto flex max-w-page flex-col items-start gap-6 px-4 py-20 sm:px-6 lg:px-8">
-          <p aria-hidden className="font-display text-display font-black text-red-500 tabular">
+          <p aria-hidden className="font-display text-display font-black text-blue-600 tabular">
             404
           </p>
           <h1 className="text-h1">Cette page n’existe pas.</h1>

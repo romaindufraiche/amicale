@@ -52,25 +52,36 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ─── Ouverture ─────────────────────────────────────────────── */}
-      <section className="overflow-hidden">
-        <div className="mx-auto grid max-w-page items-center gap-12 px-4 pt-14 pb-16 sm:px-6 md:pt-20 lg:grid-cols-[1.25fr_1fr] lg:px-8 lg:pb-24">
+      {/* ─── Ouverture : bandeau bleu police ─────────────────────────── */}
+      <section data-surface="dark" className="relative overflow-hidden bg-blue-700 text-white">
+        {/* Grand « 95 » en filigrane, débordant du cadre. */}
+        <p
+          aria-hidden
+          className="pointer-events-none absolute -right-8 -bottom-16 font-display text-display font-black tracking-tighter text-blue-600 select-none lg:hidden"
+        >
+          95
+        </p>
+        <div className="relative mx-auto grid max-w-page items-center gap-12 px-4 pt-14 pb-16 sm:px-6 md:pt-20 lg:grid-cols-[1.25fr_1fr] lg:px-8 lg:pb-24">
           <div className="flex flex-col gap-7">
-            <Eyebrow>{site.legalName}</Eyebrow>
+            <Eyebrow tone="onDark">{site.legalName}</Eyebrow>
             <h1 className="max-w-[16ch] text-h1">
               L’amicale de celles et ceux qui veillent sur le Val d’Oise.
             </h1>
-            <p className="max-w-prose text-lead text-ink-muted">
+            <p className="max-w-prose text-lead text-blue-100">
               Billetterie à tarifs adhérents, sorties, avantages partenaires : l’{site.shortName} simplifie
               les loisirs des personnels de police du département et fait vivre les liens entre collègues.
             </p>
             <div className="flex flex-wrap gap-3">
               {session ? (
-                <ButtonLink href="/espace">Accéder à mon espace</ButtonLink>
+                <ButtonLink href="/espace" variant="inverse">
+                  Accéder à mon espace
+                </ButtonLink>
               ) : (
                 <>
-                  <ButtonLink href="/inscription">Devenir adhérent</ButtonLink>
-                  <ButtonLink href="/connexion" variant="secondary">
+                  <ButtonLink href="/inscription" variant="inverse">
+                    Devenir adhérent
+                  </ButtonLink>
+                  <ButtonLink href="/connexion" variant="outlineInverse">
                     Se connecter
                   </ButtonLink>
                 </>
@@ -78,18 +89,19 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Le « 95 » du département, souligné du double trait du logo. */}
+          {/* Le « 95 » du département, souligné d'un filet rouge : bleu, blanc, rouge. */}
           <div aria-hidden className="relative hidden justify-self-end select-none lg:block">
-            <p className="font-display text-display font-black tracking-tighter text-red-500">95</p>
-            <div className="mt-5 brand-rule w-full" />
-            <p className="mt-3 text-right label-caps text-ink-muted">{site.department.name}</p>
+            <p className="font-display text-display font-black tracking-tighter text-amber-300">95</p>
+            <div className="mt-5 h-1.5 w-full bg-red-500" />
+            <div className="mt-1 h-px w-full bg-white" />
+            <p className="mt-3 text-right label-caps text-blue-100">{site.department.name}</p>
           </div>
         </div>
       </section>
 
       {/* ─── À la une : posts du bureau, défilement automatique ─── */}
       {highlights.length > 0 ? (
-        <div className="pb-16">
+        <div className="py-16">
           <HighlightsMarquee items={highlights} fullBleed />
         </div>
       ) : null}
@@ -109,7 +121,7 @@ export default async function HomePage() {
                 key={benefit.title}
                 className="grid grid-cols-[3.5rem_1fr] gap-4 border-t border-line py-8 first:border-t-0 first:pt-0 sm:grid-cols-[5rem_1fr]"
               >
-                <span aria-hidden className="font-display text-h2 font-black text-red-500 tabular">
+                <span aria-hidden className="font-display text-h2 font-black text-blue-600 tabular">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <div className="flex max-w-prose flex-col gap-2">
@@ -183,7 +195,7 @@ export default async function HomePage() {
             {STEPS.map((step, index) => (
               <li key={step.title} className="flex flex-col gap-4">
                 <div className="flex items-center gap-4">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink font-display text-lead font-extrabold text-white tabular">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-blue-600 font-display text-lead font-extrabold text-white tabular">
                     {index + 1}
                   </span>
                   <span aria-hidden className="brand-rule flex-1" />

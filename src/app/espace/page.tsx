@@ -89,7 +89,7 @@ export default async function DashboardPage() {
         {/* Carte d'adhérent : bandeau sombre reprenant le sigle et le numéro. */}
         <div
           data-surface="dark"
-          className="flex flex-col justify-between gap-8 rounded-lg bg-night-900 p-6 text-white"
+          className="flex flex-col justify-between gap-8 rounded-lg bg-blue-900 p-6 text-white"
         >
           <div className="flex items-start justify-between">
             <p className="font-display text-h3 font-black">
@@ -136,7 +136,7 @@ export default async function DashboardPage() {
               href="/espace/billetterie"
               className="group flex flex-col gap-2 rounded-md bg-surface p-5 hover:shadow-raised"
             >
-              <span className="font-display text-lead font-extrabold group-hover:text-red-700">
+              <span className="font-display text-lead font-extrabold group-hover:text-blue-600">
                 Billetterie & sorties
               </span>
               <span className="text-sm text-ink-muted">Commander des billets à tarif adhérent.</span>
@@ -145,7 +145,7 @@ export default async function DashboardPage() {
               href="/espace/avantages"
               className="group flex flex-col gap-2 rounded-md bg-surface p-5 hover:shadow-raised"
             >
-              <span className="font-display text-lead font-extrabold group-hover:text-red-700">
+              <span className="font-display text-lead font-extrabold group-hover:text-blue-600">
                 Avantages partenaires
               </span>
               <span className="text-sm text-ink-muted">Réductions et conditions négociées.</span>

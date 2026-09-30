@@ -35,13 +35,13 @@ export default async function PartnersPage() {
           {partners.map((partner) => (
             <li
               key={partner.id}
-              className="flex flex-col gap-4 rounded-md border-t-4 border-red-600 bg-surface p-6"
+              className="flex flex-col gap-4 rounded-md border-t-4 border-blue-600 bg-surface p-6"
             >
               <div className="flex flex-col gap-1">
                 <p className="label-caps text-ink-muted">{OFFER_CATEGORY_LABELS[partner.category]}</p>
                 <h2 className="text-h3">{partner.name}</h2>
               </div>
-              <p className="font-display text-lead font-extrabold text-red-700">{partner.advantage}</p>
+              <p className="font-display text-lead font-extrabold text-blue-700">{partner.advantage}</p>
               {partner.description ? (
                 <p className="whitespace-pre-line text-ink-muted">{partner.description}</p>
               ) : null}

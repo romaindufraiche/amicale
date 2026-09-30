@@ -34,7 +34,7 @@ export function AppShell({
             <Link href="/" className="shrink-0 rounded-sm" aria-label={`${site.legalName} — accueil du site`}>
               <Logo />
             </Link>
-            <span className="hidden rounded-sm bg-ink px-2 py-1 label-caps text-white sm:inline">
+            <span className="hidden rounded-sm bg-blue-600 px-2 py-1 label-caps text-white sm:inline">
               {label}
             </span>
           </div>

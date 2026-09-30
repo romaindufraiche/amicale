@@ -13,7 +13,7 @@ export default async function RegisterConfirmationPage({ searchParams }: Props) 
   return (
     <AuthShell eyebrow="Demande d’adhésion" title="Vérifiez votre messagerie">
       <div className="flex flex-col gap-5">
-        <MailCheck aria-hidden className="size-10 text-red-600" />
+        <MailCheck aria-hidden className="size-10 text-blue-500" />
         <p className="text-lead">
           Un lien de confirmation vient d’être envoyé
           {displayedEmail ? (

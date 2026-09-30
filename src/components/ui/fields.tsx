@@ -210,7 +210,7 @@ export function CheckboxField({
           type="checkbox"
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
-          className="mt-1 size-5 shrink-0 accent-red-600"
+          className="mt-1 size-5 shrink-0 accent-blue-600"
           {...input}
         />
         <label htmlFor={id} className="text-ink">

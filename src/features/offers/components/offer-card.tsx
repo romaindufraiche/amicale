@@ -66,7 +66,7 @@ export function OfferCard({
           {OFFER_CATEGORY_LABELS[offer.category]} · {offer.kind === 'EVENT' ? 'Sortie' : 'E-billet'}
         </p>
         <Heading className={cn('font-display font-extrabold', size === 'large' ? 'text-h2' : 'text-h3')}>
-          <Link href={href} className="group-hover:text-red-700 after:absolute after:inset-0">
+          <Link href={href} className="group-hover:text-blue-600 after:absolute after:inset-0">
             {offer.title}
           </Link>
         </Heading>
@@ -74,12 +74,12 @@ export function OfferCard({
         <p className="mt-auto flex items-center gap-1.5 pt-2 text-sm">
           {offer.eventStartsAt ? (
             <>
-              <CalendarDays aria-hidden className="size-4 text-red-600" />
+              <CalendarDays aria-hidden className="size-4 text-blue-500" />
               {formatDateTime(offer.eventStartsAt)}
             </>
           ) : offer.validUntil ? (
             <>
-              <Clock aria-hidden className="size-4 text-red-600" />
+              <Clock aria-hidden className="size-4 text-blue-500" />
               Valable jusqu’au {formatDate(offer.validUntil)}
             </>
           ) : null}

@@ -3,9 +3,9 @@
 /*
  * ─── Design tokens — ADPVO ────────────────────────────────────────────────
  *
- * Direction : moderne et chaleureuse, fidèle au logo ADPVO. Rouge « VO » en couleur
- * d'action, noir chaud pour le texte, neutres crème/sable ; le double trait bleu du
- * contour du logo sert de filet signature.
+ * Direction : vive et chaleureuse, fidèle au logo ADPVO. Bleu police en couleur principale,
+ * rouge « VO » en accent (rappel bleu-blanc-rouge), ambre pour la chaleur, neutres crème ;
+ * le double trait bleu du contour du logo sert de filet signature.
  * Les échelles par défaut de Tailwind sont remplacées : seules ces valeurs
  * existent dans le projet (pas de couleur, d'ombre ou de rayon arbitraire).
  * Référence complète : docs/DESIGN-SYSTEM.md
@@ -32,13 +32,18 @@
   --color-red-50: #fff1ec;
   --color-red-100: #ffdcd2;
   --color-red-500: #f4433b; /* rouge du logo — grands éléments uniquement */
-  --color-red-600: #d93128; /* couleur primaire */
+  --color-red-600: #d93128; /* accent (rouge du logo) : bandeau contact, alertes de marque */
   --color-red-700: #b5251d; /* survol, texte rouge sur fond clair */
   --color-red-800: #8c1c16;
 
-  --color-blue-50: #eef3f8;
-  --color-blue-500: #3a6ea5; /* bleu denim, adouci depuis le bleu du logo à la demande du client */
-  --color-blue-700: #24466f; /* bleu encre : aplats, texte bleu */
+  /* Bleu police : couleur principale (boutons, grands aplats, surfaces sombres). */
+  --color-blue-50: #edf2ff;
+  --color-blue-100: #dbe6ff;
+  --color-blue-500: #2f63e6; /* filet signature, focus, icônes */
+  --color-blue-600: #1a44bd; /* couleur d'action — blanc 8:1 */
+  --color-blue-700: #1737a0; /* survol, bandeau d'accueil */
+  --color-blue-800: #13307f;
+  --color-blue-900: #0f2a6e; /* pied de page, carte d'adhérent */
 
   --color-amber-50: #fff5e3;
   --color-amber-300: #ffc56a; /* accent chaleureux (économies, mises en avant) */
@@ -145,7 +150,7 @@
   }
 
   ::selection {
-    background-color: var(--color-red-100);
+    background-color: var(--color-blue-100);
     color: var(--color-ink);
   }
 
@@ -177,7 +182,7 @@
 @utility link {
   color: var(--color-ink);
   text-decoration-line: underline;
-  text-decoration-color: var(--color-red-600);
+  text-decoration-color: var(--color-blue-500);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
   transition: text-decoration-thickness 150ms var(--ease-standard);

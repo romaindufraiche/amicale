@@ -89,7 +89,7 @@ export default async function AdminHomePage() {
                   ) : null}
                 </span>
                 <span className="text-ink-muted">{tile.label}</span>
-                <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold group-hover:text-red-700">
+                <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold group-hover:text-blue-600">
                   {tile.action} <ArrowRight aria-hidden className="size-4" />
                 </span>
               </Link>

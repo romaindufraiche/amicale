@@ -37,7 +37,7 @@ export function NewsList({ items, headingLevel = 'h2' }: { items: NewsItem[]; he
             <Heading className="font-display text-h3 font-extrabold">
               <Link
                 href={`/actualites/${item.slug}`}
-                className="group-hover:text-red-700 group-hover:underline group-hover:decoration-2 group-hover:underline-offset-4 after:absolute after:inset-0"
+                className="group-hover:text-blue-600 group-hover:underline group-hover:decoration-2 group-hover:underline-offset-4 after:absolute after:inset-0"
               >
                 {item.title}
               </Link>

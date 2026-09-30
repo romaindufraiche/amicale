@@ -34,7 +34,7 @@ function DetailItem({
   return (
     <div className={wide ? 'sm:col-span-2' : undefined}>
       <dt className="flex items-center gap-2 label-caps text-ink-muted">
-        <Icon aria-hidden className="size-5 shrink-0 text-red-600" />
+        <Icon aria-hidden className="size-5 shrink-0 text-blue-500" />
         {label}
       </dt>
       <dd className={multiline ? 'pl-7 whitespace-pre-line' : 'pl-7 font-semibold'}>{children}</dd>

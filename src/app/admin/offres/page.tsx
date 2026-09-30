@@ -58,7 +58,7 @@ export default async function AdminOffersPage() {
           <section key={category} aria-labelledby={headingId} className="flex scroll-mt-6 flex-col gap-4">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-ink pb-3">
               <h2 id={headingId} className="flex items-center gap-3 text-h3">
-                <Icon aria-hidden className="size-6 text-red-600" />
+                <Icon aria-hidden className="size-6 text-blue-500" />
                 {OFFER_CATEGORY_LABELS[category]}
                 <span className="font-sans text-base font-normal text-ink-muted">
                   {items.length} offre{items.length > 1 ? 's' : ''}

@@ -51,7 +51,7 @@ export default function JoinPage() {
             <li key={step.title} className="relative flex flex-col gap-2">
               <span
                 aria-hidden
-                className="absolute top-0 -left-13 grid size-9 place-items-center rounded-full bg-ink font-display font-extrabold text-white tabular"
+                className="absolute top-0 -left-13 grid size-9 place-items-center rounded-full bg-blue-600 font-display font-extrabold text-white tabular"
               >
                 {index + 1}
               </span>

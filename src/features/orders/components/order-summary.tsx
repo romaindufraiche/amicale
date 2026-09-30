@@ -19,7 +19,7 @@ export function OrderSummaryRow({ order }: { order: UserOrder }) {
         <p className="font-display text-lead font-extrabold">
           <Link
             href={`/espace/commandes/${order.id}`}
-            className="group-hover:text-red-700 after:absolute after:inset-0"
+            className="group-hover:text-blue-600 after:absolute after:inset-0"
           >
             {order.offerTitle}
           </Link>

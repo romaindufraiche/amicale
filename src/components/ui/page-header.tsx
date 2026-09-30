@@ -1,11 +1,25 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
-/** Surtitre : petite capitale précédée d'un trait rouge, repère de section. */
-export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
+/** Surtitre : petite capitale précédée d'un trait rouge, repère de section. `onDark` : sur fond bleu. */
+export function Eyebrow({
+  children,
+  tone = 'default',
+  className,
+}: {
+  children: ReactNode
+  tone?: 'default' | 'onDark'
+  className?: string
+}) {
   return (
-    <p className={cn('flex items-center gap-2.5 label-caps text-red-700', className)}>
-      <span aria-hidden className="h-0.5 w-6 bg-red-600" />
+    <p
+      className={cn(
+        'flex items-center gap-2.5 label-caps',
+        tone === 'onDark' ? 'text-amber-300' : 'text-blue-600',
+        className,
+      )}
+    >
+      <span aria-hidden className="h-0.5 w-6 bg-red-500" />
       {children}
     </p>
   )

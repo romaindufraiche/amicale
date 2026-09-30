@@ -13,7 +13,7 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
           <button
             type="button"
             onClick={reset}
-            className="self-start rounded-sm bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700"
+            className="self-start rounded-sm bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
           >
             Réessayer
           </button>

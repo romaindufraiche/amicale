@@ -16,7 +16,7 @@ export function SiteFooter() {
   const hasContact = contact.email || contact.phone || contact.postalAddress
 
   return (
-    <footer data-surface="dark" className="mt-auto bg-night-900 text-white">
+    <footer data-surface="dark" className="mt-auto bg-blue-900 text-white">
       <div className="brand-rule" aria-hidden />
       <div className="mx-auto grid max-w-page gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
         <div className="flex flex-col gap-4">
@@ -79,7 +79,7 @@ export function SiteFooter() {
           )}
         </div>
       </div>
-      <div className="border-t border-night-700">
+      <div className="border-t border-blue-800">
         <p className="mx-auto max-w-page px-4 py-5 text-caption text-line sm:px-6 lg:px-8">
           © {new Date().getFullYear()} {site.legalName} · {site.legal.legalForm}
         </p>

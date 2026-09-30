@@ -142,7 +142,7 @@ export default async function CatalogPage({ searchParams }: Props) {
                     className={cn(
                       'inline-flex min-h-11 items-center gap-2 rounded-sm border px-4 text-sm font-semibold transition-colors',
                       active
-                        ? 'border-ink bg-ink text-white'
+                        ? 'border-blue-600 bg-blue-600 text-white'
                         : 'border-line-strong bg-surface text-ink hover:border-ink',
                     )}
                   >

@@ -61,7 +61,7 @@ export function MobileMenu({ items, footer }: { items: readonly NavItem[]; foote
               aria-current={
                 pathname === item.href || pathname.startsWith(`${item.href}/`) ? 'page' : undefined
               }
-              className="border-b border-line py-3.5 font-display text-lead font-bold aria-[current=page]:text-red-700"
+              className="border-b border-line py-3.5 font-display text-lead font-bold aria-[current=page]:text-blue-600"
             >
               {item.label}
             </Link>
