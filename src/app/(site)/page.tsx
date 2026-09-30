@@ -212,7 +212,7 @@ export default async function HomePage() {
       ) : null}
 
       {/* ─── Parcours d'adhésion ───────────────────────────────────── */}
-      <section aria-labelledby="etapes-titre" className="bg-sunken">
+      <section aria-labelledby="etapes-titre" className="bg-surface/60">
         <div className="mx-auto flex max-w-page flex-col gap-12 px-4 py-20 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="flex max-w-prose flex-col gap-4">

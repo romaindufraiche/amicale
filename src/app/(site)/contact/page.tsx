@@ -31,7 +31,7 @@ export default async function ContactPage() {
         />
       </div>
 
-      <aside className="flex flex-col gap-6 self-start rounded-lg bg-sunken p-8 lg:mt-40">
+      <aside className="flex flex-col gap-6 self-start rounded-lg bg-surface p-8 shadow-raised lg:mt-40">
         <Eyebrow>Bon à savoir</Eyebrow>
         {contact.whatsapp ? (
           <div className="flex flex-col gap-3">

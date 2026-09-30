@@ -58,7 +58,7 @@ migrations). Vérification : **Settings → Environment Variables** doit lister 
 | `BUREAU_EMAIL`              | votre adresse email                                                |
 | `TRUST_PROXY`               | `true`                                                             |
 | `DB_POOL_MAX`               | `3`                                                                |
-| `DEMO_MODE`                 | `true` (bandeau « Version de démonstration »)                      |
+| `DEMO_MODE`                 | `true` (autorise le chargement des données de démonstration)       |
 | `MAIL_TRANSPORT`            | `outbox`                                                           |
 | `MAIL_OUTBOX_IN_PRODUCTION` | `true`                                                             |
 | `MAIL_OUTBOX_DIR`           | `/tmp/outbox`                                                      |

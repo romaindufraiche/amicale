@@ -58,11 +58,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         >
           Aller au contenu
         </a>
-        {env.DEMO_MODE ? (
-          <p className="bg-amber-300 px-4 py-2 text-center text-sm font-semibold text-ink">
-            Version de démonstration : les offres, prix et contenus sont fictifs.
-          </p>
-        ) : null}
         {children}
       </body>
     </html>

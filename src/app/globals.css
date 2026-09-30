@@ -16,11 +16,11 @@
   --color-*: initial;
 
   --color-white: #ffffff;
-  --color-paper: #fffaf4; /* fond de page, blanc chaud */
+  --color-paper: #f6fafd; /* fond de page, blanc bleuté (sous le halo) */
   --color-surface: #ffffff; /* panneaux, formulaires */
-  --color-sunken: #fff2e1; /* zones en retrait, crème */
-  --color-line: #f0e2cf; /* filets et bordures */
-  --color-line-strong: #8f8270; /* bordures de champs (≥ 3:1) */
+  --color-sunken: #eaf3f9; /* zones en retrait, bleu très pâle */
+  --color-line: #dde8f0; /* filets et bordures */
+  --color-line-strong: #7a8794; /* bordures de champs (≥ 3:1) */
 
   --color-ink: #1b1713; /* texte principal, noir chaud du logo */
   --color-ink-muted: #5c5349; /* texte secondaire */
@@ -134,8 +134,19 @@
     scroll-padding-top: 6rem;
   }
 
+  /*
+   * Fond de page : halo bleu flouté (dégradés radiaux superposés), plus soutenu au centre et
+   * fondu vers le blanc sur les bords, avec une touche framboise. Fixé à la fenêtre pour ne
+   * pas se répéter sur les pages longues ; iOS l'ignore et le fait défiler, sans gêne.
+   */
   body {
     background-color: var(--color-paper);
+    background-image:
+      radial-gradient(38% 55% at 50% 30%, rgb(191 222 238 / 0.55) 0%, transparent 100%),
+      radial-gradient(30% 40% at 12% 85%, rgb(191 222 238 / 0.45) 0%, transparent 100%),
+      radial-gradient(28% 35% at 92% 78%, rgb(248 220 236 / 0.5) 0%, transparent 100%),
+      linear-gradient(90deg, #f8fbfd 0%, #e7f1f8 35%, #dcebf4 50%, #e7f1f8 65%, #f8fbfd 100%);
+    background-attachment: fixed;
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: var(--text-base);
