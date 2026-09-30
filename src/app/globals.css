@@ -29,6 +29,10 @@
   --color-night-800: #2c251f;
   --color-night-700: #3b332b;
 
+  /* Drapeau français : réservé au dégradé tricolore de la page d'accueil. */
+  --color-flag-blue: #002395; /* blanc 12,5:1 */
+  --color-flag-red: #ed2939;
+
   /* Framboise : accent vif (bandeau contact, surtitres, mises en avant). */
   --color-rose-50: #f8ecf3;
   --color-rose-600: #a61866;
@@ -221,4 +225,28 @@
 
 @utility tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Bandeau d'accueil tricolore. Le texte reste toujours sur la partie bleue :
+ * - mobile : fond bleu, bande tricolore dégradée en pied de bandeau ;
+ * - grand écran : dégradé bleu → blanc → rouge, le texte occupant la moitié bleue.
+ */
+@utility hero-tricolore {
+  background:
+    linear-gradient(90deg, var(--color-flag-blue) 0%, #ffffff 50%, var(--color-flag-red) 100%) bottom / 100%
+      14px no-repeat,
+    var(--color-flag-blue);
+
+  @media (width >= 64rem) {
+    background: linear-gradient(
+      100deg,
+      var(--color-flag-blue) 0%,
+      var(--color-flag-blue) 46%,
+      #ffffff 60%,
+      #ffffff 68%,
+      var(--color-flag-red) 86%,
+      var(--color-flag-red) 100%
+    );
+  }
 }

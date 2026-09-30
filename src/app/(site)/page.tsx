@@ -52,22 +52,15 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ─── Ouverture : bandeau bleu police ─────────────────────────── */}
-      <section data-surface="dark" className="relative overflow-hidden bg-blue-800 text-white">
-        {/* Grand « 95 » en filigrane, débordant du cadre. */}
-        <p
-          aria-hidden
-          className="pointer-events-none absolute -right-8 -bottom-16 font-display text-display font-black tracking-tighter text-blue-600 select-none lg:hidden"
-        >
-          95
-        </p>
-        <div className="relative mx-auto grid max-w-page items-center gap-12 px-4 pt-14 pb-16 sm:px-6 md:pt-20 lg:grid-cols-[1.25fr_1fr] lg:px-8 lg:pb-24">
+      {/* ─── Ouverture : bandeau tricolore (dégradé bleu, blanc, rouge) ─── */}
+      <section data-surface="dark" className="relative overflow-hidden text-white hero-tricolore">
+        <div className="relative mx-auto grid max-w-page items-center gap-12 px-4 pt-14 pb-20 sm:px-6 md:pt-20 lg:grid-cols-2 lg:px-8 lg:pb-24">
           <div className="flex flex-col gap-7">
             <Eyebrow tone="onDark">{site.legalName}</Eyebrow>
             <h1 className="max-w-[16ch] text-h1">
               L’amicale de celles et ceux qui veillent sur le Val d’Oise.
             </h1>
-            <p className="max-w-prose text-lead text-blue-100">
+            <p className="max-w-lg text-lead text-blue-100">
               Billetterie à tarifs adhérents, sorties, avantages partenaires : l’{site.shortName} simplifie
               les loisirs des personnels de police du département et fait vivre les liens entre collègues.
             </p>
@@ -89,12 +82,13 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Le « 95 » du département, en pêche, souligné d'un filet framboise. */}
-          <div aria-hidden className="relative hidden justify-self-end select-none lg:block">
-            <p className="font-display text-display font-black tracking-tighter text-amber-300">95</p>
-            <div className="mt-5 h-1.5 w-full bg-rose-600" />
-            <div className="mt-1 h-px w-full bg-white" />
-            <p className="mt-3 text-right label-caps text-blue-100">{site.department.name}</p>
+          {/* Le « 95 » du département, posé sur la bande blanche du drapeau. */}
+          <div
+            aria-hidden
+            className="hidden justify-self-center text-center select-none lg:block lg:translate-x-8"
+          >
+            <p className="font-display text-display font-black tracking-tighter text-flag-blue">95</p>
+            <p className="mt-2 label-caps text-ink">{site.department.name}</p>
           </div>
         </div>
       </section>
