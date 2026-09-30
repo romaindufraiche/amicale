@@ -7,7 +7,7 @@ Aucune charte graphique formelle n'a été fournie. La direction artistique déc
 1. **Le logo ADPVO** : sigle « ADP » en noir, « VO » en rouge, contour du Val d'Oise tracé d'un double trait bleu (épais + fin).
 2. **La demande du client** : un rendu **moderne** aux **couleurs chaleureuses**.
 
-D'où la direction retenue — revue à la demande du client pour un rendu plus vif : le **bleu police** comme couleur principale, le rouge du logo en accent (rappel bleu-blanc-rouge), l'ambre pour la chaleur, un noir chaud pour le texte, des neutres crème et sable pour la chaleur, et le double trait bleu du contour comme filet signature. Le logo n'est ni redessiné ni imité.
+Palette revue à la demande du client, **inspirée des couleurs d'Emile's** (plateforme CSE qu'il apprécie) : bleu pétrole en couleur principale, pêche et crème pour la chaleur, framboise en accent. Le rouge du logo reste réservé au logo, qui n'est ni redessiné ni imité.
 
 > **Logo** : fichier fourni par le client (`public/brand/logo-adpvo-original.jpeg`), marges blanches
 > retirées dans `logo-adpvo.png`, déclaré dans `src/config/site.ts`. Fourni sur fond blanc, il est fondu
@@ -18,22 +18,22 @@ Tous les tokens sont définis dans `src/app/globals.css` (`@theme`). Les échell
 
 ## Couleurs
 
-| Token                      | Valeur                | Rôle                                                                                           |
-| -------------------------- | --------------------- | ---------------------------------------------------------------------------------------------- |
-| `paper`                    | `#fbf7f0`             | fond de page (crème)                                                                           |
-| `surface`                  | `#ffffff`             | panneaux, formulaires, cartes                                                                  |
-| `sunken`                   | `#f4ecdf`             | zones en retrait (sable), talons de billets                                                    |
-| `line` / `line-strong`     | `#e6dbca` / `#8f8270` | filets / bordures de champs (≥ 3:1)                                                            |
-| `ink` / `ink-muted`        | `#1b1713` / `#5c5349` | texte (16,7:1) / texte secondaire (7:1)                                                        |
-| `night-900…700`            | `#1f1a16`…            | surfaces sombres (pied de page, carte d'adhérent)                                              |
-| `blue-600`                 | `#1a44bd`             | **couleur d'action** : boutons, liens actifs (blanc 8:1)                                       |
-| `blue-700` / `blue-900`    | `#1737a0` / `#0f2a6e` | bandeau d'accueil / pied de page et carte d'adhérent                                           |
-| `red-600`                  | `#d93128`             | accent (rouge « VO » du logo) : bandeau contact, trait des surtitres — rappel bleu-blanc-rouge |
-| `red-700`                  | `#b5251d`             | survol, texte rouge sur fond clair (6:1)                                                       |
-| `red-500`                  | `#f4433b`             | rouge du logo, **grands éléments uniquement** (« 95 », « VO »)                                 |
-| `blue-500`                 | `#2f63e6`             | filet signature, focus clavier, icônes                                                         |
-| `amber-300`                | `#ffc56a`             | accent chaleureux : économies, surtitres sur fond sombre                                       |
-| `success/warning/danger-*` |                       | états fonctionnels, toujours accompagnés d'une icône ou d'un libellé                           |
+| Token                      | Valeur                | Rôle                                                                     |
+| -------------------------- | --------------------- | ------------------------------------------------------------------------ |
+| `paper` / `sunken`         | `#fffaf4` / `#fff2e1` | fond blanc chaud / zones crème                                           |
+| `blue-600`                 | `#005b89`             | **bleu pétrole, couleur d'action** : boutons, liens actifs (blanc 7,3:1) |
+| `blue-800` / `blue-900`    | `#003f62` / `#012551` | bandeau d'accueil / pied de page et carte d'adhérent                     |
+| `blue-500`                 | `#4b8bac`             | filet signature, focus clavier, icônes                                   |
+| `amber-300`                | `#fdc291`             | pêche : « 95 », réductions, mises en avant                               |
+| `rose-600`                 | `#a61866`             | framboise : bandeau contact, trait des surtitres, accent                 |
+| `red-500`                  | `#f4433b`             | rouge du logo, réservé au sigle « VO »                                   |
+| `surface`                  | `#ffffff`             | panneaux, formulaires, cartes                                            |
+| `line` / `line-strong`     | `#e6dbca` / `#8f8270` | filets / bordures de champs (≥ 3:1)                                      |
+| `ink` / `ink-muted`        | `#1b1713` / `#5c5349` | texte (16,7:1) / texte secondaire (7:1)                                  |
+| `night-900…700`            | `#1f1a16`…            | surfaces sombres (pied de page, carte d'adhérent)                        |
+| `red-700`                  | `#b5251d`             | survol, texte rouge sur fond clair (6:1)                                 |
+| `red-500`                  | `#f4433b`             | rouge du logo, **grands éléments uniquement** (« 95 », « VO »)           |
+| `success/warning/danger-*` |                       | états fonctionnels, toujours accompagnés d'une icône ou d'un libellé     |
 
 Contrastes vérifiés (WCAG AA) et contrôlés automatiquement par axe-core dans les tests de bout en bout.
 

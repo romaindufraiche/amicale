@@ -85,7 +85,7 @@ export default async function AdminHomePage() {
                 <span className="flex items-center justify-between">
                   <span className="font-display text-h1 font-black tabular">{tile.value}</span>
                   {tile.urgent ? (
-                    <span className="rounded-sm bg-red-50 px-2 py-1 label-caps text-red-700">À faire</span>
+                    <span className="rounded-sm bg-rose-50 px-2 py-1 label-caps text-rose-700">À faire</span>
                   ) : null}
                 </span>
                 <span className="text-ink-muted">{tile.label}</span>

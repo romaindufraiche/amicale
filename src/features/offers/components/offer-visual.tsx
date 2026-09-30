@@ -27,10 +27,10 @@ export const CATEGORY_ICONS: Record<OfferCategory, LucideIcon> = {
 const CATEGORY_TONES: Record<OfferCategory, string> = {
   CINEMA: 'bg-night-900 text-amber-300',
   PARCS: 'bg-amber-300 text-ink',
-  SPECTACLES: 'bg-red-600 text-white',
+  SPECTACLES: 'bg-rose-600 text-white',
   SPORT: 'bg-blue-700 text-white',
   VOYAGES: 'bg-blue-50 text-blue-700',
-  FAMILLE: 'bg-red-50 text-red-700',
+  FAMILLE: 'bg-rose-50 text-rose-700',
   AUTRE: 'bg-sunken text-ink',
 }
 

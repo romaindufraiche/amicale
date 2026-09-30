@@ -3,9 +3,9 @@
 /*
  * ─── Design tokens — ADPVO ────────────────────────────────────────────────
  *
- * Direction : vive et chaleureuse, fidèle au logo ADPVO. Bleu police en couleur principale,
- * rouge « VO » en accent (rappel bleu-blanc-rouge), ambre pour la chaleur, neutres crème ;
- * le double trait bleu du contour du logo sert de filet signature.
+ * Direction : vive et chaleureuse, palette inspirée d'Emile's à la demande du client.
+ * Bleu pétrole en couleur principale, pêche et crème pour la chaleur, framboise en accent ;
+ * le rouge du logo reste réservé au logo. Le double trait bleu sert de filet signature.
  * Les échelles par défaut de Tailwind sont remplacées : seules ces valeurs
  * existent dans le projet (pas de couleur, d'ombre ou de rayon arbitraire).
  * Référence complète : docs/DESIGN-SYSTEM.md
@@ -16,10 +16,10 @@
   --color-*: initial;
 
   --color-white: #ffffff;
-  --color-paper: #fbf7f0; /* fond de page, crème */
+  --color-paper: #fffaf4; /* fond de page, blanc chaud */
   --color-surface: #ffffff; /* panneaux, formulaires */
-  --color-sunken: #f4ecdf; /* zones en retrait, sable */
-  --color-line: #e6dbca; /* filets et bordures */
+  --color-sunken: #fff2e1; /* zones en retrait, crème */
+  --color-line: #f0e2cf; /* filets et bordures */
   --color-line-strong: #8f8270; /* bordures de champs (≥ 3:1) */
 
   --color-ink: #1b1713; /* texte principal, noir chaud du logo */
@@ -29,6 +29,11 @@
   --color-night-800: #2c251f;
   --color-night-700: #3b332b;
 
+  /* Framboise : accent vif (bandeau contact, surtitres, mises en avant). */
+  --color-rose-50: #f8ecf3;
+  --color-rose-600: #a61866;
+  --color-rose-700: #8a1455;
+
   --color-red-50: #fff1ec;
   --color-red-100: #ffdcd2;
   --color-red-500: #f4433b; /* rouge du logo — grands éléments uniquement */
@@ -37,16 +42,16 @@
   --color-red-800: #8c1c16;
 
   /* Bleu police : couleur principale (boutons, grands aplats, surfaces sombres). */
-  --color-blue-50: #edf2ff;
-  --color-blue-100: #dbe6ff;
-  --color-blue-500: #2f63e6; /* filet signature, focus, icônes */
-  --color-blue-600: #1a44bd; /* couleur d'action — blanc 8:1 */
-  --color-blue-700: #1737a0; /* survol, bandeau d'accueil */
-  --color-blue-800: #13307f;
-  --color-blue-900: #0f2a6e; /* pied de page, carte d'adhérent */
+  --color-blue-50: #e8f3f9;
+  --color-blue-100: #bfdeee;
+  --color-blue-500: #4b8bac; /* filet signature, focus, icônes (≥ 3:1) */
+  --color-blue-600: #005b89; /* bleu pétrole : couleur d'action — blanc 7,3:1 */
+  --color-blue-700: #004a70; /* survol */
+  --color-blue-800: #003f62; /* bandeau d'accueil */
+  --color-blue-900: #012551; /* pied de page, carte d'adhérent */
 
-  --color-amber-50: #fff5e3;
-  --color-amber-300: #ffc56a; /* accent chaleureux (économies, mises en avant) */
+  --color-amber-50: #fff2e1;
+  --color-amber-300: #fdc291; /* pêche : chaleur, mises en avant */
   --color-amber-800: #7a4a00;
 
   /* Vert WhatsApp assombri : texte blanc lisible (5,4:1), réservé au bouton WhatsApp. */

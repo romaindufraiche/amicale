@@ -53,7 +53,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ─── Ouverture : bandeau bleu police ─────────────────────────── */}
-      <section data-surface="dark" className="relative overflow-hidden bg-blue-700 text-white">
+      <section data-surface="dark" className="relative overflow-hidden bg-blue-800 text-white">
         {/* Grand « 95 » en filigrane, débordant du cadre. */}
         <p
           aria-hidden
@@ -89,10 +89,10 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Le « 95 » du département, souligné d'un filet rouge : bleu, blanc, rouge. */}
+          {/* Le « 95 » du département, en pêche, souligné d'un filet framboise. */}
           <div aria-hidden className="relative hidden justify-self-end select-none lg:block">
             <p className="font-display text-display font-black tracking-tighter text-amber-300">95</p>
-            <div className="mt-5 h-1.5 w-full bg-red-500" />
+            <div className="mt-5 h-1.5 w-full bg-rose-600" />
             <div className="mt-1 h-px w-full bg-white" />
             <p className="mt-3 text-right label-caps text-blue-100">{site.department.name}</p>
           </div>
@@ -234,7 +234,7 @@ export default async function HomePage() {
       ) : null}
 
       {/* ─── Contact ───────────────────────────────────────────────── */}
-      <section data-surface="dark" aria-labelledby="contact-titre" className="bg-red-600 text-white">
+      <section data-surface="dark" aria-labelledby="contact-titre" className="bg-rose-600 text-white">
         <div className="mx-auto flex max-w-page flex-col gap-6 px-4 py-16 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
           <div className="flex flex-col gap-2">
             <h2 id="contact-titre" className="text-h2">
