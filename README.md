@@ -2,7 +2,7 @@
 
 Plateforme web de l'Amicale, pensée comme un site de CSE :
 
-- **site public** : présentation, catalogue des offres consultable sans compte (`/offres`, tarifs adhérents et commande réservés aux adhérents), adhésion, actualités, contact (formulaire et bouton WhatsApp), pages légales ;
+- **site public** : présentation, catalogue des offres et de leurs tarifs consultable sans compte (`/offres`, commande réservée aux adhérents), adhésion, actualités, contact (formulaire et bouton WhatsApp), pages légales ;
 - **espace adhérent** : billetterie à tarifs adhérents, sorties avec inscription, avantages partenaires, suivi des commandes, profil ;
 - **espace bureau** : posts « À la une » (bandeau défilant sur l'accueil et le tableau de bord), validation des adhésions, gestion des cotisations, offres et tarifs, commandes (règlement, remise, export CSV), actualités, partenaires, messages, journal d'audit.
 

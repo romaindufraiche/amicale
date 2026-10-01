@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 type Props = { searchParams: Promise<CatalogSearchParams> }
 
-/** Catalogue consultable sans compte ; les tarifs et la commande restent réservés aux adhérents. */
+/** Catalogue consultable sans compte, tarifs compris ; la commande reste réservée aux adhérents. */
 export default async function PublicCatalogPage({ searchParams }: Props) {
   const params = parseCatalogParams(await searchParams)
   const session = await getCurrentSession()
@@ -30,7 +30,7 @@ export default async function PublicCatalogPage({ searchParams }: Props) {
       <PageHeader
         eyebrow="Billetterie & sorties"
         title="Les offres de l’Amicale"
-        lead="Cinéma, parcs, spectacles, sport, voyages et sorties de l’Amicale. Les tarifs négociés et la commande sont réservés aux adhérents."
+        lead="Cinéma, parcs, spectacles, sport, voyages et sorties de l’Amicale. Tarifs négociés par l’Amicale, à commander depuis votre espace adhérent."
         actions={
           session ? null : (
             <>
@@ -42,7 +42,7 @@ export default async function PublicCatalogPage({ searchParams }: Props) {
           )
         }
       />
-      <OfferCatalog offers={offers} params={params} basePath="/offres" audience="public" />
+      <OfferCatalog offers={offers} params={params} basePath="/offres" />
     </div>
   )
 }

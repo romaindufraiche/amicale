@@ -43,7 +43,7 @@ test.describe('pages publiques', () => {
     await expect(page).toHaveURL(/\/connexion\?next=%2Fespace/)
   })
 
-  test('un visiteur consulte les offres sans compte, sans voir les tarifs adhérents', async ({ page }) => {
+  test('un visiteur consulte les offres et leurs tarifs sans compte', async ({ page }) => {
     await page.goto('/offres?categorie=PARCS')
     await expect(page.getByRole('link', { name: 'Parcs & loisirs' })).toHaveAttribute('aria-current', 'page')
     const firstOffer = page
@@ -56,7 +56,7 @@ test.describe('pages publiques', () => {
     await firstOffer.click()
     await expect(page).toHaveURL(/\/offres\/[a-z0-9-]+$/)
     await expect(page.getByRole('heading', { level: 1, name: title ?? '' })).toBeVisible()
-    await expect(page.getByText(/€/)).toHaveCount(0)
+    await expect(page.getByText('Tarif adhérent :').first()).toBeAttached()
 
     const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()
     expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([])

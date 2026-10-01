@@ -13,8 +13,6 @@ type OfferCardProps = {
   offer: OfferWithTariffs
   availability: OfferAvailability
   href: string
-  /** `public` : visiteur non connecté, le tarif adhérent n'est pas affiché. */
-  audience?: 'member' | 'public'
   size?: 'default' | 'large'
   headingLevel?: 'h2' | 'h3'
 }
@@ -27,7 +25,6 @@ export function OfferCard({
   offer,
   availability,
   href,
-  audience = 'member',
   size = 'default',
   headingLevel: Heading = 'h3',
 }: OfferCardProps) {
@@ -97,8 +94,6 @@ export function OfferCard({
           <p className="font-display font-extrabold text-ink-muted">
             {AVAILABILITY_LABELS[availability.reason]}
           </p>
-        ) : audience === 'public' ? (
-          <p className="text-sm font-semibold">Tarif réservé aux adhérents</p>
         ) : (
           <>
             <div className="flex flex-col">

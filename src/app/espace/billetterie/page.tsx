@@ -30,7 +30,7 @@ export default async function CatalogPage({ searchParams }: Props) {
         </Alert>
       ) : null}
 
-      <OfferCatalog offers={offers} params={params} basePath="/espace/billetterie" audience="member" />
+      <OfferCatalog offers={offers} params={params} basePath="/espace/billetterie" />
     </>
   )
 }

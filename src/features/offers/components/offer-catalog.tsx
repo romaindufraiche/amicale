@@ -18,12 +18,10 @@ type OfferCatalogProps = {
   params: CatalogParams
   /** Chemin du catalogue : `/offres` (public) ou `/espace/billetterie` (adhérents). */
   basePath: string
-  /** `public` : tarifs adhérents masqués. */
-  audience: 'member' | 'public'
 }
 
 /** Catalogue des offres : recherche, tri, catégories, offres à la une puis liste complète. */
-export function OfferCatalog({ offers, params, basePath, audience }: OfferCatalogProps) {
+export function OfferCatalog({ offers, params, basePath }: OfferCatalogProps) {
   const { category, search, sort } = params
   const now = new Date()
   const today = parisDay(now)
@@ -132,7 +130,6 @@ export function OfferCatalog({ offers, params, basePath, audience }: OfferCatalo
                   offer={offer}
                   availability={availability}
                   href={`${basePath}/${offer.slug}`}
-                  audience={audience}
                   size="large"
                   headingLevel="h2"
                 />
@@ -159,7 +156,6 @@ export function OfferCatalog({ offers, params, basePath, audience }: OfferCatalo
                   offer={offer}
                   availability={availability}
                   href={`${basePath}/${offer.slug}`}
-                  audience={audience}
                   headingLevel="h2"
                 />
               </li>

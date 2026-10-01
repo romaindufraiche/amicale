@@ -167,7 +167,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─── Offres du moment (visibles de tous, tarifs réservés aux adhérents) ─── */}
+      {/* ─── Offres du moment (visibles de tous, commande réservée aux adhérents) ─── */}
       {showcase.length > 0 ? (
         <section aria-labelledby="offres-titre">
           <div className="mx-auto flex max-w-page flex-col gap-10 px-4 py-20 sm:px-6 lg:px-8">
@@ -177,11 +177,6 @@ export default async function HomePage() {
                 <h2 id="offres-titre" className="text-h2">
                   Les offres du moment
                 </h2>
-                {!isMember ? (
-                  <p className="text-ink-muted">
-                    Les tarifs adhérents s’affichent une fois connecté à votre espace.
-                  </p>
-                ) : null}
               </div>
               <Link
                 href={isMember ? '/espace/billetterie' : '/offres'}
@@ -196,7 +191,6 @@ export default async function HomePage() {
                   <OfferCard
                     offer={offer}
                     availability={availability}
-                    audience={isMember ? 'member' : 'public'}
                     href={`${isMember ? '/espace/billetterie' : '/offres'}/${offer.slug}`}
                   />
                 </li>
