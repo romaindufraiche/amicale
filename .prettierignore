@@ -5,3 +5,4 @@ drizzle/meta
 playwright-report
 test-results
 .outbox
+.agents
