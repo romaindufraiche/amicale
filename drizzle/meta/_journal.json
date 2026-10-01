@@ -43,6 +43,13 @@
       "when": 1790502015547,
       "tag": "0005_news_image",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790848276416,
+      "tag": "0006_offer_prices_public",
+      "breakpoints": true
     }
   ]
 }

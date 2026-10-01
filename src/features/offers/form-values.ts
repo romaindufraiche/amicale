@@ -19,6 +19,7 @@ export const EMPTY_OFFER: OfferFormValues = {
   maxPerMember: '',
   imageId: null,
   featured: false,
+  pricesPublic: true,
   tariffs: [],
 }
 
@@ -40,6 +41,7 @@ export function offerToFormValues(offer: OfferWithTariffs, lockedTariffIds: Set<
     maxPerMember: offer.maxPerMember?.toString() ?? '',
     imageId: offer.imageId,
     featured: offer.featured,
+    pricesPublic: offer.pricesPublic,
     tariffs: offer.tariffs.map((tariff) => ({
       key: tariff.id,
       id: tariff.id,

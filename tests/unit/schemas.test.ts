@@ -78,6 +78,13 @@ describe('offerSchema', () => {
     ])
   })
 
+  it('affiche les tarifs aux visiteurs seulement si la case est cochée', () => {
+    expect(offerSchema.parse(offerFormToObject(form(base))).pricesPublic).toBe(false)
+    expect(offerSchema.parse(offerFormToObject(form({ ...base, pricesPublic: 'on' }))).pricesPublic).toBe(
+      true,
+    )
+  })
+
   it('exige une date pour une sortie et refuse un prix public inférieur', () => {
     const result = offerSchema.safeParse(
       offerFormToObject(form({ ...base, eventStartsAt: '', 'tariffs.0.publicPrice': '10' })),

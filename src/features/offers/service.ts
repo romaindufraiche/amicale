@@ -25,6 +25,7 @@ function offerColumns(input: OfferInput) {
     maxPerMember: input.maxPerMember,
     imageId: input.imageId,
     featured: input.featured,
+    pricesPublic: input.pricesPublic,
   }
 }
 

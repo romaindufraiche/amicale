@@ -1,0 +1,1 @@
+ALTER TABLE "offers" ADD COLUMN "prices_public" boolean DEFAULT true NOT NULL;

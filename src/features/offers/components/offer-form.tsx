@@ -27,6 +27,7 @@ export type OfferFormValues = {
   maxPerMember: string
   imageId: string | null
   featured: boolean
+  pricesPublic: boolean
   tariffs: TariffRow[]
 }
 
@@ -101,7 +102,7 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
     setRows(rowsFromValues(v, rows))
   }
 
-  const value = (name: Exclude<keyof OfferFormValues, 'tariffs' | 'featured'>) =>
+  const value = (name: Exclude<keyof OfferFormValues, 'tariffs' | 'featured' | 'pricesPublic'>) =>
     v?.[name] ?? initial[name] ?? ''
 
   return (
@@ -169,6 +170,20 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
           name="featured"
           label="Mettre à la une (en tête du catalogue et sur la page d’accueil)"
           defaultChecked={v ? v.featured === 'on' : initial.featured}
+          className="md:col-span-2"
+        />
+        <CheckboxField
+          name="pricesPublic"
+          label={
+            <>
+              Afficher les tarifs aux visiteurs non connectés
+              <span className="block text-sm text-ink-muted">
+                Décoché : les visiteurs voient l’offre, mais ses tarifs ne s’affichent qu’aux adhérents
+                connectés.
+              </span>
+            </>
+          }
+          defaultChecked={v ? v.pricesPublic === 'on' : initial.pricesPublic}
           className="md:col-span-2"
         />
         <TextField

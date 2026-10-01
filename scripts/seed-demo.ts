@@ -49,6 +49,8 @@ type DemoOffer = {
   summary: string
   description: string
   featured?: boolean
+  /** `false` : tarifs réservés aux adhérents connectés. */
+  pricesPublic?: boolean
   location?: string
   eventInDays?: number
   eventHour?: number
@@ -203,6 +205,7 @@ const DEMO_OFFERS: DemoOffer[] = [
     title: 'Soirée cabaret avec dîner',
     kind: 'EVENT',
     category: 'SPECTACLES',
+    pricesPublic: false,
     summary: 'Dîner-spectacle dans un cabaret de la région, boissons comprises.',
     description: `${DEMO}\n\nExemple d’offre complète : toutes les places ont été réservées.`,
     location: 'Cabaret (démo), Val d’Oise',
@@ -442,6 +445,7 @@ async function main() {
         summary: offer.summary,
         description: offer.description,
         featured: offer.featured ?? false,
+        pricesPublic: offer.pricesPublic ?? true,
         location: offer.location,
         eventStartsAt: offer.eventInDays !== undefined ? inDays(offer.eventInDays, offer.eventHour) : null,
         validUntil: offer.validForDays !== undefined ? isoDay(offer.validForDays) : null,

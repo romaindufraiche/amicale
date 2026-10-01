@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: offer.title, description: offer.summary, alternates: { canonical: `/offres/${slug}` } }
 }
 
-/** Fiche publique d'une offre, tarifs compris ; seule la commande est réservée aux adhérents. */
+/** Fiche publique d'une offre ; tarifs affichés si le bureau l'a choisi, commande réservée aux adhérents. */
 export default async function PublicOfferPage({ params }: Props) {
   const { slug } = await params
   const memberPath = `/espace/billetterie/${slug}`
@@ -34,7 +34,8 @@ export default async function PublicOfferPage({ params }: Props) {
   if (!offer) notFound()
   const now = new Date()
   const availability = offerAvailability(offer, offer.tariffs, now, parisDay(now))
-  const activeTariffs = offer.tariffs.filter((tariff) => tariff.active)
+  // Tarifs réservés aux adhérents : ni affichés ni transmis au visiteur.
+  const activeTariffs = offer.pricesPublic ? offer.tariffs.filter((tariff) => tariff.active) : []
 
   return (
     <div className="mx-auto flex max-w-page flex-col gap-8 px-4 py-14 sm:px-6 md:py-20 lg:px-8">
@@ -78,12 +79,17 @@ export default async function PublicOfferPage({ params }: Props) {
           ) : null}
           {session ? (
             <p className="text-ink-muted">
-              La commande sera accessible dès que le bureau aura validé votre adhésion.
+              {offer.pricesPublic
+                ? 'La commande sera accessible'
+                : 'Les tarifs et la commande seront accessibles'}{' '}
+              dès que le bureau aura validé votre adhésion.
             </p>
           ) : (
             <>
               <p className="text-ink-muted">
-                Tarifs adhérents : la commande se fait depuis votre espace, une fois connecté.
+                {offer.pricesPublic
+                  ? 'Tarifs adhérents : la commande se fait depuis votre espace, une fois connecté.'
+                  : 'Les tarifs de cette offre et la commande sont réservés aux adhérents.'}
               </p>
               <div className="flex flex-col gap-3">
                 <ButtonLink href={`/connexion?next=${encodeURIComponent(memberPath)}`}>

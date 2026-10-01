@@ -198,6 +198,8 @@ export const offers = pgTable(
     imageId: uuid().references(() => media.id, { onDelete: 'set null' }),
     /** Mise en avant dans la rubrique « À la une ». */
     featured: boolean().notNull().default(false),
+    /** Tarifs visibles des visiteurs non connectés ; sinon réservés aux adhérents. */
+    pricesPublic: boolean().notNull().default(true),
     status: publicationStatus().notNull().default('DRAFT'),
     publishedAt: timestamp({ withTimezone: true }),
     ...timestamps,

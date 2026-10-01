@@ -103,6 +103,10 @@ export const offerSchema = z
       .string()
       .optional()
       .transform((value) => value === 'on'),
+    pricesPublic: z
+      .string()
+      .optional()
+      .transform((value) => value === 'on'),
     tariffs: z.array(tariffSchema).min(1, { error: 'Ajoutez au moins un tarif.' }).max(12),
   })
   .transform((data) => ({ ...data, slug: slugify(data.slug || data.title) }))

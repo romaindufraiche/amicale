@@ -13,6 +13,8 @@ type OfferCardProps = {
   offer: OfferWithTariffs
   availability: OfferAvailability
   href: string
+  /** Tarifs masqués (offre dont les tarifs sont réservés aux adhérents, vue par un visiteur). */
+  hidePrices?: boolean
   size?: 'default' | 'large'
   headingLevel?: 'h2' | 'h3'
 }
@@ -25,6 +27,7 @@ export function OfferCard({
   offer,
   availability,
   href,
+  hidePrices = false,
   size = 'default',
   headingLevel: Heading = 'h3',
 }: OfferCardProps) {
@@ -53,7 +56,7 @@ export function OfferCard({
           )}
         />
         <div className="absolute inset-x-3 top-3 flex flex-wrap gap-1.5">
-          {saving ? <Badge tone="highlight">−{saving} %</Badge> : null}
+          {saving && !hidePrices ? <Badge tone="highlight">−{saving} %</Badge> : null}
           {availability.open && lowStock ? <Badge tone="neutral">Dernières places</Badge> : null}
         </div>
       </div>
@@ -94,6 +97,8 @@ export function OfferCard({
           <p className="font-display font-extrabold text-ink-muted">
             {AVAILABILITY_LABELS[availability.reason]}
           </p>
+        ) : hidePrices ? (
+          <p className="text-sm font-semibold">Tarif réservé aux adhérents</p>
         ) : (
           <>
             <div className="flex flex-col">

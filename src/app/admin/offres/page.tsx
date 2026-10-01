@@ -95,6 +95,11 @@ export default async function AdminOffersPage() {
                             À la une
                           </Badge>
                         ) : null}
+                        {!offer.pricesPublic ? (
+                          <Badge tone="neutral" className="ml-2">
+                            Tarifs masqués aux visiteurs
+                          </Badge>
+                        ) : null}
                       </Td>
                       <Td>{OFFER_KIND_LABELS[offer.kind]}</Td>
                       <Td className="tabular">

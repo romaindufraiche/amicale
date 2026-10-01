@@ -42,7 +42,7 @@ export default async function PublicCatalogPage({ searchParams }: Props) {
           )
         }
       />
-      <OfferCatalog offers={offers} params={params} basePath="/offres" />
+      <OfferCatalog offers={offers} params={params} basePath="/offres" audience="public" />
     </div>
   )
 }

@@ -192,6 +192,7 @@ export default async function HomePage() {
                     offer={offer}
                     availability={availability}
                     href={`${isMember ? '/espace/billetterie' : '/offres'}/${offer.slug}`}
+                    hidePrices={!isMember && !offer.pricesPublic}
                   />
                 </li>
               ))}
