@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 
 const PUBLIC_PAGES = [
   '/',
+  '/offres',
   '/adherer',
   '/actualites',
   '/contact',
@@ -40,6 +41,28 @@ test.describe('pages publiques', () => {
   test('les espaces protégés redirigent vers la connexion', async ({ page }) => {
     await page.goto('/espace/billetterie')
     await expect(page).toHaveURL(/\/connexion\?next=%2Fespace/)
+  })
+
+  test('un visiteur consulte les offres sans compte, sans voir les tarifs adhérents', async ({ page }) => {
+    await page.goto('/offres?categorie=PARCS')
+    await expect(page.getByRole('link', { name: 'Parcs & loisirs' })).toHaveAttribute('aria-current', 'page')
+    const firstOffer = page
+      .getByRole('main')
+      .getByRole('article')
+      .first()
+      .getByRole('heading')
+      .getByRole('link')
+    const title = await firstOffer.textContent()
+    await firstOffer.click()
+    await expect(page).toHaveURL(/\/offres\/[a-z0-9-]+$/)
+    await expect(page.getByRole('heading', { level: 1, name: title ?? '' })).toBeVisible()
+    await expect(page.getByText(/€/)).toHaveCount(0)
+
+    const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()
+    expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([])
+
+    await page.getByRole('link', { name: 'Se connecter pour commander' }).click()
+    await expect(page).toHaveURL(/\/connexion\?next=%2Fespace%2Fbilletterie%2F/)
   })
 
   test('le formulaire de contact enregistre le message', async ({ page }) => {

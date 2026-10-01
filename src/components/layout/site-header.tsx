@@ -7,6 +7,7 @@ import { MobileMenu } from './mobile-menu'
 import { NavLink } from './nav-link'
 
 const PUBLIC_NAV = [
+  { href: '/offres', label: 'Offres' },
   { href: '/adherer', label: 'Adhérer' },
   { href: '/actualites', label: 'Actualités' },
   { href: '/contact', label: 'Contact' },

@@ -4,6 +4,7 @@ import { whatsappUrl } from '@/lib/whatsapp'
 import { Logo } from './logo'
 
 const LINKS = [
+  { href: '/offres', label: 'Offres' },
   { href: '/adherer', label: 'Adhérer' },
   { href: '/actualites', label: 'Actualités' },
   { href: '/contact', label: 'Contact' },

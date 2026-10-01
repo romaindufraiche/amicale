@@ -110,11 +110,10 @@ export default async function HomePage() {
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {QUICK_CATEGORIES.map((category) => {
               const Icon = CATEGORY_ICONS[category]
-              const target = `/espace/billetterie?categorie=${category}`
               return (
                 <li key={category}>
                   <Link
-                    href={isMember ? target : `/connexion?next=${encodeURIComponent(target)}`}
+                    href={`${isMember ? '/espace/billetterie' : '/offres'}?categorie=${category}`}
                     className="group flex h-full items-center gap-3 rounded-md border border-line p-3 transition-colors hover:border-blue-600 hover:bg-blue-50"
                   >
                     <span
@@ -185,7 +184,7 @@ export default async function HomePage() {
                 ) : null}
               </div>
               <Link
-                href={isMember ? '/espace/billetterie' : '/connexion?next=/espace/billetterie'}
+                href={isMember ? '/espace/billetterie' : '/offres'}
                 className="inline-flex items-center gap-2 font-semibold link"
               >
                 Toute la billetterie <ArrowRight aria-hidden className="size-4" />
@@ -198,11 +197,7 @@ export default async function HomePage() {
                     offer={offer}
                     availability={availability}
                     audience={isMember ? 'member' : 'public'}
-                    href={
-                      isMember
-                        ? `/espace/billetterie/${offer.slug}`
-                        : `/connexion?next=/espace/billetterie/${offer.slug}`
-                    }
+                    href={`${isMember ? '/espace/billetterie' : '/offres'}/${offer.slug}`}
                   />
                 </li>
               ))}
