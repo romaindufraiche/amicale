@@ -60,7 +60,7 @@ test.describe('pages publiques', () => {
 
     const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()
     expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([])
-    await expect(page.getByRole('button', { name: 'Commander' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Envoyer ma commande' })).toBeVisible()
   })
 
   test('le formulaire de contact enregistre le message', async ({ page }) => {

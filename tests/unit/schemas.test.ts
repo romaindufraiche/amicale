@@ -120,16 +120,14 @@ describe('offerRequestSchema', () => {
     firstName: ' Camille ',
     lastName: 'Exemple',
     email: ' Camille@Example.FR ',
-    phone: '06 12 34 56 78',
   }
 
   it('normalise la saisie', () => {
     expect(offerRequestSchema.parse(valid)).toMatchObject({
       firstName: 'Camille',
+      lastName: 'Exemple',
       email: 'camille@example.fr',
-      phone: '0612345678',
     })
-    expect(offerRequestSchema.parse({ ...valid, phone: '' }).phone).toBeNull()
   })
 
   it('exige nom, prénom et email, et détecte le champ piège', () => {

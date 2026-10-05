@@ -15,7 +15,7 @@ export async function updateSiteSettings(actorId: string, input: SettingsInput):
       action: 'settings.updated',
       entityType: 'site_settings',
       entityId: '1',
-      details: { membershipUrl: input.membershipUrl },
+      details: { membershipUrl: input.membershipUrl, ordersEmail: input.ordersEmail },
     })
   })
 }

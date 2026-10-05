@@ -18,7 +18,7 @@ import {
 import { formatDateTime } from '@/lib/dates'
 import { requirePermission } from '@/server/auth/guards'
 
-export const metadata: Metadata = { title: 'Demandes' }
+export const metadata: Metadata = { title: 'Commandes' }
 
 type Props = { searchParams: Promise<Record<string, string | undefined>> }
 
@@ -31,8 +31,8 @@ export default async function RequestsPage({ searchParams }: Props) {
     <>
       <PageHeader
         eyebrow="Espace bureau"
-        title="Demandes"
-        lead="Personnes ayant laissé leurs coordonnées avant de payer une offre sur HelloAsso. Comparez avec les paiements reçus sur HelloAsso, puis notez ceux que vous avez constatés."
+        title="Commandes"
+        lead="Commandes passées depuis la fiche des offres. Chaque nouvelle commande vous est aussi envoyée par email. Marquez une commande comme réglée une fois le paiement reçu."
         actions={
           <a
             href={`/admin/demandes/export${requestFiltersQuery(filters)}`}
@@ -46,7 +46,7 @@ export default async function RequestsPage({ searchParams }: Props) {
       <form method="get" action="/admin/demandes" className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="filtre-statut" className="text-sm font-semibold">
-            Paiement
+            Règlement
           </label>
           <select
             id="filtre-statut"
@@ -85,17 +85,17 @@ export default async function RequestsPage({ searchParams }: Props) {
       </form>
 
       {requests.length === 0 ? (
-        <EmptyState title="Aucune demande">
-          Les demandes apparaissent ici dès qu’une personne remplit le formulaire « Commander » d’une offre.
+        <EmptyState title="Aucune commande">
+          Les commandes apparaissent ici dès qu’une personne remplit le formulaire « Commander » d’une offre.
         </EmptyState>
       ) : (
-        <Table caption="Demandes de commande">
+        <Table caption="Commandes">
           <thead>
             <tr>
               <Th>Date</Th>
               <Th>Personne</Th>
               <Th>Offre</Th>
-              <Th>Paiement</Th>
+              <Th>Règlement</Th>
               <Th>
                 <span className="sr-only">Actions</span>
               </Th>
@@ -114,13 +114,6 @@ export default async function RequestsPage({ searchParams }: Props) {
                       {request.email}
                     </a>
                   </p>
-                  {request.phone ? (
-                    <p>
-                      <a href={`tel:${request.phone}`} className="link tabular">
-                        {request.phone}
-                      </a>
-                    </p>
-                  ) : null}
                 </Td>
                 <Td>
                   <Link href={`/admin/offres/${request.offerId}`} className="link">
@@ -138,15 +131,13 @@ export default async function RequestsPage({ searchParams }: Props) {
                         <span className="sr-only">(nouvel onglet)</span>
                       </a>
                     </p>
-                  ) : (
-                    <p className="text-caption text-ink-muted">Pas de lien HelloAsso</p>
-                  )}
+                  ) : null}
                 </Td>
                 <Td>
                   {request.paidAt ? (
                     <Badge tone="success">Réglée le {formatDateTime(request.paidAt)}</Badge>
                   ) : (
-                    <Badge tone="warning">Non constaté</Badge>
+                    <Badge tone="warning">Non réglée</Badge>
                   )}
                 </Td>
                 <Td>
@@ -155,7 +146,7 @@ export default async function RequestsPage({ searchParams }: Props) {
                       <ActionForm
                         action={setRequestPaidAction}
                         fields={{ requestId: request.id, paid: '0' }}
-                        label="Annuler le paiement"
+                        label="Repasser en non réglée"
                         variant="ghost"
                       />
                     ) : (
@@ -170,7 +161,7 @@ export default async function RequestsPage({ searchParams }: Props) {
                       fields={{ requestId: request.id }}
                       label="Supprimer"
                       variant="danger"
-                      confirm={`Supprimer la demande de ${request.firstName} ${request.lastName} ?`}
+                      confirm={`Supprimer la commande de ${request.firstName} ${request.lastName} ?`}
                     />
                   </div>
                 </Td>

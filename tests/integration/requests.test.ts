@@ -1,3 +1,5 @@
+import { readdirSync, readFileSync, statSync } from 'node:fs'
+import path from 'node:path'
 import { eq } from 'drizzle-orm'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { listRequestsForAdmin } from '@/features/requests/queries'
@@ -8,7 +10,7 @@ import { db } from '@/server/db/client'
 import { auditLogs, offerRequests } from '@/server/db/schema'
 import { createMember, createOffer, resetDatabase } from '../support/db'
 
-const PERSON = { firstName: 'Camille', lastName: 'Exemple', email: 'camille@example.fr', phone: null }
+const PERSON = { firstName: 'Camille', lastName: 'Exemple', email: 'camille@example.fr' }
 const HELLOASSO = 'https://www.helloasso.com/associations/exemple/evenements/offre'
 
 describe('submitOfferRequest', () => {
@@ -21,6 +23,29 @@ describe('submitOfferRequest', () => {
     const rows = await db.select().from(offerRequests)
     expect(rows).toHaveLength(1)
     expect(rows[0]).toMatchObject({ offerId: offer.id, email: 'camille@example.fr', paidAt: null })
+  })
+
+  it('envoie un email à l’adresse de réception des commandes', async () => {
+    const admin = await createMember({ role: 'ADMIN' })
+    await updateSiteSettings(admin.id, { membershipUrl: null, ordersEmail: 'commandes@example.org' })
+    const { offer } = await createOffer({ title: 'Sortie au zoo' })
+    const before = Date.now()
+    await submitOfferRequest({ ...PERSON, offerId: offer.id }, '203.0.113.9')
+
+    const dir = path.join(process.cwd(), '.outbox')
+    const emails = readdirSync(dir)
+      .filter((file) => statSync(path.join(dir, file)).mtimeMs >= before - 1000)
+      .map(
+        (file) =>
+          JSON.parse(readFileSync(path.join(dir, file), 'utf8')) as {
+            to: string
+            subject: string
+            text?: string
+          },
+      )
+    const sent = emails.find((email) => email.to === 'commandes@example.org')
+    expect(sent?.subject).toBe('Nouvelle commande : Sortie au zoo')
+    expect(JSON.stringify(sent)).toContain('camille@example.fr')
   })
 
   it('refuse une offre non publiée, complète ou close', async () => {
@@ -77,9 +102,15 @@ describe('réglages du site', () => {
 
   it('crée puis met à jour la ligne unique de réglages', async () => {
     const admin = await createMember({ role: 'ADMIN' })
-    expect(await getSiteSettings()).toEqual({ membershipUrl: null })
-    await updateSiteSettings(admin.id, { membershipUrl: HELLOASSO })
-    await updateSiteSettings(admin.id, { membershipUrl: `${HELLOASSO}/adhesion` })
-    expect(await getSiteSettings()).toEqual({ membershipUrl: `${HELLOASSO}/adhesion` })
+    expect(await getSiteSettings()).toEqual({ membershipUrl: null, ordersEmail: null })
+    await updateSiteSettings(admin.id, { membershipUrl: HELLOASSO, ordersEmail: null })
+    await updateSiteSettings(admin.id, {
+      membershipUrl: `${HELLOASSO}/adhesion`,
+      ordersEmail: 'tresorier@example.org',
+    })
+    expect(await getSiteSettings()).toEqual({
+      membershipUrl: `${HELLOASSO}/adhesion`,
+      ordersEmail: 'tresorier@example.org',
+    })
   })
 })

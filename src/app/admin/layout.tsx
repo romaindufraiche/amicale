@@ -14,7 +14,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   const user = await requirePermission('admin:access', '/admin')
   const nav: AppNavItem[] = [
     { href: '/admin', label: 'Vue d’ensemble', exact: true },
-    { href: '/admin/demandes', label: 'Demandes' },
+    { href: '/admin/demandes', label: 'Commandes' },
     { href: '/admin/offres', label: 'Offres' },
     { href: '/admin/a-la-une', label: 'À la une' },
     { href: '/admin/actualites', label: 'Actualités' },

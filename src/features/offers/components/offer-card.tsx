@@ -1,6 +1,7 @@
 import { CalendarDays, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
+import { buttonClasses } from '@/components/ui/button'
 import { cn } from '@/lib/cn'
 import { formatDate, formatDateTime } from '@/lib/dates'
 import { formatEuros, formatPrice } from '@/lib/money'
@@ -116,6 +117,14 @@ export function OfferCard({
           </>
         )}
       </div>
+      {availability.open ? (
+        <div className="bg-sunken px-5 pb-5">
+          {/* Au-dessus du lien de la carte, qui couvre toute sa surface. */}
+          <Link href={`${href}#commander`} className={buttonClasses('primary', 'sm', 'relative z-10 w-full')}>
+            Commander<span className="sr-only"> : {offer.title}</span>
+          </Link>
+        </div>
+      ) : null}
     </article>
   )
 }

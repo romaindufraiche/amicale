@@ -7,7 +7,16 @@ import { SubmitButton } from '@/components/ui/submit-button'
 import { idleState } from '@/lib/form-state'
 import { saveSettingsAction } from '../actions'
 
-export function SettingsForm({ membershipUrl }: { membershipUrl: string | null }) {
+export function SettingsForm({
+  membershipUrl,
+  ordersEmail,
+  defaultOrdersEmail,
+}: {
+  membershipUrl: string | null
+  ordersEmail: string | null
+  /** Adresse utilisée tant que le champ est vide (variable `BUREAU_EMAIL`). */
+  defaultOrdersEmail: string
+}) {
   const [state, formAction] = useActionState(saveSettingsAction, idleState)
   const v = state.values
   const e = state.fieldErrors
@@ -23,6 +32,15 @@ export function SettingsForm({ membershipUrl }: { membershipUrl: string | null }
         placeholder="https://www.helloasso.com/associations/…"
         defaultValue={v?.membershipUrl ?? membershipUrl ?? ''}
         error={e?.membershipUrl}
+      />
+      <TextField
+        name="ordersEmail"
+        type="email"
+        label="Adresse qui reçoit les commandes"
+        hint={`Un email y est envoyé à chaque commande passée sur le site. Vide : ${defaultOrdersEmail}.`}
+        autoComplete="email"
+        defaultValue={v?.ordersEmail ?? ordersEmail ?? ''}
+        error={e?.ordersEmail}
       />
       <SubmitButton pendingLabel="Enregistrement…" className="self-start">
         Enregistrer

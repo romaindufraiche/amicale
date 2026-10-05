@@ -1,11 +1,11 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
-import { login, logout } from './helpers'
+import { lastEmailTo, login, logout } from './helpers'
 
 const MEMBERSHIP_URL = 'https://www.helloasso.com/associations/exemple/adhesions/adhesion-2026'
 const OFFER_URL = 'https://www.helloasso.com/associations/exemple/evenements/aquarium'
 
-test('adhésion et commande via HelloAsso, suivi des demandes par le bureau', async ({ page }) => {
+test('adhésion via HelloAsso, commande d’une offre et suivi par le bureau', async ({ page }) => {
   await login(page, 'bureau@demo.local')
   await expect(page).toHaveURL('/admin')
 
@@ -36,16 +36,18 @@ test('adhésion et commande via HelloAsso, suivi des demandes par le bureau', as
     MEMBERSHIP_URL,
   )
 
-  // Visiteur : commande en deux temps.
+  // Visiteur : bouton « Commander » de la carte, puis formulaire nom, prénom, email.
   const lastName = `Testeur${Date.now()}`
-  await page.goto('/offres/aquarium')
-  await page.getByRole('button', { name: 'Commander' }).click()
+  await page.goto('/offres?q=Aquarium')
+  await page.getByRole('link', { name: 'Commander : Aquarium et tunnel des requins' }).click()
+  await expect(page).toHaveURL(/\/offres\/aquarium#commander$/)
+  await page.getByRole('button', { name: 'Envoyer ma commande' }).click()
   await expect(page.getByText('Certains champs sont à corriger.')).toBeVisible()
   await page.getByLabel('Prénom').fill('Camille')
   await page.getByLabel('Nom', { exact: true }).fill(lastName)
   await page.getByLabel('Adresse email').fill('camille@example.fr')
-  await page.getByRole('button', { name: 'Commander' }).click()
-  await expect(page.getByText('Vos coordonnées sont enregistrées.')).toBeVisible()
+  await page.getByRole('button', { name: 'Envoyer ma commande' }).click()
+  await expect(page.getByText('Commande envoyée.')).toBeVisible()
   await expect(page.getByRole('link', { name: 'Continuer vers le paiement' })).toHaveAttribute(
     'href',
     OFFER_URL,
@@ -53,13 +55,19 @@ test('adhésion et commande via HelloAsso, suivi des demandes par le bureau', as
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()
   expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([])
 
-  // Bureau : la demande apparaît, le paiement est noté, l'export la contient.
+  // Le bureau est prévenu par email.
+  const email = await lastEmailTo('bureau@example.org', (candidate) =>
+    JSON.stringify(candidate).includes(lastName),
+  )
+  expect(email.subject).toBe('Nouvelle commande : Aquarium et tunnel des requins')
+
+  // Bureau : la commande apparaît, elle est marquée réglée, l'export la contient.
   await login(page, 'bureau@demo.local')
   await page.goto('/admin/demandes')
   const row = page.getByRole('row').filter({ hasText: lastName })
-  await expect(row.getByText('Non constaté')).toBeVisible()
+  await expect(row.getByText('Non réglée')).toBeVisible()
   await row.getByRole('button', { name: 'Marquer comme réglée' }).click()
-  await expect(page.getByText('Paiement noté.')).toBeVisible()
+  await expect(page.getByText('Commande marquée comme réglée.')).toBeVisible()
   await expect(row.getByText(/^Réglée le/)).toBeVisible()
   await page.goto('/admin/demandes?statut=reglees')
   await expect(page.getByRole('row').filter({ hasText: lastName })).toBeVisible()

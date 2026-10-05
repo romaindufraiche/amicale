@@ -12,8 +12,8 @@ import { idleState } from '@/lib/form-state'
 import { type OfferRequestState, submitOfferRequestAction } from '../actions'
 
 /**
- * Commande en deux temps : la personne laisse ses coordonnées (enregistrées pour le bureau),
- * puis rejoint la page HelloAsso de l'offre pour payer.
+ * Commande d'une offre : nom, prénom et email, enregistrés pour le bureau (prévenu par email).
+ * Si l'offre a une page HelloAsso, la personne y est ensuite dirigée pour payer.
  */
 export function OfferRequestForm({ offerId }: { offerId: string }) {
   const [state, formAction] = useActionState<OfferRequestState, FormData>(submitOfferRequestAction, idleState)
@@ -21,7 +21,7 @@ export function OfferRequestForm({ offerId }: { offerId: string }) {
   if (state.status === 'success') {
     return state.paymentUrl ? (
       <div className="flex flex-col gap-4">
-        <Alert tone="success" title="Vos coordonnées sont enregistrées.">
+        <Alert tone="success" title="Commande envoyée.">
           Dernière étape : réglez votre commande sur HelloAsso, la plateforme de paiement de l’Amicale.
         </Alert>
         <a href={state.paymentUrl} rel="noopener noreferrer" className={buttonClasses('primary', 'md')}>
@@ -30,8 +30,8 @@ export function OfferRequestForm({ offerId }: { offerId: string }) {
         <p className="text-sm text-ink-muted">Paiement sécurisé sur le site helloasso.com.</p>
       </div>
     ) : (
-      <Alert tone="success" title="Demande enregistrée.">
-        Le bureau vous recontactera par email pour le règlement.
+      <Alert tone="success" title="Commande envoyée.">
+        Merci ! Le bureau de l’Amicale a bien reçu votre commande et vous recontactera par email.
       </Alert>
     )
   }
@@ -67,20 +67,12 @@ export function OfferRequestForm({ offerId }: { offerId: string }) {
         defaultValue={v?.email}
         error={e?.email}
       />
-      <TextField
-        name="phone"
-        type="tel"
-        label="Téléphone"
-        autoComplete="tel"
-        defaultValue={v?.phone}
-        error={e?.phone}
-      />
       {/* Champ piège pour les robots : masqué visuellement et ignoré au clavier. */}
       <div aria-hidden className="sr-only">
         <label htmlFor="request-website">Ne pas remplir</label>
         <input id="request-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
-      <SubmitButton pendingLabel="Envoi…">Commander</SubmitButton>
+      <SubmitButton pendingLabel="Envoi…">Envoyer ma commande</SubmitButton>
       <p className="text-caption text-ink-muted">
         Vos coordonnées sont transmises au bureau de l’Amicale pour le suivi de votre commande.{' '}
         <Link href="/confidentialite" className="link">

@@ -3,6 +3,7 @@ import { PageHeader } from '@/components/ui/page-header'
 import { SettingsForm } from '@/features/settings/components/settings-form'
 import { getSiteSettings } from '@/features/settings/queries'
 import { requirePermission } from '@/server/auth/guards'
+import { env } from '@/server/env'
 
 export const metadata: Metadata = { title: 'Réglages' }
 
@@ -14,9 +15,13 @@ export default async function SettingsPage() {
       <PageHeader
         eyebrow="Espace bureau"
         title="Réglages"
-        lead="Liens utilisés sur l’ensemble du site. Le lien de paiement de chaque offre se règle dans la fiche de l’offre."
+        lead="Lien d’adhésion et réception des commandes. Le lien de paiement facultatif de chaque offre se règle dans la fiche de l’offre."
       />
-      <SettingsForm membershipUrl={settings.membershipUrl} />
+      <SettingsForm
+        membershipUrl={settings.membershipUrl}
+        ordersEmail={settings.ordersEmail}
+        defaultOrdersEmail={env.BUREAU_EMAIL}
+      />
     </>
   )
 }

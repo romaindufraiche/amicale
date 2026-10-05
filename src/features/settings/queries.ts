@@ -4,14 +4,14 @@ import { cache } from 'react'
 import { db } from '@/server/db/client'
 import { siteSettings } from '@/server/db/schema'
 
-export type PublicSettings = { membershipUrl: string | null }
+export type SiteSettingsValues = { membershipUrl: string | null; ordersEmail: string | null }
 
 /** Réglages du site ; valeurs vides tant que le bureau ne les a pas renseignés. Lus une fois par requête. */
-export const getSiteSettings = cache(async (): Promise<PublicSettings> => {
+export const getSiteSettings = cache(async (): Promise<SiteSettingsValues> => {
   const [row] = await db
-    .select({ membershipUrl: siteSettings.membershipUrl })
+    .select({ membershipUrl: siteSettings.membershipUrl, ordersEmail: siteSettings.ordersEmail })
     .from(siteSettings)
     .where(eq(siteSettings.id, 1))
     .limit(1)
-  return { membershipUrl: row?.membershipUrl ?? null }
+  return { membershipUrl: row?.membershipUrl ?? null, ordersEmail: row?.ordersEmail ?? null }
 })

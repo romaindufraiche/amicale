@@ -18,7 +18,10 @@ export async function saveSettingsAction(_previous: FormState, formData: FormDat
     return {
       status: 'success',
       message: 'Réglages enregistrés.',
-      values: { membershipUrl: parsed.data.membershipUrl ?? '' },
+      values: {
+        membershipUrl: parsed.data.membershipUrl ?? '',
+        ordersEmail: parsed.data.ordersEmail ?? '',
+      },
     }
   })
 }

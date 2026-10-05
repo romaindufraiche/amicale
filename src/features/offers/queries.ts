@@ -1,5 +1,5 @@
 import 'server-only'
-import { and, asc, count, desc, eq, ilike, inArray, isNull, or, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm'
 import { db } from '@/server/db/client'
 import {
   offers,
@@ -146,13 +146,4 @@ export async function tariffIdsWithOrders(offerId: string): Promise<Set<string>>
     .innerJoin(offerTariffs, eq(offerTariffs.id, orderLines.tariffId))
     .where(eq(offerTariffs.offerId, offerId))
   return new Set(rows.map((row) => row.tariffId))
-}
-
-/** Offres en ligne sans lien HelloAsso : leurs demandes ne mènent à aucun paiement. */
-export async function countPublishedOffersWithoutPaymentLink(): Promise<number> {
-  const [row] = await db
-    .select({ value: count() })
-    .from(offers)
-    .where(and(eq(offers.status, 'PUBLISHED'), isNull(offers.helloassoUrl)))
-  return row?.value ?? 0
 }

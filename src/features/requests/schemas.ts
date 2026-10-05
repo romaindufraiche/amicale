@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { emailField, phoneField } from '@/features/auth/schemas'
+import { emailField } from '@/features/auth/schemas'
 
 const nameField = (label: string) =>
   z
@@ -13,7 +13,6 @@ export const offerRequestSchema = z.object({
   firstName: nameField('Le prénom'),
   lastName: nameField('Le nom'),
   email: emailField,
-  phone: phoneField,
   /** Champ piège invisible : un humain le laisse vide, un robot le remplit. */
   website: z.string().max(0).optional(),
 })
@@ -25,13 +24,13 @@ export type RequestFilter = (typeof REQUEST_FILTERS)[number]
 
 export const REQUEST_FILTER_LABELS: Record<RequestFilter, string> = {
   toutes: 'Toutes',
-  'a-regler': 'Paiement non constaté',
+  'a-regler': 'Non réglées',
   reglees: 'Réglées',
 }
 
 export type AdminRequestFilters = { status: RequestFilter; offerId?: string }
 
-/** Filtres de la liste des demandes, lus depuis l'URL : valeurs inconnues ignorées. */
+/** Filtres de la liste des commandes, lus depuis l'URL : valeurs inconnues ignorées. */
 export function parseRequestFilters(params: Record<string, string | undefined>): AdminRequestFilters {
   const status = REQUEST_FILTERS.find((value) => value === params.statut) ?? 'toutes'
   const offerId = z.uuid().safeParse(params.offre)

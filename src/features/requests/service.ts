@@ -3,6 +3,7 @@ import { and, eq, isNotNull, isNull } from 'drizzle-orm'
 import { recordAudit } from '@/features/audit/service'
 import { getPublishedOfferById } from '@/features/offers/queries'
 import { offerAvailability } from '@/features/offers/rules'
+import { getSiteSettings } from '@/features/settings/queries'
 import { parisDay } from '@/lib/dates'
 import { db } from '@/server/db/client'
 import { offerRequests } from '@/server/db/schema'
@@ -18,7 +19,8 @@ export type SubmitRequestResult =
   | { ok: false; reason: 'UNAVAILABLE' }
 
 /**
- * Enregistre une demande de commande, puis renvoie le lien de paiement HelloAsso de l'offre.
+ * Enregistre une commande, prévient le bureau par email, puis renvoie le lien de paiement
+ * HelloAsso de l'offre s'il existe.
  * L'offre est relue en base : un formulaire falsifié ne peut viser ni une offre fermée, ni un
  * autre lien de paiement.
  */
@@ -37,17 +39,21 @@ export async function submitOfferRequest(
 
   const [saved] = await db.insert(offerRequests).values(input).returning({ id: offerRequests.id })
   logger.info('offer_request.received', { requestId: saved?.id, offerId: offer.id })
+  const { ordersEmail } = await getSiteSettings()
   await sendEmail(
-    env.BUREAU_EMAIL,
+    ordersEmail ?? env.BUREAU_EMAIL,
     {
-      subject: `[Demande] ${offer.title}`,
+      subject: `Nouvelle commande : ${offer.title}`,
       paragraphs: [
-        `Nouvelle demande pour « ${offer.title} » : ${input.firstName} ${input.lastName} (${input.email}).`,
+        `Offre : ${offer.title}`,
+        `Nom : ${input.lastName}`,
+        `Prénom : ${input.firstName}`,
+        `Email : ${input.email}`,
         offer.helloassoUrl
           ? 'La personne a été dirigée vers la page de paiement HelloAsso de l’offre.'
-          : 'Aucun lien HelloAsso n’est renseigné pour cette offre : recontactez la personne pour le règlement.',
+          : 'Aucun lien de paiement n’est renseigné pour cette offre : recontactez la personne pour le règlement.',
       ],
-      action: { label: 'Voir les demandes', url: `${env.APP_URL}/admin/demandes?offre=${offer.id}` },
+      action: { label: 'Voir les commandes', url: `${env.APP_URL}/admin/demandes?offre=${offer.id}` },
     },
     { replyTo: input.email },
   )

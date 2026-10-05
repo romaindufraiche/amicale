@@ -428,6 +428,8 @@ export const siteSettings = pgTable(
     id: integer().primaryKey().default(1),
     /** Page HelloAsso d'adhésion à l'Amicale (bouton « Adhérer »). */
     membershipUrl: text(),
+    /** Adresse qui reçoit un email à chaque commande ; à défaut, `BUREAU_EMAIL`. */
+    ordersEmail: text(),
     updatedById: uuid().references(() => users.id, { onDelete: 'set null' }),
     updatedAt: timestamp({ withTimezone: true })
       .notNull()

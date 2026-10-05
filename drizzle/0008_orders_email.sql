@@ -1,0 +1,1 @@
+ALTER TABLE "site_settings" ADD COLUMN "orders_email" text;

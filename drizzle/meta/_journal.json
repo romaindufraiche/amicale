@@ -57,6 +57,13 @@
       "when": 1791190492080,
       "tag": "0007_helloasso",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791191761937,
+      "tag": "0008_orders_email",
+      "breakpoints": true
     }
   ]
 }

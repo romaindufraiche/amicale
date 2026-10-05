@@ -20,7 +20,7 @@ test('le bureau masque les tarifs d’une offre sur le site', async ({ page }) =
   await page.goto('/offres/thermes-et-spa')
   await expect(page.getByText('Les tarifs sont indiqués sur la page de paiement.')).toBeVisible()
   await expect(page.getByRole('main').getByText(/€/)).toHaveCount(0)
-  await expect(page.getByRole('button', { name: 'Commander' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Envoyer ma commande' })).toBeVisible()
   await page.goto('/offres?q=Thermes')
   const card = page.getByRole('article').filter({ hasText: 'Thermes et spa' })
   await expect(card.getByText('Tarif indiqué à la commande')).toBeVisible()

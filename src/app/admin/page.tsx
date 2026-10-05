@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { Alert } from '@/components/ui/alert'
 import { PageHeader } from '@/components/ui/page-header'
 import { countPendingMessages } from '@/features/contact/service'
-import { countPublishedOffersWithoutPaymentLink } from '@/features/offers/queries'
 import { countUnpaidRequests } from '@/features/requests/queries'
 import { getSiteSettings } from '@/features/settings/queries'
 import { requirePermission } from '@/server/auth/guards'
@@ -20,9 +19,8 @@ function plural(count: number, singular: string, pluralForm: string) {
 
 export default async function AdminHomePage() {
   const user = await requirePermission('admin:access', '/admin')
-  const [unpaidRequests, offersWithoutLink, messages, settings] = await Promise.all([
+  const [unpaidRequests, messages, settings] = await Promise.all([
     countUnpaidRequests(),
-    countPublishedOffersWithoutPaymentLink(),
     countPendingMessages(),
     getSiteSettings(),
   ])
@@ -30,25 +28,10 @@ export default async function AdminHomePage() {
   const todo: Tile[] = [
     {
       value: unpaidRequests,
-      label: plural(
-        unpaidRequests,
-        'demande dont le paiement n’est pas constaté',
-        'demandes dont le paiement n’est pas constaté',
-      ),
+      label: plural(unpaidRequests, 'commande non réglée', 'commandes non réglées'),
       href: '/admin/demandes?statut=a-regler',
       action: 'Voir',
       urgent: false,
-    },
-    {
-      value: offersWithoutLink,
-      label: plural(
-        offersWithoutLink,
-        'offre en ligne sans lien HelloAsso',
-        'offres en ligne sans lien HelloAsso',
-      ),
-      href: '/admin/offres',
-      action: 'Compléter',
-      urgent: offersWithoutLink > 0,
     },
     {
       value: messages,
@@ -72,7 +55,7 @@ export default async function AdminHomePage() {
         <h2 id="a-traiter" className="text-h3">
           À traiter
         </h2>
-        <ul className="grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-3">
+        <ul className="grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-2">
           {todo.map((tile) => (
             <li key={tile.href} className="bg-surface">
               <Link href={tile.href} className="group flex h-full flex-col gap-3 p-6 hover:bg-sunken">
