@@ -14,13 +14,13 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   const user = await requirePermission('admin:access', '/admin')
   const nav: AppNavItem[] = [
     { href: '/admin', label: 'Vue d’ensemble', exact: true },
-    { href: '/admin/adherents', label: 'Adhérents' },
-    { href: '/admin/commandes', label: 'Commandes' },
-    { href: '/admin/a-la-une', label: 'À la une' },
+    { href: '/admin/demandes', label: 'Demandes' },
     { href: '/admin/offres', label: 'Offres' },
+    { href: '/admin/a-la-une', label: 'À la une' },
     { href: '/admin/actualites', label: 'Actualités' },
     { href: '/admin/partenaires', label: 'Partenaires' },
     { href: '/admin/messages', label: 'Messages' },
+    { href: '/admin/reglages', label: 'Réglages' },
     ...(can(user.role, 'audit:read') ? [{ href: '/admin/journal', label: 'Journal' }] : []),
   ]
   return (
@@ -29,8 +29,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       label="Espace bureau"
       nav={nav}
       aside={
-        <ButtonLink href="/espace" variant="ghost" size="sm" className="hidden sm:inline-flex">
-          Espace adhérent
+        <ButtonLink href="/" variant="ghost" size="sm" className="hidden sm:inline-flex">
+          Voir le site
         </ButtonLink>
       }
     >

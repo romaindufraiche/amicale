@@ -16,13 +16,13 @@ export default function NotFound() {
           </p>
           <h1 className="text-h1">Cette page n’existe pas.</h1>
           <p className="max-w-prose text-lead text-ink-muted">
-            Le lien est peut-être incorrect, ou le contenu a été retiré. Si vous cherchiez une offre ou une
-            commande, retrouvez-la depuis votre espace.
+            Le lien est peut-être incorrect, ou le contenu a été retiré. Si vous cherchiez une offre,
+            retrouvez-la dans le catalogue.
           </p>
           <div className="flex flex-wrap gap-3">
             <ButtonLink href="/">Retour à l’accueil</ButtonLink>
-            <ButtonLink href="/espace" variant="secondary">
-              Mon espace
+            <ButtonLink href="/offres" variant="secondary">
+              Voir les offres
             </ButtonLink>
           </div>
         </div>

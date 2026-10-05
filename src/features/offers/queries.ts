@@ -1,5 +1,5 @@
 import 'server-only'
-import { and, asc, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm'
+import { and, asc, count, desc, eq, ilike, inArray, isNull, or, sql } from 'drizzle-orm'
 import { db } from '@/server/db/client'
 import {
   offers,
@@ -88,6 +88,16 @@ export async function getPublishedOfferBySlug(slug: string): Promise<OfferWithTa
   return { ...offer, tariffs: await tariffsFor([offer.id]) }
 }
 
+export async function getPublishedOfferById(id: string): Promise<OfferWithTariffs | null> {
+  const [offer] = await db
+    .select()
+    .from(offers)
+    .where(and(eq(offers.id, id), eq(offers.status, 'PUBLISHED')))
+    .limit(1)
+  if (!offer) return null
+  return { ...offer, tariffs: await tariffsFor([offer.id]) }
+}
+
 /** Nombre de billets déjà commandés (hors annulations) par un adhérent pour une offre. */
 export async function quantityOrderedBy(userId: string, offerId: string): Promise<number> {
   const [row] = await db
@@ -136,4 +146,13 @@ export async function tariffIdsWithOrders(offerId: string): Promise<Set<string>>
     .innerJoin(offerTariffs, eq(offerTariffs.id, orderLines.tariffId))
     .where(eq(offerTariffs.offerId, offerId))
   return new Set(rows.map((row) => row.tariffId))
+}
+
+/** Offres en ligne sans lien HelloAsso : leurs demandes ne mènent à aucun paiement. */
+export async function countPublishedOffersWithoutPaymentLink(): Promise<number> {
+  const [row] = await db
+    .select({ value: count() })
+    .from(offers)
+    .where(and(eq(offers.status, 'PUBLISHED'), isNull(offers.helloassoUrl)))
+  return row?.value ?? 0
 }

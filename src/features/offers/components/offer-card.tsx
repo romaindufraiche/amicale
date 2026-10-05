@@ -13,7 +13,7 @@ type OfferCardProps = {
   offer: OfferWithTariffs
   availability: OfferAvailability
   href: string
-  /** Tarifs masqués (offre dont les tarifs sont réservés aux adhérents, vue par un visiteur). */
+  /** Tarifs masqués par le bureau : affichés seulement sur la page de paiement. */
   hidePrices?: boolean
   size?: 'default' | 'large'
   headingLevel?: 'h2' | 'h3'
@@ -98,7 +98,7 @@ export function OfferCard({
             {AVAILABILITY_LABELS[availability.reason]}
           </p>
         ) : hidePrices ? (
-          <p className="text-sm font-semibold">Tarif réservé aux adhérents</p>
+          <p className="text-sm font-semibold">Tarif indiqué à la commande</p>
         ) : (
           <>
             <div className="flex flex-col">

@@ -15,7 +15,7 @@ const optionalDateTime = z
     return date
   })
 
-/** Lien interne (/espace/…) ou externe en https uniquement. */
+/** Lien interne (/offres/…) ou externe en https uniquement. */
 export function isAllowedLink(value: string): boolean {
   if (value.startsWith('/')) return !value.startsWith('//') && !value.startsWith('/\\')
   return /^https:\/\//i.test(value) && URL.canParse(value)
@@ -34,7 +34,7 @@ export const highlightSchema = z
       .trim()
       .max(300)
       .refine((value) => value === '' || isAllowedLink(value), {
-        error: 'Lien invalide : chemin du site (/espace/billetterie) ou adresse https://…',
+        error: 'Lien invalide : chemin du site (/offres) ou adresse https://…',
       })
       .transform((value) => (value === '' ? null : value)),
     linkLabel: z

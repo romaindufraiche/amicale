@@ -1,49 +1,65 @@
 import type { Metadata } from 'next'
 import { site } from '@/config/site'
-import { ButtonLink } from '@/components/ui/button'
+import Link from 'next/link'
+import { Alert } from '@/components/ui/alert'
 import { Eyebrow, PageHeader } from '@/components/ui/page-header'
-import { MEMBER_CATEGORIES, MEMBER_CATEGORY_LABELS } from '@/features/members/categories'
+import { JoinLink } from '@/features/settings/components/join-link'
+import { getSiteSettings } from '@/features/settings/queries'
 
 export const metadata: Metadata = {
   title: 'Adhérer',
-  description: `Comment adhérer à l'${site.legalName} : demande en ligne, confirmation de l’email et validation par le bureau.`,
+  description: `Comment adhérer à l'${site.legalName} : adhésion et cotisation en ligne sur HelloAsso.`,
   alternates: { canonical: '/adherer' },
 }
 
 const STEPS = [
   {
-    title: 'Vous remplissez la demande en ligne',
-    text: 'Identité, situation, service d’affectation et mot de passe. Aucune pièce justificative n’est demandée en ligne.',
+    title: 'Vous cliquez sur « Adhérer en ligne »',
+    text: 'Le bouton vous mène à la page d’adhésion de l’Amicale sur HelloAsso, la plateforme de paiement utilisée par l’association.',
   },
   {
-    title: 'Vous confirmez votre adresse email',
-    text: 'Un lien vous est envoyé immédiatement. Tant qu’il n’est pas utilisé, votre demande n’est pas transmise.',
+    title: 'Vous remplissez le formulaire',
+    text: 'Vos coordonnées et votre situation, telles que demandées par le bureau sur HelloAsso.',
   },
   {
-    title: 'Le bureau examine votre demande',
-    text: 'Il peut vous contacter pour la compléter. Une fois votre adhésion validée, vous recevez votre numéro d’adhérent par email.',
+    title: 'Vous réglez votre cotisation',
+    text: 'Le paiement se fait en ligne, de façon sécurisée. HelloAsso vous envoie une confirmation par email.',
   },
   {
-    title: 'Vous accédez à votre espace',
-    text: 'Billetterie, sorties, avantages partenaires et suivi de vos commandes, tant que votre cotisation est à jour.',
+    title: 'Vous profitez des offres',
+    text: 'Billetterie et sorties à tarifs négociés : commandez depuis la fiche de chaque offre.',
   },
 ] as const
 
-export default function JoinPage() {
+/** Situations ouvrant droit à l'adhésion, telles que présentées jusqu'ici sur le site. */
+const SITUATIONS = [
+  'Personnel actif',
+  'Retraité·e',
+  'Personnel administratif, technique ou scientifique',
+  'Autre situation',
+] as const
+
+export default async function JoinPage() {
+  const { membershipUrl } = await getSiteSettings()
   return (
     <div className="mx-auto flex max-w-page flex-col gap-16 px-4 py-14 sm:px-6 md:py-20 lg:px-8">
       <PageHeader
         eyebrow="Adhérer"
         title="Rejoindre l’Amicale"
-        lead={`L’${site.shortName} rassemble les personnels de police du ${site.department.name}. Chaque demande est examinée par le bureau de l’association.`}
-        actions={<ButtonLink href="/inscription">Faire ma demande</ButtonLink>}
+        lead={`L’${site.shortName} rassemble les personnels de police du ${site.department.name}. L’adhésion et la cotisation se font en ligne, sur HelloAsso.`}
+        actions={membershipUrl ? <JoinLink>Adhérer en ligne</JoinLink> : null}
       />
+      {!membershipUrl ? (
+        <Alert tone="info" title="L’adhésion en ligne ouvre bientôt.">
+          En attendant, <Link href="/contact">écrivez au bureau</Link> pour adhérer.
+        </Alert>
+      ) : null}
 
       <section aria-labelledby="parcours" className="grid gap-10 lg:grid-cols-[1fr_2fr]">
         <div className="flex flex-col gap-4">
           <Eyebrow>Le parcours</Eyebrow>
           <h2 id="parcours" className="text-h2">
-            De la demande à l’accès
+            L’adhésion en ligne
           </h2>
         </div>
         <ol className="relative flex flex-col gap-10 border-l-4 border-blue-500 pl-8">
@@ -74,15 +90,15 @@ export default function JoinPage() {
         </div>
         <div className="flex flex-col gap-6">
           <ul className="flex flex-col divide-y divide-line border-y border-line">
-            {MEMBER_CATEGORIES.map((category) => (
-              <li key={category} className="py-3.5 font-semibold">
-                {MEMBER_CATEGORY_LABELS[category]}
+            {SITUATIONS.map((situation) => (
+              <li key={situation} className="py-3.5 font-semibold">
+                {situation}
               </li>
             ))}
           </ul>
           <p className="max-w-prose text-ink-muted">
             Les conditions d’adhésion sont fixées par les statuts de l’association. En cas de doute sur votre
-            situation, déposez votre demande ou écrivez au bureau.
+            situation, écrivez au bureau.
           </p>
           {site.membership.feeLabel ? (
             <p className="text-lead">

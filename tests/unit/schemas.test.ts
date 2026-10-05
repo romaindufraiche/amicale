@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { registerSchema } from '@/features/auth/schemas'
 import { offerFormToObject, offerSchema } from '@/features/offers/schemas'
+import { offerRequestSchema, parseRequestFilters, requestFiltersQuery } from '@/features/requests/schemas'
+import { isHttpsUrl } from '@/lib/https-url'
 import { can } from '@/server/auth/permissions'
 import { defaultMembershipEnd, formatMemberNumber, hasValidMembership } from '@/features/members/membership'
 
@@ -85,12 +87,67 @@ describe('offerSchema', () => {
     )
   })
 
+  it('valide le lien de paiement d’une offre', () => {
+    const parse = (helloassoUrl: string) =>
+      offerSchema.safeParse(offerFormToObject(form({ ...base, helloassoUrl })))
+    expect(parse('').data?.helloassoUrl).toBeNull()
+    expect(parse(' https://www.helloasso.com/x ').data?.helloassoUrl).toBe('https://www.helloasso.com/x')
+    expect(parse('http://exemple.fr').error?.issues[0]?.path).toEqual(['helloassoUrl'])
+  })
+
   it('exige une date pour une sortie et refuse un prix public inférieur', () => {
     const result = offerSchema.safeParse(
       offerFormToObject(form({ ...base, eventStartsAt: '', 'tariffs.0.publicPrice': '10' })),
     )
     const paths = result.error?.issues.map((issue) => issue.path.join('.'))
     expect(paths).toEqual(expect.arrayContaining(['eventStartsAt', 'tariffs.0.publicPrice']))
+  })
+})
+
+describe('liens HelloAsso', () => {
+  it('n’accepte que des adresses https complètes', () => {
+    expect(isHttpsUrl('https://www.helloasso.com/associations/exemple')).toBe(true)
+    expect(isHttpsUrl('http://www.helloasso.com/associations/exemple')).toBe(false)
+    expect(isHttpsUrl('javascript:alert(1)')).toBe(false)
+    expect(isHttpsUrl('https://localhost')).toBe(false)
+    expect(isHttpsUrl('www.helloasso.com')).toBe(false)
+  })
+})
+
+describe('offerRequestSchema', () => {
+  const valid = {
+    offerId: '6f1c7a4e-2b7d-4c55-9a0e-3d2f5b8c1a90',
+    firstName: ' Camille ',
+    lastName: 'Exemple',
+    email: ' Camille@Example.FR ',
+    phone: '06 12 34 56 78',
+  }
+
+  it('normalise la saisie', () => {
+    expect(offerRequestSchema.parse(valid)).toMatchObject({
+      firstName: 'Camille',
+      email: 'camille@example.fr',
+      phone: '0612345678',
+    })
+    expect(offerRequestSchema.parse({ ...valid, phone: '' }).phone).toBeNull()
+  })
+
+  it('exige nom, prénom et email, et détecte le champ piège', () => {
+    const result = offerRequestSchema.safeParse({ ...valid, firstName: '', email: 'x', website: 'spam' })
+    const paths = result.error?.issues.map((issue) => issue.path.join('.'))
+    expect(paths).toEqual(expect.arrayContaining(['firstName', 'email', 'website']))
+  })
+
+  it('lit les filtres de la liste du bureau', () => {
+    expect(parseRequestFilters({})).toEqual({ status: 'toutes', offerId: undefined })
+    expect(parseRequestFilters({ statut: 'reglees', offre: valid.offerId })).toEqual({
+      status: 'reglees',
+      offerId: valid.offerId,
+    })
+    expect(parseRequestFilters({ statut: 'inconnu', offre: '1 OR 1=1' }).offerId).toBeUndefined()
+    expect(requestFiltersQuery({ status: 'a-regler', offerId: valid.offerId })).toBe(
+      `?statut=a-regler&offre=${valid.offerId}`,
+    )
   })
 })
 

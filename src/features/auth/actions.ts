@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { errorState, type FormState, validationError } from '@/lib/form-state'
 import { safeRedirectPath } from '@/lib/safe-redirect'
 import { runFormAction } from '@/server/action'
-import { requireSession } from '@/server/auth/guards'
+import { homePathFor, requireSession } from '@/server/auth/guards'
 import { createSession, destroyCurrentSession } from '@/server/auth/session'
 import { updateOwnProfile } from '@/features/members/service'
 import { consumeRateLimit, formatRetryAfter } from '@/server/rate-limit'
@@ -58,7 +58,7 @@ export async function loginAction(_previous: FormState, formData: FormData): Pro
     }
 
     await createSession(result.userId, await getUserAgent())
-    redirect(safeRedirectPath(parsed.data.next))
+    redirect(safeRedirectPath(parsed.data.next, homePathFor(result.role)))
   })
 }
 

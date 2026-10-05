@@ -43,7 +43,7 @@ test.describe('pages publiques', () => {
     await expect(page).toHaveURL(/\/connexion\?next=%2Fespace/)
   })
 
-  test('un visiteur consulte les offres et leurs tarifs sans compte', async ({ page }) => {
+  test('un visiteur consulte les offres et leurs tarifs', async ({ page }) => {
     await page.goto('/offres?categorie=PARCS')
     await expect(page.getByRole('link', { name: 'Parcs & loisirs' })).toHaveAttribute('aria-current', 'page')
     const firstOffer = page
@@ -60,9 +60,7 @@ test.describe('pages publiques', () => {
 
     const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()
     expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([])
-
-    await page.getByRole('link', { name: 'Se connecter pour commander' }).click()
-    await expect(page).toHaveURL(/\/connexion\?next=%2Fespace%2Fbilletterie%2F/)
+    await expect(page.getByRole('button', { name: 'Commander' })).toBeVisible()
   })
 
   test('le formulaire de contact enregistre le message', async ({ page }) => {

@@ -56,6 +56,8 @@ Défini dans `src/server/db/schema.ts`, migrations SQL versionnées dans `drizzl
 | `user_tokens`              | liens de confirmation d'email et de réinitialisation (empreintes, usage unique)             |
 | `rate_limits`              | compteurs de limitation de débit (partagés entre instances)                                 |
 | `offers` / `offer_tariffs` | offres (billetterie ou sortie) et leurs tarifs, prix adhérent/public, stock                 |
+| `offer_requests`           | demandes de commande (coordonnées) avant le paiement sur HelloAsso, paiement constaté       |
+| `site_settings`            | réglages modifiables par le bureau (lien HelloAsso d'adhésion), une seule ligne             |
 | `orders` / `order_lines`   | commandes, lignes avec libellé et prix **copiés** au moment de la commande                  |
 | `media`                    | images téléversées (ré-encodées en WebP, métadonnées supprimées), servies par `/media/<id>` |
 | `highlights`               | posts « À la une » du bandeau défilant                                                      |

@@ -97,7 +97,7 @@ export default async function AdminOffersPage() {
                         ) : null}
                         {!offer.pricesPublic ? (
                           <Badge tone="neutral" className="ml-2">
-                            Tarifs masqués aux visiteurs
+                            Tarifs masqués sur le site
                           </Badge>
                         ) : null}
                       </Td>

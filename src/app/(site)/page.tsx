@@ -13,20 +13,20 @@ import { listPublishedOffers } from '@/features/offers/queries'
 import { offerAvailability } from '@/features/offers/rules'
 import { parisDay } from '@/lib/dates'
 import { listPublishedNews } from '@/features/news/queries'
-import { getCurrentSession } from '@/server/auth/session'
+import { JoinLink } from '@/features/settings/components/join-link'
 
 const BENEFITS = [
   {
     title: 'Billetterie à tarifs adhérents',
-    text: 'Cinéma, parcs de loisirs, spectacles, sport : commandez vos billets en ligne depuis votre espace, au prix négocié par l’Amicale.',
+    text: 'Cinéma, parcs de loisirs, spectacles, sport : commandez vos billets en ligne au prix négocié par l’Amicale, avec un paiement sécurisé sur HelloAsso.',
   },
   {
     title: 'Sorties et événements',
-    text: 'Les sorties organisées par l’Amicale sont annoncées dans votre espace. Inscrivez-vous en quelques clics, dans la limite des places disponibles.',
+    text: 'Les sorties organisées par l’Amicale sont annoncées sur le site. Inscrivez-vous en quelques clics, dans la limite des places disponibles.',
   },
   {
     title: 'Avantages partenaires',
-    text: 'Les réductions et conditions préférentielles obtenues auprès des partenaires de l’Amicale, réunies au même endroit et réservées aux adhérents.',
+    text: 'Les réductions et conditions préférentielles obtenues par l’Amicale auprès de ses partenaires.',
   },
 ] as const
 
@@ -34,18 +34,25 @@ const BENEFITS = [
 const QUICK_CATEGORIES = ['CINEMA', 'PARCS', 'SPECTACLES', 'SPORT', 'VOYAGES', 'FAMILLE'] as const
 
 const STEPS = [
-  { title: 'Créez votre compte', text: 'Renseignez votre situation et votre service en quelques minutes.' },
-  { title: 'Confirmez votre email', text: 'Un lien de confirmation vous est envoyé immédiatement.' },
-  { title: 'Validation par le bureau', text: 'Le bureau examine votre demande et active votre adhésion.' },
+  {
+    title: 'Cliquez sur « Adhérer »',
+    text: 'Le bouton vous mène à la page d’adhésion de l’Amicale sur HelloAsso.',
+  },
+  {
+    title: 'Réglez votre cotisation',
+    text: 'Remplissez le formulaire et payez en ligne, de façon sécurisée.',
+  },
+  {
+    title: 'Profitez des offres',
+    text: 'Billetterie et sorties à tarifs négociés : commandez depuis la fiche de chaque offre.',
+  },
 ] as const
 
 export default async function HomePage() {
-  const session = await getCurrentSession()
-  const isMember = session?.user.status === 'ACTIVE'
   const [{ rows: latestNews }, offers, highlights] = await Promise.all([
     listPublishedNews({ includeMembersOnly: false, limit: 3 }),
     listPublishedOffers(),
-    listActiveHighlights({ includeMembersOnly: isMember }),
+    listActiveHighlights({ includeMembersOnly: false }),
   ])
   const now = new Date()
   const today = parisDay(now)
@@ -70,20 +77,10 @@ export default async function HomePage() {
               les loisirs des personnels de police du département et fait vivre les liens entre collègues.
             </p>
             <div className="flex flex-wrap gap-3">
-              {session ? (
-                <ButtonLink href="/espace" variant="inverse">
-                  Accéder à mon espace
-                </ButtonLink>
-              ) : (
-                <>
-                  <ButtonLink href="/inscription" variant="inverse">
-                    Devenir adhérent
-                  </ButtonLink>
-                  <ButtonLink href="/connexion" variant="outlineInverse">
-                    Se connecter
-                  </ButtonLink>
-                </>
-              )}
+              <JoinLink variant="inverse">Adhérer à l’Amicale</JoinLink>
+              <ButtonLink href="/offres" variant="outlineInverse">
+                Voir les offres
+              </ButtonLink>
             </div>
           </div>
 
@@ -113,7 +110,7 @@ export default async function HomePage() {
               return (
                 <li key={category}>
                   <Link
-                    href={`${isMember ? '/espace/billetterie' : '/offres'}?categorie=${category}`}
+                    href={`/offres?categorie=${category}`}
                     className="group flex h-full items-center gap-3 rounded-md border border-line p-3 transition-colors hover:border-blue-600 hover:bg-blue-50"
                   >
                     <span
@@ -145,7 +142,7 @@ export default async function HomePage() {
           <div className="flex flex-col gap-4 lg:sticky lg:top-8 lg:self-start">
             <Eyebrow>L’adhésion</Eyebrow>
             <h2 id="avantages-titre" className="text-h2">
-              Tout ce que l’Amicale vous ouvre, dans un seul espace.
+              Ce que l’Amicale vous apporte.
             </h2>
           </div>
           <ol className="flex flex-col">
@@ -167,7 +164,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─── Offres du moment (visibles de tous, commande réservée aux adhérents) ─── */}
+      {/* ─── Offres du moment ─── */}
       {showcase.length > 0 ? (
         <section aria-labelledby="offres-titre">
           <div className="mx-auto flex max-w-page flex-col gap-10 px-4 py-20 sm:px-6 lg:px-8">
@@ -178,10 +175,7 @@ export default async function HomePage() {
                   Les offres du moment
                 </h2>
               </div>
-              <Link
-                href={isMember ? '/espace/billetterie' : '/offres'}
-                className="inline-flex items-center gap-2 font-semibold link"
-              >
+              <Link href="/offres" className="inline-flex items-center gap-2 font-semibold link">
                 Toute la billetterie <ArrowRight aria-hidden className="size-4" />
               </Link>
             </div>
@@ -191,8 +185,8 @@ export default async function HomePage() {
                   <OfferCard
                     offer={offer}
                     availability={availability}
-                    href={`${isMember ? '/espace/billetterie' : '/offres'}/${offer.slug}`}
-                    hidePrices={!isMember && !offer.pricesPublic}
+                    href={`/offres/${offer.slug}`}
+                    hidePrices={!offer.pricesPublic}
                   />
                 </li>
               ))}
@@ -229,11 +223,9 @@ export default async function HomePage() {
               </li>
             ))}
           </ol>
-          {!session ? (
-            <div>
-              <ButtonLink href="/inscription">Commencer mon adhésion</ButtonLink>
-            </div>
-          ) : null}
+          <div>
+            <JoinLink>Adhérer à l’Amicale</JoinLink>
+          </div>
         </div>
       </section>
 

@@ -50,6 +50,13 @@
       "when": 1790848276416,
       "tag": "0006_offer_prices_public",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791190492080,
+      "tag": "0007_helloasso",
+      "breakpoints": true
     }
   ]
 }

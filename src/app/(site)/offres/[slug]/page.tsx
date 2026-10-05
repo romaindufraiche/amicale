@@ -1,16 +1,15 @@
 import { ArrowLeft } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { cache } from 'react'
 import { Alert } from '@/components/ui/alert'
-import { ButtonLink } from '@/components/ui/button'
 import { OfferDetails } from '@/features/offers/components/offer-details'
 import { getPublishedOfferBySlug } from '@/features/offers/queries'
 import { AVAILABILITY_LABELS, offerAvailability } from '@/features/offers/rules'
 import { parisDay } from '@/lib/dates'
 import { formatEuros, formatPrice } from '@/lib/money'
-import { getCurrentSession } from '@/server/auth/session'
+import { OfferRequestForm } from '@/features/requests/components/offer-request-form'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -23,18 +22,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: offer.title, description: offer.summary, alternates: { canonical: `/offres/${slug}` } }
 }
 
-/** Fiche publique d'une offre ; tarifs affichés si le bureau l'a choisi, commande réservée aux adhérents. */
+/** Fiche d'une offre : tarifs (si le bureau les affiche) et formulaire de commande. */
 export default async function PublicOfferPage({ params }: Props) {
-  const { slug } = await params
-  const memberPath = `/espace/billetterie/${slug}`
-  const session = await getCurrentSession()
-  if (session?.user.status === 'ACTIVE') redirect(memberPath)
-
-  const offer = await loadOffer(slug)
+  const offer = await loadOffer((await params).slug)
   if (!offer) notFound()
   const now = new Date()
   const availability = offerAvailability(offer, offer.tariffs, now, parisDay(now))
-  // Tarifs réservés aux adhérents : ni affichés ni transmis au visiteur.
+  // Tarifs masqués par le bureau : ni affichés ni transmis au navigateur.
   const activeTariffs = offer.pricesPublic ? offer.tariffs.filter((tariff) => tariff.active) : []
 
   return (
@@ -73,33 +67,18 @@ export default async function PublicOfferPage({ params }: Props) {
                 </li>
               ))}
             </ul>
-          ) : null}
-          {!availability.open ? (
-            <Alert tone="warning" title={AVAILABILITY_LABELS[availability.reason]} />
-          ) : null}
-          {session ? (
-            <p className="text-ink-muted">
-              {offer.pricesPublic
-                ? 'La commande sera accessible'
-                : 'Les tarifs et la commande seront accessibles'}{' '}
-              dès que le bureau aura validé votre adhésion.
-            </p>
           ) : (
+            <p className="text-ink-muted">Les tarifs sont indiqués sur la page de paiement.</p>
+          )}
+          {availability.open ? (
             <>
-              <p className="text-ink-muted">
-                {offer.pricesPublic
-                  ? 'Tarifs adhérents : la commande se fait depuis votre espace, une fois connecté.'
-                  : 'Les tarifs de cette offre et la commande sont réservés aux adhérents.'}
+              <p className="text-sm text-ink-muted">
+                Indiquez vos coordonnées, puis réglez votre commande en ligne sur HelloAsso.
               </p>
-              <div className="flex flex-col gap-3">
-                <ButtonLink href={`/connexion?next=${encodeURIComponent(memberPath)}`}>
-                  Se connecter pour commander
-                </ButtonLink>
-                <ButtonLink href="/inscription" variant="secondary">
-                  Devenir adhérent
-                </ButtonLink>
-              </div>
+              <OfferRequestForm offerId={offer.id} />
             </>
+          ) : (
+            <Alert tone="warning" title={AVAILABILITY_LABELS[availability.reason]} />
           )}
         </aside>
       </div>

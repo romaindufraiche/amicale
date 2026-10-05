@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { fromParisDateTimeInput } from '@/lib/dates'
 import { parseEurosToCents } from '@/lib/money'
+import { optionalHttpsUrl } from '@/lib/https-url'
 import { slugify } from '@/lib/slug'
 import { OFFER_CATEGORIES } from './labels'
 
@@ -107,6 +108,7 @@ export const offerSchema = z
       .string()
       .optional()
       .transform((value) => value === 'on'),
+    helloassoUrl: optionalHttpsUrl,
     tariffs: z.array(tariffSchema).min(1, { error: 'Ajoutez au moins un tarif.' }).max(12),
   })
   .transform((data) => ({ ...data, slug: slugify(data.slug || data.title) }))

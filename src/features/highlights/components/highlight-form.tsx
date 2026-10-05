@@ -70,7 +70,7 @@ export function HighlightForm({ initial }: { initial: HighlightFormValues }) {
         <TextField
           name="linkUrl"
           label="Lien"
-          hint="Page du site (/espace/billetterie/…) ou adresse https://…"
+          hint="Page du site (/offres/…) ou adresse https://…"
           defaultValue={value('linkUrl')}
           error={e?.linkUrl}
         />

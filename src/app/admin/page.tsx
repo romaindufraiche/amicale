@@ -1,10 +1,12 @@
 import { ArrowRight } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Alert } from '@/components/ui/alert'
 import { PageHeader } from '@/components/ui/page-header'
 import { countPendingMessages } from '@/features/contact/service'
-import { countMembersByStatus } from '@/features/members/service'
-import { countOrdersByStatus } from '@/features/orders/stats'
+import { countPublishedOffersWithoutPaymentLink } from '@/features/offers/queries'
+import { countUnpaidRequests } from '@/features/requests/queries'
+import { getSiteSettings } from '@/features/settings/queries'
 import { requirePermission } from '@/server/auth/guards'
 
 export const metadata: Metadata = { title: 'Vue d’ensemble' }
@@ -18,45 +20,35 @@ function plural(count: number, singular: string, pluralForm: string) {
 
 export default async function AdminHomePage() {
   const user = await requirePermission('admin:access', '/admin')
-  const [members, orders, messages] = await Promise.all([
-    countMembersByStatus(),
-    countOrdersByStatus(),
+  const [unpaidRequests, offersWithoutLink, messages, settings] = await Promise.all([
+    countUnpaidRequests(),
+    countPublishedOffersWithoutPaymentLink(),
     countPendingMessages(),
+    getSiteSettings(),
   ])
 
   const todo: Tile[] = [
     {
-      value: members.PENDING_APPROVAL,
+      value: unpaidRequests,
       label: plural(
-        members.PENDING_APPROVAL,
-        'demande d’adhésion à examiner',
-        'demandes d’adhésion à examiner',
+        unpaidRequests,
+        'demande dont le paiement n’est pas constaté',
+        'demandes dont le paiement n’est pas constaté',
       ),
-      href: '/admin/adherents?statut=PENDING_APPROVAL',
-      action: 'Examiner',
-      urgent: members.PENDING_APPROVAL > 0,
-    },
-    {
-      value: orders.PENDING_PAYMENT,
-      label: plural(
-        orders.PENDING_PAYMENT,
-        'commande en attente de règlement',
-        'commandes en attente de règlement',
-      ),
-      href: '/admin/commandes?statut=PENDING_PAYMENT',
+      href: '/admin/demandes?statut=a-regler',
       action: 'Voir',
       urgent: false,
     },
     {
-      value: orders.PAID,
+      value: offersWithoutLink,
       label: plural(
-        orders.PAID,
-        'commande réglée, billets à remettre',
-        'commandes réglées, billets à remettre',
+        offersWithoutLink,
+        'offre en ligne sans lien HelloAsso',
+        'offres en ligne sans lien HelloAsso',
       ),
-      href: '/admin/commandes?statut=PAID',
-      action: 'Préparer',
-      urgent: orders.PAID > 0,
+      href: '/admin/offres',
+      action: 'Compléter',
+      urgent: offersWithoutLink > 0,
     },
     {
       value: messages,
@@ -69,16 +61,18 @@ export default async function AdminHomePage() {
 
   return (
     <>
-      <PageHeader
-        eyebrow="Espace bureau"
-        title={`Bonjour ${user.firstName}`}
-        lead={`${members.ACTIVE} ${plural(members.ACTIVE, 'adhérent actif', 'adhérents actifs')}.`}
-      />
+      <PageHeader eyebrow="Espace bureau" title={`Bonjour ${user.firstName}`} />
+      {!settings.membershipUrl ? (
+        <Alert tone="warning" title="Le lien HelloAsso d’adhésion n’est pas renseigné.">
+          Les boutons « Adhérer » du site mènent pour l’instant à la page « Adhérer ».{' '}
+          <Link href="/admin/reglages">Renseigner le lien</Link>
+        </Alert>
+      ) : null}
       <section aria-labelledby="a-traiter" className="flex flex-col gap-5">
         <h2 id="a-traiter" className="text-h3">
           À traiter
         </h2>
-        <ul className="grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-3">
           {todo.map((tile) => (
             <li key={tile.href} className="bg-surface">
               <Link href={tile.href} className="group flex h-full flex-col gap-3 p-6 hover:bg-sunken">

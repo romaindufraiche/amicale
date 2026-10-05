@@ -5,7 +5,16 @@ import { auditLogs } from '@/server/db/schema'
 export type AuditEntry = {
   actorId: string | null
   action: string
-  entityType: 'user' | 'offer' | 'order' | 'news' | 'partner' | 'contact_message' | 'highlight'
+  entityType:
+    | 'user'
+    | 'offer'
+    | 'order'
+    | 'offer_request'
+    | 'news'
+    | 'partner'
+    | 'contact_message'
+    | 'highlight'
+    | 'site_settings'
   entityId: string
   details?: Record<string, string | number | boolean | null>
 }

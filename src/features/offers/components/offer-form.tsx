@@ -28,6 +28,7 @@ export type OfferFormValues = {
   imageId: string | null
   featured: boolean
   pricesPublic: boolean
+  helloassoUrl: string
   tariffs: TariffRow[]
 }
 
@@ -176,14 +177,25 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
           name="pricesPublic"
           label={
             <>
-              Afficher les tarifs aux visiteurs non connectés
+              Afficher les tarifs sur le site
               <span className="block text-sm text-ink-muted">
-                Décoché : les visiteurs voient l’offre, mais ses tarifs ne s’affichent qu’aux adhérents
-                connectés.
+                Décoché : l’offre est visible, mais ses tarifs ne s’affichent que sur la page de paiement
+                HelloAsso.
               </span>
             </>
           }
           defaultChecked={v ? v.pricesPublic === 'on' : initial.pricesPublic}
+          className="md:col-span-2"
+        />
+        <TextField
+          name="helloassoUrl"
+          type="url"
+          inputMode="url"
+          label="Lien HelloAsso de paiement"
+          hint="Page HelloAsso de cette offre. Après avoir laissé ses coordonnées, la personne y est dirigée pour payer. Vide : le bureau la recontacte pour le règlement."
+          placeholder="https://www.helloasso.com/associations/…"
+          defaultValue={value('helloassoUrl')}
+          error={e?.helloassoUrl}
           className="md:col-span-2"
         />
         <TextField

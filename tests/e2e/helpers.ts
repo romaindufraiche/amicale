@@ -9,7 +9,7 @@ export async function login(page: Page, email: string, password = DEMO_PASSWORD)
   await page.getByLabel('Adresse email').fill(email)
   await page.getByLabel('Mot de passe', { exact: true }).fill(password)
   await page.getByRole('button', { name: 'Se connecter' }).click()
-  await expect(page).toHaveURL(/\/espace/)
+  await expect(page).toHaveURL(/\/(espace|admin)/)
 }
 
 export async function logout(page: Page) {

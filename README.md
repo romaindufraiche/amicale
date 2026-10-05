@@ -2,11 +2,18 @@
 
 Plateforme web de l'Amicale, pensée comme un site de CSE :
 
-- **site public** : présentation, catalogue des offres consultable sans compte (`/offres` ; tarifs affichés ou réservés aux adhérents, au choix du bureau pour chaque offre ; commande réservée aux adhérents), adhésion, actualités, contact (formulaire et bouton WhatsApp), pages légales ;
-- **espace adhérent** : billetterie à tarifs adhérents, sorties avec inscription, avantages partenaires, suivi des commandes, profil ;
-- **espace bureau** : posts « À la une » (bandeau défilant sur l'accueil et le tableau de bord), validation des adhésions, gestion des cotisations, offres et tarifs, commandes (règlement, remise, export CSV), actualités, partenaires, messages, journal d'audit.
+- **site public** : présentation, catalogue des offres (`/offres`, tarifs affichés ou non au choix du bureau pour chaque offre), adhésion, actualités, contact (formulaire et bouton WhatsApp), pages légales ;
+- **espace bureau** : demandes de commande (suivi des paiements, export CSV), réglages (lien HelloAsso d'adhésion), offres et tarifs (avec le lien HelloAsso de chaque offre), posts « À la une », actualités, partenaires, messages, journal d'audit.
 
-Le règlement des commandes se fait **hors ligne** (virement, chèque, permanence) : le bureau enregistre la réception du règlement dans son espace. Aucun paiement en ligne n'est simulé. Voir « Évolutions possibles ».
+**Adhésions et paiements sur HelloAsso.** Les boutons « Adhérer » mènent à la page HelloAsso d'adhésion
+renseignée par le bureau (**Espace bureau → Réglages**). Pour commander une offre, la personne laisse
+son nom, son prénom, son email et éventuellement son téléphone sur la fiche de l'offre, puis un bouton la
+dirige vers la page HelloAsso de cette offre (lien renseigné dans la fiche de l'offre). Le bureau retrouve
+toutes les demandes dans **Espace bureau → Demandes**, y compris celles qui n'ont pas abouti à un
+paiement, et note les paiements constatés sur HelloAsso. Le site ne voit aucune donnée bancaire.
+
+> L'ancien espace adhérent (comptes adhérents, commandes réglées hors ligne) n'est plus relié au site ;
+> sa suppression complète du code et de la base est en attente de validation.
 
 > ⚠️ **Avant la mise en production**, le bureau doit fournir les informations listées dans
 > [`docs/CONTENU.md`](docs/CONTENU.md) : logo en fichier, coordonnées, mentions légales,

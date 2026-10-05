@@ -19,7 +19,7 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
   const valid = typeof token === 'string' && (await isResetTokenValid(token))
 
   return (
-    <AuthShell eyebrow="Espace adhérent" title="Nouveau mot de passe">
+    <AuthShell eyebrow="Espace bureau" title="Nouveau mot de passe">
       {valid ? (
         <ResetPasswordForm token={token} />
       ) : (

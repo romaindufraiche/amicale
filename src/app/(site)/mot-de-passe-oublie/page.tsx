@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: 'Mot de passe oublié', robots: { ind
 export default function ForgotPasswordPage() {
   return (
     <AuthShell
-      eyebrow="Espace adhérent"
+      eyebrow="Espace bureau"
       title="Mot de passe oublié"
       lead="Indiquez l’adresse email de votre compte : nous vous enverrons un lien pour choisir un nouveau mot de passe."
     >

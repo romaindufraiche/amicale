@@ -10,6 +10,7 @@ const LINKS = [
   { href: '/contact', label: 'Contact' },
   { href: '/mentions-legales', label: 'Mentions légales' },
   { href: '/confidentialite', label: 'Données personnelles' },
+  { href: '/connexion', label: 'Espace bureau' },
 ] as const
 
 export function SiteFooter() {

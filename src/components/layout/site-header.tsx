@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import { site } from '@/config/site'
-import { getCurrentSession } from '@/server/auth/session'
 import { ButtonLink } from '@/components/ui/button'
+import { JoinLink } from '@/features/settings/components/join-link'
+import { can } from '@/server/auth/permissions'
+import { getCurrentSession } from '@/server/auth/session'
 import { Logo } from './logo'
 import { MobileMenu } from './mobile-menu'
 import { NavLink } from './nav-link'
@@ -15,18 +17,15 @@ const PUBLIC_NAV = [
 
 export async function SiteHeader() {
   const session = await getCurrentSession()
-  const actions = session ? (
-    <ButtonLink href="/espace" size="sm">
-      Mon espace
-    </ButtonLink>
-  ) : (
+  const isBureau = session?.user.status === 'ACTIVE' && can(session.user.role, 'admin:access')
+  const actions = (
     <>
-      <ButtonLink href="/connexion" variant="ghost" size="sm">
-        Se connecter
-      </ButtonLink>
-      <ButtonLink href="/inscription" size="sm">
-        Devenir adhérent
-      </ButtonLink>
+      {isBureau ? (
+        <ButtonLink href="/admin" variant="ghost" size="sm">
+          Espace bureau
+        </ButtonLink>
+      ) : null}
+      <JoinLink size="sm">Adhérer en ligne</JoinLink>
     </>
   )
 

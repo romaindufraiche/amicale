@@ -1,11 +1,9 @@
 import type { Metadata } from 'next'
-import { redirect } from 'next/navigation'
-import { ButtonLink } from '@/components/ui/button'
 import { PageHeader } from '@/components/ui/page-header'
-import { catalogQuery, parseCatalogParams, type CatalogSearchParams } from '@/features/offers/catalog-params'
+import { parseCatalogParams, type CatalogSearchParams } from '@/features/offers/catalog-params'
 import { OfferCatalog } from '@/features/offers/components/offer-catalog'
 import { listPublishedOffers } from '@/features/offers/queries'
-import { getCurrentSession } from '@/server/auth/session'
+import { JoinLink } from '@/features/settings/components/join-link'
 
 export const metadata: Metadata = {
   title: 'Billetterie & sorties',
@@ -16,13 +14,9 @@ export const metadata: Metadata = {
 
 type Props = { searchParams: Promise<CatalogSearchParams> }
 
-/** Catalogue consultable sans compte, tarifs compris ; la commande reste réservée aux adhérents. */
+/** Catalogue public des offres ; la commande se fait depuis la fiche de chaque offre. */
 export default async function PublicCatalogPage({ searchParams }: Props) {
   const params = parseCatalogParams(await searchParams)
-  const session = await getCurrentSession()
-  // Un adhérent validé retrouve le catalogue complet (tarifs, commande) dans son espace.
-  if (session?.user.status === 'ACTIVE') redirect(`/espace/billetterie${catalogQuery(params)}`)
-
   const offers = await listPublishedOffers(params)
 
   return (
@@ -30,17 +24,8 @@ export default async function PublicCatalogPage({ searchParams }: Props) {
       <PageHeader
         eyebrow="Billetterie & sorties"
         title="Les offres de l’Amicale"
-        lead="Cinéma, parcs, spectacles, sport, voyages et sorties de l’Amicale. Tarifs négociés par l’Amicale, à commander depuis votre espace adhérent."
-        actions={
-          session ? null : (
-            <>
-              <ButtonLink href="/inscription">Devenir adhérent</ButtonLink>
-              <ButtonLink href="/connexion?next=/espace/billetterie" variant="secondary">
-                Se connecter
-              </ButtonLink>
-            </>
-          )
-        }
+        lead="Cinéma, parcs, spectacles, sport, voyages et sorties de l’Amicale. Tarifs négociés par l’Amicale : commandez en ligne depuis la fiche de chaque offre."
+        actions={<JoinLink>Adhérer à l’Amicale</JoinLink>}
       />
       <OfferCatalog offers={offers} params={params} basePath="/offres" audience="public" />
     </div>

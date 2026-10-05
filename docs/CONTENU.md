@@ -23,6 +23,11 @@ Le site n'invente aucune donnée métier. Les informations ci-dessous sont néce
 - [ ] Horaires de permanence (facultatif) → `site.contact.officeHours`
 - [ ] Adresse de réception des notifications (nouvelles demandes, messages) → variable `BUREAU_EMAIL`
 
+## HelloAsso
+
+- [ ] Lien de la page HelloAsso d'adhésion → **Espace bureau → Réglages**.
+- [ ] Lien de la page HelloAsso de chaque offre → champ « Lien HelloAsso de paiement » de l'offre.
+
 ## Adhésion
 
 - [ ] Conditions d'adhésion selon les statuts (les situations proposées dans le formulaire sont : personnel actif, retraité·e, personnel administratif, technique ou scientifique, autre situation — à valider).

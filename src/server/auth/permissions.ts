@@ -10,6 +10,8 @@ const PERMISSIONS = {
   'members:roles': ['ADMIN'],
   'offers:manage': ['BUREAU', 'ADMIN'],
   'orders:manage': ['BUREAU', 'ADMIN'],
+  'requests:manage': ['BUREAU', 'ADMIN'],
+  'settings:manage': ['BUREAU', 'ADMIN'],
   'news:manage': ['BUREAU', 'ADMIN'],
   'partners:manage': ['BUREAU', 'ADMIN'],
   'messages:manage': ['BUREAU', 'ADMIN'],

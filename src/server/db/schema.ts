@@ -198,8 +198,10 @@ export const offers = pgTable(
     imageId: uuid().references(() => media.id, { onDelete: 'set null' }),
     /** Mise en avant dans la rubrique « À la une ». */
     featured: boolean().notNull().default(false),
-    /** Tarifs visibles des visiteurs non connectés ; sinon réservés aux adhérents. */
+    /** Tarifs affichés sur le site public ; sinon visibles seulement sur la page de paiement. */
     pricesPublic: boolean().notNull().default(true),
+    /** Page HelloAsso de l'offre, vers laquelle la personne est dirigée après sa demande. */
+    helloassoUrl: text(),
     status: publicationStatus().notNull().default('DRAFT'),
     publishedAt: timestamp({ withTimezone: true }),
     ...timestamps,
@@ -292,6 +294,32 @@ export const orderLines = pgTable(
     index('order_lines_tariff_id_idx').on(t.tariffId),
     check('order_lines_quantity_positive', sql`${t.quantity} > 0`),
     check('order_lines_unit_price_positive', sql`${t.unitPriceCents} >= 0`),
+  ],
+)
+
+/**
+ * Demande de commande déposée sur le site avant le paiement sur HelloAsso. Le bureau y
+ * retrouve aussi les personnes qui n'ont pas finalisé leur paiement.
+ */
+export const offerRequests = pgTable(
+  'offer_requests',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    offerId: uuid()
+      .notNull()
+      .references(() => offers.id, { onDelete: 'cascade' }),
+    firstName: text().notNull(),
+    lastName: text().notNull(),
+    email: text().notNull(),
+    phone: text(),
+    /** Paiement constaté par le bureau sur HelloAsso. */
+    paidAt: timestamp({ withTimezone: true }),
+    paidMarkedById: uuid().references(() => users.id, { onDelete: 'set null' }),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index('offer_requests_offer_id_idx').on(t.offerId),
+    index('offer_requests_created_at_idx').on(t.createdAt),
   ],
 )
 
@@ -391,6 +419,24 @@ export const contactMessages = pgTable(
   (t) => [index('contact_messages_created_at_idx').on(t.createdAt)],
 )
 
+// ─── Réglages du site ───────────────────────────────────────────────────────
+
+/** Réglages modifiables depuis l'espace bureau ; une seule ligne (id = 1). */
+export const siteSettings = pgTable(
+  'site_settings',
+  {
+    id: integer().primaryKey().default(1),
+    /** Page HelloAsso d'adhésion à l'Amicale (bouton « Adhérer »). */
+    membershipUrl: text(),
+    updatedById: uuid().references(() => users.id, { onDelete: 'set null' }),
+    updatedAt: timestamp({ withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [check('site_settings_single_row', sql`${t.id} = 1`)],
+)
+
 // ─── Journal d'audit ─────────────────────────────────────────────────────────
 
 export const auditLogs = pgTable(
@@ -423,6 +469,8 @@ export type PublicationStatus = (typeof publicationStatus.enumValues)[number]
 export type Order = typeof orders.$inferSelect
 export type OrderLine = typeof orderLines.$inferSelect
 export type OrderStatus = (typeof orderStatus.enumValues)[number]
+export type OfferRequest = typeof offerRequests.$inferSelect
+export type SiteSettings = typeof siteSettings.$inferSelect
 export type Partner = typeof partners.$inferSelect
 export type News = typeof news.$inferSelect
 export type NewsVisibility = (typeof newsVisibility.enumValues)[number]

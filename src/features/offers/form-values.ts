@@ -20,6 +20,7 @@ export const EMPTY_OFFER: OfferFormValues = {
   imageId: null,
   featured: false,
   pricesPublic: true,
+  helloassoUrl: '',
   tariffs: [],
 }
 
@@ -42,6 +43,7 @@ export function offerToFormValues(offer: OfferWithTariffs, lockedTariffIds: Set<
     imageId: offer.imageId,
     featured: offer.featured,
     pricesPublic: offer.pricesPublic,
+    helloassoUrl: offer.helloassoUrl ?? '',
     tariffs: offer.tariffs.map((tariff) => ({
       key: tariff.id,
       id: tariff.id,

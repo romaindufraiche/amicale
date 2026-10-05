@@ -5,7 +5,7 @@ import { generateToken, hashToken } from '@/server/auth/crypto'
 import { hashPassword, verifyAgainstDummy, verifyPassword } from '@/server/auth/password'
 import { revokeUserSessions } from '@/server/auth/session'
 import { db } from '@/server/db/client'
-import { users, userTokens, type User } from '@/server/db/schema'
+import { users, userTokens, type User, type UserRole } from '@/server/db/schema'
 import { env } from '@/server/env'
 import { logger } from '@/server/logger'
 import { sendEmail } from '@/server/mail/transport'
@@ -139,7 +139,7 @@ export async function verifyEmail(token: string): Promise<VerifyEmailResult> {
 // ─── Connexion ──────────────────────────────────────────────────────────────
 
 export type AuthenticateResult =
-  | { ok: true; userId: string }
+  | { ok: true; userId: string; role: UserRole }
   | { ok: false; reason: 'INVALID_CREDENTIALS' | 'EMAIL_NOT_VERIFIED' | 'SUSPENDED' | 'REJECTED' }
   | { ok: false; reason: 'RATE_LIMITED'; retryAfterSeconds: number }
 
@@ -172,6 +172,7 @@ export async function authenticate(
       firstName: users.firstName,
       passwordHash: users.passwordHash,
       status: users.status,
+      role: users.role,
     })
     .from(users)
     .where(eq(users.email, email))
@@ -191,7 +192,7 @@ export async function authenticate(
 
   await resetRateLimit(emailKey)
   logger.info('auth.login', { userId: user.id })
-  return { ok: true, userId: user.id }
+  return { ok: true, userId: user.id, role: user.role }
 }
 
 // ─── Mot de passe oublié ────────────────────────────────────────────────────

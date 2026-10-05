@@ -26,6 +26,7 @@ function offerColumns(input: OfferInput) {
     imageId: input.imageId,
     featured: input.featured,
     pricesPublic: input.pricesPublic,
+    helloassoUrl: input.helloassoUrl,
   }
 }
 
