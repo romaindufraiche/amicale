@@ -2,13 +2,12 @@
 
 ## Principes
 
-Un **monolithe modulaire** Next.js : une seule application, un seul déploiement, une seule base PostgreSQL. C'est proportionné à une association départementale de quelques centaines à quelques milliers d'adhérents. Pas de microservice, pas de file de messages, pas d'API publique séparée.
+Un **monolithe modulaire** Next.js : une seule application, un seul déploiement, une seule base PostgreSQL. C'est proportionné à une association départementale. Pas de microservice, pas de file de messages, pas d'API publique séparée.
 
 ```
 src/
 ├── app/                 Routes (pages, layouts, route handlers) : présentation uniquement
-│   ├── (site)/          Site public + pages de compte (connexion, inscription…)
-│   ├── espace/          Espace adhérent
+│   ├── (site)/          Site public + connexion du bureau
 │   ├── admin/           Espace bureau
 │   └── api/health/      Sonde de disponibilité
 ├── components/
@@ -29,7 +28,7 @@ src/
 └── instrumentation.ts   Journalisation des erreurs serveur non gérées
 ```
 
-Domaines : `auth`, `members`, `offers`, `orders`, `news`, `highlights`, `media`, `partners`, `contact`, `audit`.
+Domaines : `auth`, `offers`, `requests` (commandes), `settings`, `news`, `highlights`, `media`, `partners`, `contact`, `audit`.
 
 ## Flux d'une action
 
@@ -51,64 +50,54 @@ Défini dans `src/server/db/schema.ts`, migrations SQL versionnées dans `drizzl
 
 | Table                      | Rôle                                                                                        |
 | -------------------------- | ------------------------------------------------------------------------------------------- |
-| `users`                    | comptes : identité, situation, rôle, statut d'adhésion, fin de cotisation                   |
+| `users`                    | comptes du bureau uniquement (les adhérents n'ont pas de compte) : identité, rôle, statut   |
 | `sessions`                 | sessions (empreinte SHA-256 du jeton, expiration glissante de 14 jours)                     |
 | `user_tokens`              | liens de confirmation d'email et de réinitialisation (empreintes, usage unique)             |
 | `rate_limits`              | compteurs de limitation de débit (partagés entre instances)                                 |
 | `offers` / `offer_tariffs` | offres (billetterie ou sortie) et leurs tarifs, prix adhérent/public, stock                 |
-| `offer_requests`           | demandes de commande (coordonnées) avant le paiement sur HelloAsso, paiement constaté       |
+| `offer_requests`           | commandes passées sur le site (offre, nom, prénom, email), règlement noté par le bureau     |
 | `site_settings`            | réglages modifiables par le bureau (lien HelloAsso d'adhésion), une seule ligne             |
 | `orders` / `order_lines`   | commandes, lignes avec libellé et prix **copiés** au moment de la commande                  |
 | `media`                    | images téléversées (ré-encodées en WebP, métadonnées supprimées), servies par `/media/<id>` |
 | `highlights`               | posts « À la une » du bandeau défilant                                                      |
 | `partners`                 | avantages partenaires                                                                       |
-| `news`                     | actualités (publiques ou réservées aux adhérents)                                           |
+| `news`                     | actualités                                                                                  |
 | `contact_messages`         | messages du formulaire de contact                                                           |
 | `audit_logs`               | journal des actions du bureau                                                               |
 
-Conventions : montants en centimes (entiers), horodatages `timestamptz`, dates calendaires `YYYY-MM-DD` interprétées à l'heure de Paris, contraintes `CHECK` sur prix, stocks et quantités, clés étrangères `restrict` sur l'historique des commandes.
+Conventions : montants en centimes (entiers), horodatages `timestamptz`, dates calendaires `YYYY-MM-DD` interprétées à l'heure de Paris, contraintes `CHECK` sur prix, stocks et quantités.
 
-### Cycle de vie
+### Commandes
 
-- **Adhésion** : `PENDING_VERIFICATION` → (email confirmé) `PENDING_APPROVAL` → (bureau) `ACTIVE` | `REJECTED` ; `ACTIVE` ↔ `SUSPENDED`. Une cotisation est valide si le compte est actif et que `membership_valid_until` n'est pas dépassée.
-- **Commande** : `PENDING_PAYMENT` → `PAID` → `DELIVERED`, annulable tant qu'elle n'est pas remise (l'adhérent ne peut annuler qu'avant règlement). Les transitions sont définies dans `features/orders/rules.ts`.
-
-### Intégrité des commandes
-
-`features/orders/service.ts#createOrder`, en une transaction :
-
-1. **Idempotence** : chaque formulaire porte une clé unique (`orders_user_idempotency_key`). Un double clic ou un rechargement renvoie la commande existante.
-2. Verrouillage de l'adhérent (`SELECT … FOR UPDATE`) : deux commandes simultanées ne contournent pas la limite par adhérent.
-3. Verrouillage des tarifs : le stock ne devient jamais négatif (également garanti par une contrainte `CHECK`).
-4. Prix et total **recalculés depuis la base**, jamais pris dans le navigateur.
-
-Ces garanties sont couvertes par des tests d'intégration concurrents (`tests/integration/orders.test.ts`).
+`features/requests/service.ts#submitOfferRequest` : l'offre est relue en base (publiée, ouverte, non complète),
+la commande est enregistrée, un email part à l'adresse choisie dans les réglages (à défaut `BUREAU_EMAIL`),
+puis le lien HelloAsso de l'offre, lu en base, est renvoyé s'il existe. Limitation à 10 commandes par heure
+et par IP, champ piège anti-robot. Couvert par `tests/integration/requests.test.ts`.
 
 ## Sécurité
 
-| Sujet                  | Mesure                                                                                                                                                                                                |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Mots de passe          | Argon2id (paramètres OWASP), 12 caractères minimum, comparaison à temps constant y compris pour un compte inconnu                                                                                     |
-| Sessions               | jeton aléatoire 256 bits, seule l'empreinte est stockée ; cookie `__Host-`, `HttpOnly`, `Secure`, `SameSite=Lax` ; révocation au changement de mot de passe, à la suspension et au changement de rôle |
-| Énumération de comptes | réponses identiques à l'inscription et au « mot de passe oublié » ; le titulaire est prévenu par email                                                                                                |
-| Force brute            | limitation par adresse (5 / 15 min) et par IP (30 / 15 min) à la connexion ; inscription, réinitialisation, contact et changement de mot de passe limités                                             |
-| Autorisation           | matrice de droits `src/server/auth/permissions.ts`, vérifiée côté serveur ; pages bureau en 404 pour les non-habilités                                                                                |
-| IDOR                   | toute lecture ou écriture d'une commande par un adhérent est filtrée sur son identifiant                                                                                                              |
-| CSRF                   | Server Actions (vérification d'origine par Next.js) + cookies `SameSite=Lax`                                                                                                                          |
-| XSS                    | contenus saisis stockés en texte brut et rendus par React ; CSP stricte à nonce (`strict-dynamic`)                                                                                                    |
-| Redirections ouvertes  | paramètre `next` restreint aux chemins internes (`safeRedirectPath`)                                                                                                                                  |
-| En-têtes               | HSTS, `X-Frame-Options: DENY`, `frame-ancestors 'none'`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`                                                                                           |
-| Export CSV             | protection contre l'injection de formules                                                                                                                                                             |
-| Données personnelles   | aucune liste d'adhérents publique, pas de traceur tiers, polices auto-hébergées, logs sans secret ni jeton (y compris dans les URL)                                                                   |
-| Téléversement d'images | réservé au bureau, 8 Mo max, JPEG/PNG/WebP ; fichier décodé puis ré-encodé (un faux fichier image est rejeté, EXIF et GPS supprimés), 60 envois par heure au plus                                     |
-| Anti-spam              | champ piège + limitation par IP sur le formulaire de contact                                                                                                                                          |
+| Sujet                  | Mesure                                                                                                                                                                                      |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mots de passe          | Argon2id (paramètres OWASP), 12 caractères minimum, comparaison à temps constant y compris pour un compte inconnu                                                                           |
+| Sessions               | jeton aléatoire 256 bits, seule l'empreinte est stockée ; cookie `__Host-`, `HttpOnly`, `Secure`, `SameSite=Lax` ; révocation au changement de mot de passe et à la désactivation du compte |
+| Énumération de comptes | réponse identique au « mot de passe oublié », que l'adresse existe ou non                                                                                                                   |
+| Force brute            | limitation par adresse (5 / 15 min) et par IP (30 / 15 min) à la connexion ; commandes, réinitialisation, contact et changement de mot de passe limités                                     |
+| Autorisation           | matrice de droits `src/server/auth/permissions.ts`, vérifiée côté serveur ; pages bureau en 404 pour les non-habilités                                                                      |
+| CSRF                   | Server Actions (vérification d'origine par Next.js) + cookies `SameSite=Lax`                                                                                                                |
+| XSS                    | contenus saisis stockés en texte brut et rendus par React ; CSP stricte à nonce (`strict-dynamic`)                                                                                          |
+| Redirections ouvertes  | paramètre `next` restreint aux chemins internes (`safeRedirectPath`)                                                                                                                        |
+| En-têtes               | HSTS, `X-Frame-Options: DENY`, `frame-ancestors 'none'`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`                                                                                 |
+| Export CSV             | protection contre l'injection de formules                                                                                                                                                   |
+| Données personnelles   | aucune donnée de commande publique, pas de traceur tiers, polices auto-hébergées, logs sans secret ni jeton (y compris dans les URL)                                                        |
+| Téléversement d'images | réservé au bureau, 8 Mo max, JPEG/PNG/WebP ; fichier décodé puis ré-encodé (un faux fichier image est rejeté, EXIF et GPS supprimés), 60 envois par heure au plus                           |
+| Anti-spam              | champ piège + limitation par IP sur les formulaires de contact et de commande                                                                                                               |
 
 ## Choix techniques
 
 - **Next.js App Router + Server Actions** : rendu serveur (SEO, performance), pas d'API REST à maintenir ni à sécuriser séparément. JavaScript client limité aux formulaires interactifs et au menu mobile.
 - **Rendu dynamique** de toutes les pages : exigé par la CSP à nonce, et sans coût notable à cette échelle.
-- **PostgreSQL + Drizzle** : transactions et verrous nécessaires aux commandes, SQL explicite, migrations versionnées et reproductibles.
-- **Sessions en base plutôt que JWT** : révocables immédiatement (suspension, changement de rôle).
+- **PostgreSQL + Drizzle** : transactions, SQL explicite, migrations versionnées et reproductibles.
+- **Sessions en base plutôt que JWT** : révocables immédiatement (désactivation d'un compte).
 - **Limitation de débit en base** : fonctionne avec plusieurs instances, sans Redis.
 - **Aucune bibliothèque de composants** : le design system est spécifique à la marque (voir `DESIGN-SYSTEM.md`).
 - **Environnement validé à l'exécution** (`src/server/env.ts`) : le build ne nécessite aucun secret.

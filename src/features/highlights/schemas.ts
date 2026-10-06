@@ -47,7 +47,6 @@ export const highlightSchema = z
       .union([z.uuid(), z.literal('')], { error: 'Image invalide.' })
       .optional()
       .transform((value) => value || null),
-    visibility: z.enum(['PUBLIC', 'MEMBERS'], { error: 'Visibilité invalide.' }),
     startsAt: optionalDateTime,
     endsAt: optionalDateTime,
     position: z

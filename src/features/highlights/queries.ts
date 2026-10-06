@@ -1,12 +1,11 @@
 import 'server-only'
-import { and, asc, desc, eq, gt, inArray, isNull, lte, or } from 'drizzle-orm'
+import { and, asc, desc, eq, gt, isNull, lte, or } from 'drizzle-orm'
 import { db } from '@/server/db/client'
-import { highlights, type NewsVisibility } from '@/server/db/schema'
+import { highlights } from '@/server/db/schema'
 
 /** Posts affichés dans le bandeau : publiés et dans leur période d'affichage. */
-export async function listActiveHighlights(options: { includeMembersOnly: boolean }) {
+export async function listActiveHighlights() {
   const now = new Date()
-  const visibilities: NewsVisibility[] = options.includeMembersOnly ? ['PUBLIC', 'MEMBERS'] : ['PUBLIC']
   return db
     .select({
       id: highlights.id,
@@ -21,7 +20,6 @@ export async function listActiveHighlights(options: { includeMembersOnly: boolea
     .where(
       and(
         eq(highlights.published, true),
-        inArray(highlights.visibility, visibilities),
         or(isNull(highlights.startsAt), lte(highlights.startsAt, now)),
         or(isNull(highlights.endsAt), gt(highlights.endsAt, now)),
       ),

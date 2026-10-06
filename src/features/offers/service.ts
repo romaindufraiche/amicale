@@ -2,7 +2,7 @@ import 'server-only'
 import { and, eq, notInArray } from 'drizzle-orm'
 import { recordAudit } from '@/features/audit/service'
 import { db, type Transaction } from '@/server/db/client'
-import { offers, offerTariffs, orderLines, type PublicationStatus } from '@/server/db/schema'
+import { offers, offerTariffs, type PublicationStatus } from '@/server/db/schema'
 import type { OfferInput } from './schemas'
 import { isUniqueViolation } from '@/server/db/errors'
 
@@ -22,7 +22,6 @@ function offerColumns(input: OfferInput) {
     eventStartsAt: input.kind === 'EVENT' ? input.eventStartsAt : null,
     validUntil: input.kind === 'TICKET' ? input.validUntil : null,
     orderDeadline: input.orderDeadline,
-    maxPerMember: input.maxPerMember,
     imageId: input.imageId,
     featured: input.featured,
     pricesPublic: input.pricesPublic,
@@ -31,7 +30,7 @@ function offerColumns(input: OfferInput) {
 }
 
 async function saveTariffs(tx: Transaction, offerId: string, tariffs: OfferInput['tariffs']): Promise<void> {
-  // Tarifs retirés du formulaire : supprimés s'ils n'ont jamais été commandés, désactivés sinon.
+  // Tarifs retirés du formulaire : supprimés.
   const keptIds = tariffs.flatMap((tariff) => (tariff.id ? [tariff.id] : []))
   const removed = await tx
     .select({ id: offerTariffs.id })
@@ -43,13 +42,7 @@ async function saveTariffs(tx: Transaction, offerId: string, tariffs: OfferInput
       ),
     )
   for (const { id } of removed) {
-    const [used] = await tx
-      .select({ id: orderLines.id })
-      .from(orderLines)
-      .where(eq(orderLines.tariffId, id))
-      .limit(1)
-    if (used) await tx.update(offerTariffs).set({ active: false }).where(eq(offerTariffs.id, id))
-    else await tx.delete(offerTariffs).where(eq(offerTariffs.id, id))
+    await tx.delete(offerTariffs).where(eq(offerTariffs.id, id))
   }
 
   for (const [position, tariff] of tariffs.entries()) {

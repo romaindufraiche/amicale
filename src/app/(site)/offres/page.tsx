@@ -27,7 +27,7 @@ export default async function PublicCatalogPage({ searchParams }: Props) {
         lead="Cinéma, parcs, spectacles, sport, voyages et sorties de l’Amicale. Tarifs négociés par l’Amicale : commandez en ligne depuis la fiche de chaque offre."
         actions={<JoinLink>Adhérer à l’Amicale</JoinLink>}
       />
-      <OfferCatalog offers={offers} params={params} basePath="/offres" audience="public" />
+      <OfferCatalog offers={offers} params={params} basePath="/offres" />
     </div>
   )
 }

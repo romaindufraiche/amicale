@@ -1,6 +1,5 @@
 import { sql } from 'drizzle-orm'
 import {
-  type AnyPgColumn,
   boolean,
   check,
   customType,
@@ -9,7 +8,6 @@ import {
   integer,
   jsonb,
   pgEnum,
-  pgSequence,
   pgTable,
   text,
   timestamp,
@@ -22,9 +20,7 @@ import {
  *
  * Conventions :
  * - montants en centimes d'euro (entiers), jamais en flottants ;
- * - horodatages en `timestamptz` ;
- * - les libellés et prix des commandes sont copiés au moment de la commande
- *   (une modification ultérieure du tarif ne réécrit pas l'historique).
+ * - horodatages en `timestamptz`.
  */
 
 const timestamps = {
@@ -35,24 +31,12 @@ const timestamps = {
     .$onUpdate(() => new Date()),
 }
 
-// ─── Adhérents & accès ───────────────────────────────────────────────────────
+// ─── Comptes du bureau & accès ───────────────────────────────────────────────
 
-export const userRole = pgEnum('user_role', ['MEMBER', 'BUREAU', 'ADMIN'])
+/** Seuls les membres du bureau ont un compte : les adhérents n'en ont pas. */
+export const userRole = pgEnum('user_role', ['BUREAU', 'ADMIN'])
 
-export const userStatus = pgEnum('user_status', [
-  /** Compte créé, adresse email non confirmée. */
-  'PENDING_VERIFICATION',
-  /** Email confirmé, demande d'adhésion en attente d'examen par le bureau. */
-  'PENDING_APPROVAL',
-  'ACTIVE',
-  'SUSPENDED',
-  'REJECTED',
-])
-
-export const memberCategory = pgEnum('member_category', ['ACTIF', 'RETRAITE', 'ADMINISTRATIF', 'AUTRE'])
-
-/** Compteur des numéros d'adhérent, attribués à la validation de l'adhésion. */
-export const memberNumberSeq = pgSequence('member_number_seq', { startWith: 1 })
+export const userStatus = pgEnum('user_status', ['ACTIVE', 'SUSPENDED'])
 
 export const users = pgTable(
   'users',
@@ -63,24 +47,12 @@ export const users = pgTable(
     passwordHash: text().notNull(),
     firstName: text().notNull(),
     lastName: text().notNull(),
-    phone: text(),
-    category: memberCategory().notNull(),
-    /** Service d'affectation déclaré, utilisé par le bureau pour vérifier l'éligibilité. */
-    assignment: text(),
-    role: userRole().notNull().default('MEMBER'),
-    status: userStatus().notNull().default('PENDING_VERIFICATION'),
-    emailVerifiedAt: timestamp({ withTimezone: true }),
-    memberNumber: text(),
-    /** Date de fin de validité de la cotisation (incluse). */
-    membershipValidUntil: date({ mode: 'string' }),
-    reviewedAt: timestamp({ withTimezone: true }),
-    reviewedById: uuid().references((): AnyPgColumn => users.id, { onDelete: 'set null' }),
+    role: userRole().notNull().default('BUREAU'),
+    status: userStatus().notNull().default('ACTIVE'),
     ...timestamps,
   },
   (t) => [
     uniqueIndex('users_email_key').on(t.email),
-    uniqueIndex('users_member_number_key').on(t.memberNumber),
-    index('users_status_idx').on(t.status),
     check('users_email_lowercase', sql`${t.email} = lower(${t.email})`),
   ],
 )
@@ -100,12 +72,12 @@ export const sessions = pgTable(
   (t) => [index('sessions_user_id_idx').on(t.userId), index('sessions_expires_at_idx').on(t.expiresAt)],
 )
 
-export const tokenPurpose = pgEnum('token_purpose', ['EMAIL_VERIFICATION', 'PASSWORD_RESET'])
+export const tokenPurpose = pgEnum('token_purpose', ['PASSWORD_RESET'])
 
 export const userTokens = pgTable(
   'user_tokens',
   {
-    /** Empreinte SHA-256 du jeton envoyé par email. */
+    /** Empreinte SHA-256 du jeton envoyé par email (réinitialisation du mot de passe). */
     id: text().primaryKey(),
     userId: uuid()
       .notNull()
@@ -118,7 +90,7 @@ export const userTokens = pgTable(
   (t) => [index('user_tokens_user_purpose_idx').on(t.userId, t.purpose)],
 )
 
-/** Compteurs de limitation de débit (connexion, inscription, contact…). */
+/** Compteurs de limitation de débit (connexion, commandes, contact…). */
 export const rateLimits = pgTable('rate_limits', {
   key: text().primaryKey(),
   count: integer().notNull(),
@@ -192,8 +164,6 @@ export const offers = pgTable(
     validUntil: date({ mode: 'string' }),
     /** Au-delà de cette date, les commandes sont fermées. */
     orderDeadline: timestamp({ withTimezone: true }),
-    /** Quantité totale maximale par adhérent pour cette offre, tous tarifs confondus. */
-    maxPerMember: integer(),
     /** Visuel de l'offre ; à défaut, un visuel de catégorie est affiché. */
     imageId: uuid().references(() => media.id, { onDelete: 'set null' }),
     /** Mise en avant dans la rubrique « À la une ». */
@@ -209,7 +179,6 @@ export const offers = pgTable(
   (t) => [
     uniqueIndex('offers_slug_key').on(t.slug),
     index('offers_status_idx').on(t.status),
-    check('offers_max_per_member_positive', sql`${t.maxPerMember} is null or ${t.maxPerMember} > 0`),
     check('offers_event_has_date', sql`${t.kind} <> 'EVENT' or ${t.eventStartsAt} is not null`),
   ],
 )
@@ -242,64 +211,9 @@ export const offerTariffs = pgTable(
   ],
 )
 
-export const orderStatus = pgEnum('order_status', ['PENDING_PAYMENT', 'PAID', 'DELIVERED', 'CANCELLED'])
-
-export const orders = pgTable(
-  'orders',
-  {
-    id: uuid().primaryKey().defaultRandom(),
-    /** Numéro séquentiel lisible, affiché sous forme de référence (ex. C-000042). */
-    number: integer().generatedAlwaysAsIdentity(),
-    userId: uuid()
-      .notNull()
-      .references(() => users.id, { onDelete: 'restrict' }),
-    offerId: uuid()
-      .notNull()
-      .references(() => offers.id, { onDelete: 'restrict' }),
-    status: orderStatus().notNull().default('PENDING_PAYMENT'),
-    totalCents: integer().notNull(),
-    /** Clé fournie par le formulaire : une double soumission ne crée pas deux commandes. */
-    idempotencyKey: text().notNull(),
-    paidAt: timestamp({ withTimezone: true }),
-    deliveredAt: timestamp({ withTimezone: true }),
-    cancelledAt: timestamp({ withTimezone: true }),
-    ...timestamps,
-  },
-  (t) => [
-    uniqueIndex('orders_number_key').on(t.number),
-    uniqueIndex('orders_user_idempotency_key').on(t.userId, t.idempotencyKey),
-    index('orders_user_id_idx').on(t.userId),
-    index('orders_offer_id_idx').on(t.offerId),
-    index('orders_status_idx').on(t.status),
-    check('orders_total_positive', sql`${t.totalCents} >= 0`),
-  ],
-)
-
-export const orderLines = pgTable(
-  'order_lines',
-  {
-    id: uuid().primaryKey().defaultRandom(),
-    orderId: uuid()
-      .notNull()
-      .references(() => orders.id, { onDelete: 'cascade' }),
-    tariffId: uuid()
-      .notNull()
-      .references(() => offerTariffs.id, { onDelete: 'restrict' }),
-    label: text().notNull(),
-    unitPriceCents: integer().notNull(),
-    quantity: integer().notNull(),
-  },
-  (t) => [
-    index('order_lines_order_id_idx').on(t.orderId),
-    index('order_lines_tariff_id_idx').on(t.tariffId),
-    check('order_lines_quantity_positive', sql`${t.quantity} > 0`),
-    check('order_lines_unit_price_positive', sql`${t.unitPriceCents} >= 0`),
-  ],
-)
-
 /**
- * Demande de commande déposée sur le site avant le paiement sur HelloAsso. Le bureau y
- * retrouve aussi les personnes qui n'ont pas finalisé leur paiement.
+ * Commande passée depuis la fiche d'une offre (nom, prénom, email). Le bureau la suit dans
+ * son espace et note le règlement une fois reçu.
  */
 export const offerRequests = pgTable(
   'offer_requests',
@@ -312,7 +226,7 @@ export const offerRequests = pgTable(
     lastName: text().notNull(),
     email: text().notNull(),
     phone: text(),
-    /** Paiement constaté par le bureau sur HelloAsso. */
+    /** Règlement constaté par le bureau. */
     paidAt: timestamp({ withTimezone: true }),
     paidMarkedById: uuid().references(() => users.id, { onDelete: 'set null' }),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
@@ -334,7 +248,7 @@ export const partners = pgTable(
     /** Résumé de l'avantage, ex. « Tarif préférentiel sur l'abonnement annuel ». */
     advantage: text().notNull(),
     description: text(),
-    /** Code ou démarche, visible uniquement des adhérents à jour. */
+    /** Code ou démarche pour bénéficier de l'avantage, affiché sur la page publique « Partenaires ». */
     howToBenefit: text().notNull(),
     websiteUrl: text(),
     published: boolean().notNull().default(false),
@@ -345,8 +259,6 @@ export const partners = pgTable(
 
 // ─── Actualités ──────────────────────────────────────────────────────────────
 
-export const newsVisibility = pgEnum('news_visibility', ['PUBLIC', 'MEMBERS'])
-
 export const news = pgTable(
   'news',
   {
@@ -355,7 +267,6 @@ export const news = pgTable(
     title: text().notNull(),
     excerpt: text().notNull(),
     body: text().notNull(),
-    visibility: newsVisibility().notNull().default('PUBLIC'),
     /** Photo d'illustration, affichée en tête de l'article et dans les listes. */
     imageId: uuid().references(() => media.id, { onDelete: 'set null' }),
     status: publicationStatus().notNull().default('DRAFT'),
@@ -380,12 +291,11 @@ export const highlights = pgTable(
     id: uuid().primaryKey().defaultRandom(),
     title: text().notNull(),
     body: text().notNull(),
-    /** Lien facultatif : chemin interne (/espace/…) ou adresse https. */
+    /** Lien facultatif : chemin interne (/offres/…) ou adresse https. */
     linkUrl: text(),
     linkLabel: text(),
     tone: highlightTone().notNull().default('RED'),
     imageId: uuid().references(() => media.id, { onDelete: 'set null' }),
-    visibility: newsVisibility().notNull().default('PUBLIC'),
     published: boolean().notNull().default(false),
     /** Période d'affichage facultative. */
     startsAt: timestamp({ withTimezone: true }),
@@ -462,20 +372,15 @@ export const auditLogs = pgTable(
 export type User = typeof users.$inferSelect
 export type UserRole = (typeof userRole.enumValues)[number]
 export type UserStatus = (typeof userStatus.enumValues)[number]
-export type MemberCategory = (typeof memberCategory.enumValues)[number]
 export type Offer = typeof offers.$inferSelect
 export type OfferTariff = typeof offerTariffs.$inferSelect
 export type OfferKind = (typeof offerKind.enumValues)[number]
 export type OfferCategory = (typeof offerCategory.enumValues)[number]
 export type PublicationStatus = (typeof publicationStatus.enumValues)[number]
-export type Order = typeof orders.$inferSelect
-export type OrderLine = typeof orderLines.$inferSelect
-export type OrderStatus = (typeof orderStatus.enumValues)[number]
 export type OfferRequest = typeof offerRequests.$inferSelect
 export type SiteSettings = typeof siteSettings.$inferSelect
 export type Partner = typeof partners.$inferSelect
 export type News = typeof news.$inferSelect
-export type NewsVisibility = (typeof newsVisibility.enumValues)[number]
 export type Highlight = typeof highlights.$inferSelect
 export type HighlightTone = (typeof highlightTone.enumValues)[number]
 export type Media = typeof media.$inferSelect

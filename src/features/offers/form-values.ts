@@ -16,7 +16,6 @@ export const EMPTY_OFFER: OfferFormValues = {
   eventStartsAt: '',
   validUntil: '',
   orderDeadline: '',
-  maxPerMember: '',
   imageId: null,
   featured: false,
   pricesPublic: true,
@@ -25,7 +24,7 @@ export const EMPTY_OFFER: OfferFormValues = {
 }
 
 /** Convertit une offre en base en valeurs de formulaire (montants en euros, dates à l'heure de Paris). */
-export function offerToFormValues(offer: OfferWithTariffs, lockedTariffIds: Set<string>): OfferFormValues {
+export function offerToFormValues(offer: OfferWithTariffs): OfferFormValues {
   return {
     id: offer.id,
     title: offer.title,
@@ -39,7 +38,6 @@ export function offerToFormValues(offer: OfferWithTariffs, lockedTariffIds: Set<
     eventStartsAt: toParisDateTimeInput(offer.eventStartsAt),
     validUntil: offer.validUntil ?? '',
     orderDeadline: toParisDateTimeInput(offer.orderDeadline),
-    maxPerMember: offer.maxPerMember?.toString() ?? '',
     imageId: offer.imageId,
     featured: offer.featured,
     pricesPublic: offer.pricesPublic,
@@ -52,7 +50,6 @@ export function offerToFormValues(offer: OfferWithTariffs, lockedTariffIds: Set<
       publicPrice: centsToInput(tariff.publicPriceCents),
       stock: tariff.stock?.toString() ?? '',
       active: tariff.active,
-      locked: lockedTariffIds.has(tariff.id),
     })),
   }
 }

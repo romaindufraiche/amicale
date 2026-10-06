@@ -2,10 +2,9 @@ import 'server-only'
 import { and, asc, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm'
 import { db } from '@/server/db/client'
 import {
+  offerRequests,
   offers,
   offerTariffs,
-  orderLines,
-  orders,
   type OfferCategory,
   type PublicationStatus,
 } from '@/server/db/schema'
@@ -98,16 +97,6 @@ export async function getPublishedOfferById(id: string): Promise<OfferWithTariff
   return { ...offer, tariffs: await tariffsFor([offer.id]) }
 }
 
-/** Nombre de billets déjà commandés (hors annulations) par un adhérent pour une offre. */
-export async function quantityOrderedBy(userId: string, offerId: string): Promise<number> {
-  const [row] = await db
-    .select({ total: sql<number>`coalesce(sum(${orderLines.quantity}), 0)::int` })
-    .from(orderLines)
-    .innerJoin(orders, eq(orders.id, orderLines.orderId))
-    .where(and(eq(orders.userId, userId), eq(orders.offerId, offerId), sql`${orders.status} <> 'CANCELLED'`))
-  return row?.total ?? 0
-}
-
 // ─── Back-office ────────────────────────────────────────────────────────────
 
 export async function listOffersForAdmin(status?: PublicationStatus) {
@@ -124,7 +113,7 @@ export async function listOffersForAdmin(status?: PublicationStatus) {
       eventStartsAt: offers.eventStartsAt,
       orderDeadline: offers.orderDeadline,
       updatedAt: offers.updatedAt,
-      ordersCount: sql<number>`(select count(*)::int from ${orders} where ${orders.offerId} = ${offers.id} and ${orders.status} <> 'CANCELLED')`,
+      requestsCount: sql<number>`(select count(*)::int from ${offerRequests} where ${offerRequests.offerId} = ${offers.id})`,
     })
     .from(offers)
     .where(status ? eq(offers.status, status) : undefined)
@@ -136,14 +125,4 @@ export async function getOfferForAdmin(id: string): Promise<OfferWithTariffs | n
   const [offer] = await db.select().from(offers).where(eq(offers.id, id)).limit(1)
   if (!offer) return null
   return { ...offer, tariffs: await tariffsFor([offer.id]) }
-}
-
-/** Identifiants des tarifs déjà utilisés dans une commande (non supprimables). */
-export async function tariffIdsWithOrders(offerId: string): Promise<Set<string>> {
-  const rows = await db
-    .selectDistinct({ tariffId: orderLines.tariffId })
-    .from(orderLines)
-    .innerJoin(offerTariffs, eq(offerTariffs.id, orderLines.tariffId))
-    .where(eq(offerTariffs.offerId, offerId))
-  return new Set(rows.map((row) => row.tariffId))
 }

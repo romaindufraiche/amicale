@@ -12,10 +12,7 @@ export const SESSION_COOKIE = isProduction ? '__Host-amicale_session' : 'amicale
 const SESSION_TTL_MS = 14 * 24 * 60 * 60 * 1000
 const RENEW_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000
 
-export type SessionUser = Pick<
-  User,
-  'id' | 'email' | 'firstName' | 'lastName' | 'role' | 'status' | 'memberNumber' | 'membershipValidUntil'
->
+export type SessionUser = Pick<User, 'id' | 'email' | 'firstName' | 'lastName' | 'role' | 'status'>
 
 export type CurrentSession = { sessionId: string; user: SessionUser }
 
@@ -56,8 +53,6 @@ export const getCurrentSession = cache(async (): Promise<CurrentSession | null> 
         lastName: users.lastName,
         role: users.role,
         status: users.status,
-        memberNumber: users.memberNumber,
-        membershipValidUntil: users.membershipValidUntil,
       },
     })
     .from(sessions)
@@ -66,9 +61,9 @@ export const getCurrentSession = cache(async (): Promise<CurrentSession | null> 
     .limit(1)
 
   if (!row) return null
-  if (row.user.status === 'SUSPENDED' || row.user.status === 'REJECTED') return null
+  if (row.user.status === 'SUSPENDED') return null
 
-  // Expiration glissante : la session est prolongée tant que l'adhérent revient.
+  // Expiration glissante : la session est prolongée tant que le membre du bureau revient.
   // Le cookie est rafraîchi en parallèle par le proxy (src/proxy.ts).
   if (row.expiresAt.getTime() - Date.now() < RENEW_THRESHOLD_MS) {
     await db

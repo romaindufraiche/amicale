@@ -5,7 +5,6 @@ import { Alert } from '@/components/ui/alert'
 import { AuthShell } from '@/features/auth/components/auth-shell'
 import { LoginForm } from '@/features/auth/components/login-form'
 import { safeRedirectPath } from '@/lib/safe-redirect'
-import { homePathFor } from '@/server/auth/guards'
 import { getCurrentSession } from '@/server/auth/session'
 
 export const metadata: Metadata = {
@@ -20,7 +19,7 @@ export default async function LoginPage({ searchParams }: Props) {
   const params = await searchParams
   const next = params.next ? safeRedirectPath(params.next) : undefined
   const session = await getCurrentSession()
-  if (session) redirect(next ?? homePathFor(session.user.role))
+  if (session) redirect(next ?? '/admin')
 
   return (
     <AuthShell eyebrow="Espace bureau" title="Connexion">

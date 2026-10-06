@@ -8,7 +8,7 @@ import { updateSiteSettings } from '@/features/settings/service'
 import { getSiteSettings } from '@/features/settings/queries'
 import { db } from '@/server/db/client'
 import { auditLogs, offerRequests } from '@/server/db/schema'
-import { createMember, createOffer, resetDatabase } from '../support/db'
+import { createBureauUser, createOffer, resetDatabase } from '../support/db'
 
 const PERSON = { firstName: 'Camille', lastName: 'Exemple', email: 'camille@example.fr' }
 const HELLOASSO = 'https://www.helloasso.com/associations/exemple/evenements/offre'
@@ -26,7 +26,7 @@ describe('submitOfferRequest', () => {
   })
 
   it('envoie un email à l’adresse de réception des commandes', async () => {
-    const admin = await createMember({ role: 'ADMIN' })
+    const admin = await createBureauUser({ role: 'ADMIN' })
     await updateSiteSettings(admin.id, { membershipUrl: null, ordersEmail: 'commandes@example.org' })
     const { offer } = await createOffer({ title: 'Sortie au zoo' })
     const before = Date.now()
@@ -77,7 +77,7 @@ describe('setRequestPaid', () => {
   beforeEach(resetDatabase)
 
   it('note puis retire le paiement, avec trace dans le journal', async () => {
-    const admin = await createMember({ role: 'BUREAU' })
+    const admin = await createBureauUser({ role: 'BUREAU' })
     const { offer } = await createOffer()
     await submitOfferRequest({ ...PERSON, offerId: offer.id }, '203.0.113.4')
     const [request] = await db.select().from(offerRequests)
@@ -101,7 +101,7 @@ describe('réglages du site', () => {
   beforeEach(resetDatabase)
 
   it('crée puis met à jour la ligne unique de réglages', async () => {
-    const admin = await createMember({ role: 'ADMIN' })
+    const admin = await createBureauUser({ role: 'ADMIN' })
     expect(await getSiteSettings()).toEqual({ membershipUrl: null, ordersEmail: null })
     await updateSiteSettings(admin.id, { membershipUrl: HELLOASSO, ordersEmail: null })
     await updateSiteSettings(admin.id, {

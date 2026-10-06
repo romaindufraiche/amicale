@@ -6,24 +6,24 @@ type NewOfferTariffInput = Omit<typeof offerTariffs.$inferInsert, 'offerId' | 'p
 
 export async function resetDatabase() {
   await db.execute(
-    sql`truncate audit_logs, contact_messages, highlights, media, news, partners, offer_requests, site_settings, order_lines, orders, offer_tariffs, offers, user_tokens, sessions, rate_limits, users restart identity cascade`,
+    sql`truncate audit_logs, contact_messages, highlights, media, news, partners, offer_requests, site_settings, offer_tariffs, offers, user_tokens, sessions, rate_limits, users restart identity cascade`,
   )
 }
 
 let counter = 0
 
-export async function createMember(overrides: Partial<typeof users.$inferInsert> = {}) {
+/** Compte du bureau (les adhérents n'ont pas de compte). */
+export async function createBureauUser(overrides: Partial<typeof users.$inferInsert> = {}) {
   counter += 1
   const [user] = await db
     .insert(users)
     .values({
-      email: `adherent${counter}@test.local`,
+      email: `bureau${counter}@test.local`,
       passwordHash: 'not-used',
       firstName: 'Test',
-      lastName: `Adhérent ${counter}`,
-      category: 'ACTIF',
+      lastName: `Bureau ${counter}`,
+      role: 'BUREAU',
       status: 'ACTIVE',
-      membershipValidUntil: '2099-12-31',
       ...overrides,
     })
     .returning()

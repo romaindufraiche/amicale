@@ -6,10 +6,7 @@ import type { UserRole } from '@/server/db/schema'
  */
 const PERMISSIONS = {
   'admin:access': ['BUREAU', 'ADMIN'],
-  'members:manage': ['BUREAU', 'ADMIN'],
-  'members:roles': ['ADMIN'],
   'offers:manage': ['BUREAU', 'ADMIN'],
-  'orders:manage': ['BUREAU', 'ADMIN'],
   'requests:manage': ['BUREAU', 'ADMIN'],
   'settings:manage': ['BUREAU', 'ADMIN'],
   'news:manage': ['BUREAU', 'ADMIN'],

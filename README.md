@@ -1,6 +1,6 @@
 # ADPVO — Amicale des Policiers du Val d'Oise
 
-Plateforme web de l'Amicale, pensée comme un site de CSE :
+Plateforme web de l'Amicale, pensée comme un site de CSE. **Les adhérents n'ont pas de compte** : seuls les membres du bureau se connectent, pour administrer le site.
 
 - **site public** : présentation, catalogue des offres (`/offres`, tarifs affichés ou non au choix du bureau pour chaque offre), adhésion, actualités, contact (formulaire et bouton WhatsApp), pages légales ;
 - **espace bureau** : commandes (règlement, export CSV), réglages (lien HelloAsso d'adhésion, adresse qui reçoit les commandes), offres et tarifs, posts « À la une », actualités, partenaires, messages, journal d'audit.
@@ -14,9 +14,6 @@ La commande est enregistrée, un email est envoyé à l'adresse choisie dans **R
 export CSV). Facultatif : si un lien HelloAsso est renseigné dans la fiche de l'offre, la personne y est
 dirigée pour payer après sa commande. Le site ne voit aucune donnée bancaire. Les emails ne partent
 réellement qu'avec un serveur d'envoi configuré (`MAIL_TRANSPORT=smtp`, voir `docs/EXPLOITATION.md`).
-
-> L'ancien espace adhérent (comptes adhérents, commandes réglées hors ligne) n'est plus relié au site ;
-> sa suppression complète du code et de la base est en attente de validation.
 
 > ⚠️ **Avant la mise en production**, le bureau doit fournir les informations listées dans
 > [`docs/CONTENU.md`](docs/CONTENU.md) : logo en fichier, coordonnées, mentions légales,
@@ -39,16 +36,13 @@ pnpm db:seed:demo               # données de démonstration (développement uni
 pnpm dev                        # http://localhost:3000
 ```
 
-Comptes de démonstration (mot de passe `demo-mot-de-passe`) :
+Compte de démonstration du bureau (mot de passe `demo-mot-de-passe`) :
 
-| Compte                | Rôle                                   |
-| --------------------- | -------------------------------------- |
-| `bureau@demo.local`   | administrateur (espace bureau complet) |
-| `adherent@demo.local` | adhérent à jour de cotisation          |
-| `demande@demo.local`  | demande d'adhésion en attente          |
-| `retraite@demo.local` | seconde demande d'adhésion en attente  |
+| Compte              | Rôle                                   |
+| ------------------- | -------------------------------------- |
+| `bureau@demo.local` | administrateur (espace bureau complet) |
 
-Le jeu de démonstration contient 17 offres **fictives** (cinéma, parcs, spectacles, sport, voyages, sorties de l'Amicale), 5 partenaires, 4 actualités et quelques commandes. Aucune enseigne réelle n'est citée. Sans photo, chaque offre affiche un visuel de sa catégorie ; pour ajouter une vraie photo, glissez-déposez-la dans le formulaire de l'offre (espace bureau).
+Le jeu de démonstration contient 17 offres **fictives** (cinéma, parcs, spectacles, sport, voyages, sorties de l'Amicale), 5 partenaires, 4 actualités et 3 commandes, toutes fictives. Aucune enseigne réelle n'est citée. Sans photo, chaque offre affiche un visuel de sa catégorie ; pour ajouter une vraie photo, glissez-déposez-la dans le formulaire de l'offre (espace bureau).
 
 En développement, les emails ne sont pas envoyés : ils sont écrits en JSON dans `.outbox/` (liens de confirmation, de réinitialisation, etc.).
 
@@ -95,7 +89,5 @@ Choix justifiés dans [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 Non implémentées volontairement. Aucune n'est présentée comme disponible dans l'interface.
 
-- Paiement en ligne (HelloAsso, Stripe…) : webhook authentifié et idempotent, qui passe la commande à « Réglée ».
+- Rapprochement automatique des paiements HelloAsso (API HelloAsso) : la commande passerait seule à « Réglée ».
 - Double authentification (TOTP) pour les comptes du bureau.
-- Images des offres (téléversement contrôlé, recadrage, formats modernes).
-- Renouvellement de cotisation en ligne.

@@ -17,7 +17,6 @@ export type HighlightFormValues = {
   linkLabel: string
   tone: string
   imageId: string | null
-  visibility: string
   startsAt: string
   endsAt: string
   position: string
@@ -25,11 +24,6 @@ export type HighlightFormValues = {
 }
 
 const TONE_OPTIONS = HIGHLIGHT_TONE_VALUES.map((value) => ({ value, label: HIGHLIGHT_TONES[value].label }))
-const VISIBILITY_OPTIONS = [
-  { value: 'PUBLIC', label: 'Tout le monde (page d’accueil et espace adhérent)' },
-  { value: 'MEMBERS', label: 'Adhérents connectés uniquement' },
-]
-
 export function HighlightForm({ initial }: { initial: HighlightFormValues }) {
   const [state, formAction] = useActionState(saveHighlightAction, idleState)
   const v = state.values
@@ -101,14 +95,6 @@ export function HighlightForm({ initial }: { initial: HighlightFormValues }) {
           error={e?.position}
         />
       </div>
-      <SelectField
-        name="visibility"
-        label="Visible par"
-        required
-        options={VISIBILITY_OPTIONS}
-        defaultValue={value('visibility')}
-        error={e?.visibility}
-      />
       <div className="grid gap-6 sm:grid-cols-2">
         <TextField
           name="startsAt"

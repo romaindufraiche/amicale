@@ -10,7 +10,7 @@ import { NavLink } from './nav-link'
 export type AppNavItem = { href: string; label: string; exact?: boolean }
 
 /**
- * Gabarit des espaces connectés (adhérent et bureau) : en-tête compact,
+ * Gabarit de l'espace bureau : en-tête compact,
  * navigation en onglets défilante sur mobile, contenu centré.
  */
 export function AppShell({
@@ -44,9 +44,9 @@ export function AppShell({
               <span className="block font-semibold">
                 {user.firstName} {user.lastName}
               </span>
-              {user.memberNumber ? (
-                <span className="text-ink-muted tabular">N° {user.memberNumber}</span>
-              ) : null}
+              <Link href="/admin/compte" className="link text-ink-muted">
+                Mon compte
+              </Link>
             </p>
             <form action={logoutAction}>
               <button

@@ -16,14 +16,12 @@ import { CATEGORY_ICONS } from './offer-visual'
 type OfferCatalogProps = {
   offers: OfferWithTariffs[]
   params: CatalogParams
-  /** Chemin du catalogue : `/offres` (public) ou `/espace/billetterie` (adhérents). */
+  /** Chemin du catalogue, pour les liens de filtre et de fiche. */
   basePath: string
-  /** `public` : les tarifs des offres qui les réservent aux adhérents sont masqués. */
-  audience: 'member' | 'public'
 }
 
 /** Catalogue des offres : recherche, tri, catégories, offres à la une puis liste complète. */
-export function OfferCatalog({ offers, params, basePath, audience }: OfferCatalogProps) {
+export function OfferCatalog({ offers, params, basePath }: OfferCatalogProps) {
   const { category, search, sort } = params
   const now = new Date()
   const today = parisDay(now)
@@ -132,7 +130,7 @@ export function OfferCatalog({ offers, params, basePath, audience }: OfferCatalo
                   offer={offer}
                   availability={availability}
                   href={`${basePath}/${offer.slug}`}
-                  hidePrices={audience === 'public' && !offer.pricesPublic}
+                  hidePrices={!offer.pricesPublic}
                   size="large"
                   headingLevel="h2"
                 />
@@ -159,7 +157,7 @@ export function OfferCatalog({ offers, params, basePath, audience }: OfferCatalo
                   offer={offer}
                   availability={availability}
                   href={`${basePath}/${offer.slug}`}
-                  hidePrices={audience === 'public' && !offer.pricesPublic}
+                  hidePrices={!offer.pricesPublic}
                   headingLevel="h2"
                 />
               </li>

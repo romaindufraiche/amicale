@@ -11,7 +11,7 @@ import { setOfferStatusAction } from '@/features/offers/actions'
 import { OfferForm } from '@/features/offers/components/offer-form'
 import { offerToFormValues } from '@/features/offers/form-values'
 import { PUBLICATION_STATUS_LABELS } from '@/features/offers/labels'
-import { getOfferForAdmin, tariffIdsWithOrders } from '@/features/offers/queries'
+import { getOfferForAdmin } from '@/features/offers/queries'
 import { requirePermission } from '@/server/auth/guards'
 
 export const metadata: Metadata = { title: 'Modifier une offre' }
@@ -24,7 +24,6 @@ export default async function EditOfferPage({ params, searchParams }: Props) {
   const offerId = z.uuid().safeParse(id)
   const offer = offerId.success ? await getOfferForAdmin(offerId.data) : null
   if (!offer) notFound()
-  const locked = await tariffIdsWithOrders(offer.id)
   const saved = (await searchParams).enregistree === '1'
 
   return (
@@ -65,14 +64,14 @@ export default async function EditOfferPage({ params, searchParams }: Props) {
                 label="Archiver"
                 variant="ghost"
                 size="md"
-                confirm="Archiver cette offre ? Elle ne sera plus visible des adhérents ; les commandes existantes sont conservées."
+                confirm="Archiver cette offre ? Elle ne sera plus visible sur le site ; ses commandes sont conservées."
               />
             ) : null}
           </div>
         }
       />
       {saved ? <Alert tone="success" title="Offre enregistrée." /> : null}
-      <OfferForm key={offer.updatedAt.toISOString()} initial={offerToFormValues(offer, locked)} />
+      <OfferForm key={offer.updatedAt.toISOString()} initial={offerToFormValues(offer)} />
     </>
   )
 }

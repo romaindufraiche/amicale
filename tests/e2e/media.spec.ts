@@ -25,7 +25,7 @@ test('le bureau ajoute une image à une offre par glisser-déposer', async ({ pa
   await page.getByRole('button', { name: 'Enregistrer les modifications' }).click()
   await expect(page.getByText('Offre enregistrée.')).toBeVisible()
 
-  await page.goto('/espace/billetterie?categorie=FAMILLE')
+  await page.goto('/offres?categorie=FAMILLE')
   const card = page.getByRole('article').filter({ hasText: 'Aquarium et tunnel des requins' })
   const image = card.locator('img')
   await expect(image).toHaveAttribute('src', /\/media\/[0-9a-f-]+/)
@@ -33,9 +33,9 @@ test('le bureau ajoute une image à une offre par glisser-déposer', async ({ pa
   expect(response.headers()['content-type']).toBe('image/webp')
 })
 
-test('un visiteur non autorisé ne peut pas téléverser d’image', async ({ page }) => {
-  await login(page, 'adherent@demo.local')
-  expect((await page.goto('/admin/offres'))?.status()).toBe(404)
+test('un visiteur non connecté n’accède pas à l’espace bureau', async ({ page }) => {
+  await page.goto('/admin/offres')
+  await expect(page).toHaveURL(/\/connexion\?next=%2Fadmin/)
 })
 
 test('une photo lourde est réduite dans le navigateur puis ajoutée à une actualité', async ({ page }) => {

@@ -11,7 +11,7 @@ Palette revue à la demande du client, **inspirée des couleurs d'Emile's** (pla
 
 > **Logo** : fichier fourni par le client (`public/brand/logo-adpvo-original.jpeg`), marges blanches
 > retirées dans `logo-adpvo.png`, déclaré dans `src/config/site.ts`. Fourni sur fond blanc, il est fondu
-> dans le fond (`mix-blend-multiply`). Sur fond sombre (pied de page, carte d'adhérent), le sigle
+> dans le fond (`mix-blend-multiply`). Sur fond sombre (pied de page), le sigle
 > est composé en texte en attendant une version « négatif » du logo.
 
 Tous les tokens sont définis dans `src/app/globals.css` (`@theme`). Les échelles par défaut de Tailwind sont **supprimées** : une couleur, une ombre ou un rayon qui n'est pas un token n'existe pas.
@@ -22,7 +22,7 @@ Tous les tokens sont définis dans `src/app/globals.css` (`@theme`). Les échell
 | -------------------------- | --------------------- | ------------------------------------------------------------------------ |
 | `paper` / `sunken`         | `#f6fafd` / `#eaf3f9` | fond sous le halo bleu flouté (`body`) / zones en retrait                |
 | `blue-600`                 | `#005b89`             | **bleu pétrole, couleur d'action** : boutons, liens actifs (blanc 7,3:1) |
-| `blue-800` / `blue-900`    | `#003f62` / `#012551` | bandeau d'accueil / pied de page et carte d'adhérent                     |
+| `blue-800` / `blue-900`    | `#003f62` / `#012551` | bandeau d'accueil / pied de page                                         |
 | `blue-500`                 | `#4b8bac`             | filet signature, focus clavier, icônes                                   |
 | `amber-300`                | `#fdc291`             | pêche : « 95 », réductions, mises en avant                               |
 | `rose-600`                 | `#a61866`             | framboise : bandeau contact, trait des surtitres, accent                 |
@@ -30,7 +30,7 @@ Tous les tokens sont définis dans `src/app/globals.css` (`@theme`). Les échell
 | `surface`                  | `#ffffff`             | panneaux, formulaires, cartes                                            |
 | `line` / `line-strong`     | `#dde8f0` / `#7a8794` | filets / bordures de champs (≥ 3:1)                                      |
 | `ink` / `ink-muted`        | `#1b1713` / `#5c5349` | texte (16,7:1) / texte secondaire (7:1)                                  |
-| `night-900…700`            | `#1f1a16`…            | surfaces sombres (pied de page, carte d'adhérent)                        |
+| `night-900…700`            | `#1f1a16`…            | surfaces sombres                                                         |
 | `red-700`                  | `#b5251d`             | survol, texte rouge sur fond clair (6:1)                                 |
 | `red-500`                  | `#f4433b`             | rouge du logo, **grands éléments uniquement** (« 95 », « VO »)           |
 | `success/warning/danger-*` |                       | états fonctionnels, toujours accompagnés d'une icône ou d'un libellé     |
@@ -67,13 +67,12 @@ Longueur de ligne limitée à `max-w-prose` (42 rem) pour la lecture.
 
 ## Motifs de marque
 
-| Motif                              | Où                                               | Pourquoi                                                                                                 |
-| ---------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| `brand-rule`                       | pied de page, étapes, carte d'adhérent, articles | liseré tricolore dégradé (bleu, blanc, rouge du drapeau) ; l'en-tête n'en a plus, à la demande du client |
-| Le « 95 »                          | accueil, 404                                     | identité départementale, en rouge du logo                                                                |
-| Billet perforé                     | catalogue de billetterie                         | fonctionnel : talon = prix, distingue ce qui se commande                                                 |
-| Surtitre à trait rouge (`Eyebrow`) | en-têtes de sections                             | repère de lecture constant                                                                               |
-| Carte d'adhérent                   | tableau de bord                                  | numéro et validité de cotisation d'un coup d'œil                                                         |
+| Motif                              | Où                             | Pourquoi                                                                                                 |
+| ---------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `brand-rule`                       | pied de page, étapes, articles | liseré tricolore dégradé (bleu, blanc, rouge du drapeau) ; l'en-tête n'en a plus, à la demande du client |
+| Le « 95 »                          | accueil, 404                   | identité départementale, en rouge du logo                                                                |
+| Billet perforé                     | catalogue de billetterie       | fonctionnel : talon = prix, distingue ce qui se commande                                                 |
+| Surtitre à trait rouge (`Eyebrow`) | en-têtes de sections           | repère de lecture constant                                                                               |
 
 ## Composants
 
@@ -86,5 +85,5 @@ Chaque composant interactif gère ses états : survol, focus visible (anneau ble
 - Un seul `h1` par page ; hiérarchie des titres continue.
 - Zones tactiles d'au moins 40 px (boutons `sm`) et 44–48 px pour la navigation et les boutons principaux.
 - Le rouge `red-500` ne sert jamais au texte courant (contraste insuffisant) ; utiliser `red-700`.
-- Les statuts (commande, adhésion) sont toujours écrits en toutes lettres, jamais signalés par la seule couleur.
+- Les statuts (commande, publication) sont toujours écrits en toutes lettres, jamais signalés par la seule couleur.
 - Pas de photos d'illustration génériques : si des visuels sont ajoutés, ce seront les photos réelles de l'Amicale.

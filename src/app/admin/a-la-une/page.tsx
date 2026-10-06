@@ -28,7 +28,7 @@ export default async function AdminHighlightsPage({ searchParams }: Props) {
       <PageHeader
         eyebrow="Espace bureau"
         title="À la une"
-        lead="Posts courts qui défilent en haut de la page d’accueil et du tableau de bord des adhérents."
+        lead="Posts courts qui défilent sur la page d’accueil du site."
         actions={
           <ButtonLink href="/admin/a-la-une/nouveau">
             <Plus aria-hidden className="size-4" /> Nouveau post
@@ -48,7 +48,6 @@ export default async function AdminHighlightsPage({ searchParams }: Props) {
           <thead>
             <tr>
               <Th>Post</Th>
-              <Th>Visible par</Th>
               <Th>Période</Th>
               <Th className="text-right">Ordre</Th>
               <Th>Statut</Th>
@@ -71,7 +70,6 @@ export default async function AdminHighlightsPage({ searchParams }: Props) {
                       </Link>
                     </span>
                   </Td>
-                  <Td>{item.visibility === 'PUBLIC' ? 'Tout le monde' : 'Adhérents'}</Td>
                   <Td className="tabular">
                     {item.startsAt || item.endsAt
                       ? `${item.startsAt ? `du ${formatShortDate(item.startsAt)}` : ''} ${item.endsAt ? `au ${formatShortDate(item.endsAt)}` : ''}`.trim()

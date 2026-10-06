@@ -10,15 +10,14 @@
  *   pnpm db:seed:demo
  */
 import 'dotenv/config'
-import { randomUUID } from 'node:crypto'
 import { sql } from 'drizzle-orm'
-import { changeOrderStatus, createOrder } from '@/features/orders/service'
 import { hashPassword } from '@/server/auth/password'
 import { db } from '@/server/db/client'
 import {
   contactMessages,
   highlights,
   news,
+  offerRequests,
   offers,
   offerTariffs,
   partners,
@@ -56,7 +55,6 @@ type DemoOffer = {
   eventHour?: number
   validForDays?: number
   closesInDays?: number
-  maxPerMember?: number
   pickupInfo?: string
   tariffs: DemoTariff[]
 }
@@ -76,7 +74,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     eventInDays: 75,
     eventHour: 14,
     closesInDays: 50,
-    maxPerMember: 6,
     pickupInfo: 'Accueil sur place sur présentation de votre numéro d’adhérent.',
     tariffs: [
       { label: 'Enfant (jusqu’à 12 ans)', member: 0, stock: 120 },
@@ -92,7 +89,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     summary: 'Billet daté 1 jour, accès à toutes les attractions et spectacles du parc.',
     description: `${DEMO}\n\nPlus de 40 attractions pour petits et grands, spectacles en continu et parades en fin de journée.`,
     validForDays: 240,
-    maxPerMember: 8,
     pickupInfo: E_TICKETS,
     tariffs: [
       { label: 'Adulte', member: 3900, public: 6200, stock: 8 },
@@ -111,7 +107,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     eventInDays: 32,
     eventHour: 21,
     closesInDays: 20,
-    maxPerMember: 4,
     pickupInfo: E_TICKETS,
     tariffs: [{ label: 'Tribune latérale', member: 2500, public: 4500, stock: 40 }],
   },
@@ -123,7 +118,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     summary: 'Valable pour toutes les séances 2D, 7 jours sur 7, dans le réseau partenaire.',
     description: `${DEMO}\n\nLe e-billet s’échange directement en caisse ou sur la borne contre une place pour la séance de votre choix.`,
     validForDays: 300,
-    maxPerMember: 20,
     pickupInfo: E_TICKETS,
     tariffs: [{ label: 'Place de cinéma', member: 750, public: 1350 }],
   },
@@ -135,7 +129,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     summary: 'Grand écran, son immersif et fauteuils inclinables.',
     description: `${DEMO}\n\nSupplément lunettes 3D éventuel à régler sur place.`,
     validForDays: 180,
-    maxPerMember: 10,
     pickupInfo: E_TICKETS,
     tariffs: [{ label: 'Place premium', member: 1190, public: 1950 }],
   },
@@ -178,7 +171,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     eventInDays: 46,
     eventHour: 20,
     closesInDays: 30,
-    maxPerMember: 4,
     pickupInfo: E_TICKETS,
     tariffs: [{ label: 'Catégorie 1', member: 3500, public: 5900, stock: 30 }],
   },
@@ -193,7 +185,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     eventInDays: 60,
     eventHour: 15,
     closesInDays: 40,
-    maxPerMember: 6,
     pickupInfo: E_TICKETS,
     tariffs: [
       { label: 'Adulte', member: 4200, public: 6900, stock: 25 },
@@ -224,7 +215,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     eventInDays: 18,
     eventHour: 14,
     closesInDays: 12,
-    maxPerMember: 5,
     pickupInfo: 'Rendez-vous sur place, liste des inscrits tenue par le bureau.',
     tariffs: [
       { label: 'Adulte', member: 1200, public: 2400, stock: 30 },
@@ -239,7 +229,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     summary: 'Accès libre aux murs de bloc et de voies, location de chaussons comprise.',
     description: `${DEMO}\n\nCarte nominative, valable un an à partir de la première utilisation.`,
     validForDays: 365,
-    maxPerMember: 2,
     pickupInfo: 'Carte remise lors de la permanence du bureau (démo).',
     tariffs: [{ label: 'Carte 10 entrées', member: 9000, public: 14000 }],
   },
@@ -254,7 +243,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     eventInDays: 40,
     eventHour: 7,
     closesInDays: 30,
-    maxPerMember: 3,
     tariffs: [{ label: 'Participant', member: 1500, stock: 24 }],
   },
   {
@@ -268,7 +256,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     eventInDays: 95,
     eventHour: 7,
     closesInDays: 60,
-    maxPerMember: 4,
     pickupInfo: 'Programme détaillé et convocation envoyés par email aux inscrits.',
     tariffs: [
       { label: 'Adulte (chambre double)', member: 11900, public: 18900, stock: 20 },
@@ -286,7 +273,6 @@ const DEMO_OFFERS: DemoOffer[] = [
     eventInDays: 130,
     eventHour: 8,
     closesInDays: 70,
-    maxPerMember: 5,
     tariffs: [{ label: 'Acompte par personne', member: 15000, stock: 25 }],
   },
   {
@@ -378,60 +364,22 @@ async function main() {
   }
 
   await db.execute(
-    sql`truncate audit_logs, contact_messages, highlights, media, news, partners, order_lines, orders, offer_tariffs, offers, user_tokens, sessions, rate_limits, users restart identity cascade`,
+    sql`truncate audit_logs, contact_messages, highlights, media, news, partners, offer_requests, offer_tariffs, offers, user_tokens, sessions, rate_limits, users restart identity cascade`,
   )
 
-  const passwordHash = await hashPassword(DEMO_PASSWORD)
-  const year = new Date().getFullYear()
-  const [bureau, member] = await db
+  // Seul le bureau a un compte : les adhérents n'en ont pas.
+  const [bureau] = await db
     .insert(users)
-    .values([
-      {
-        email: 'bureau@demo.local',
-        passwordHash,
-        firstName: 'Camille',
-        lastName: 'Démo',
-        category: 'ACTIF',
-        role: 'ADMIN',
-        status: 'ACTIVE',
-        emailVerifiedAt: new Date(),
-        memberNumber: `95-${year}-0001`,
-        membershipValidUntil: `${year}-12-31`,
-      },
-      {
-        email: 'adherent@demo.local',
-        passwordHash,
-        firstName: 'Alex',
-        lastName: 'Exemple',
-        category: 'ACTIF',
-        assignment: 'Service de démonstration',
-        status: 'ACTIVE',
-        emailVerifiedAt: new Date(),
-        memberNumber: `95-${year}-0002`,
-        membershipValidUntil: `${year}-12-31`,
-      },
-      {
-        email: 'demande@demo.local',
-        passwordHash,
-        firstName: 'Sam',
-        lastName: 'Candidat',
-        category: 'RETRAITE',
-        status: 'PENDING_APPROVAL',
-        emailVerifiedAt: new Date(),
-      },
-      {
-        email: 'retraite@demo.local',
-        passwordHash,
-        firstName: 'Dominique',
-        lastName: 'Illustration',
-        category: 'RETRAITE',
-        status: 'PENDING_APPROVAL',
-        emailVerifiedAt: new Date(),
-      },
-    ])
+    .values({
+      email: 'bureau@demo.local',
+      passwordHash: await hashPassword(DEMO_PASSWORD),
+      firstName: 'Camille',
+      lastName: 'Démo',
+      role: 'ADMIN',
+      status: 'ACTIVE',
+    })
     .returning({ id: users.id })
-  if (!bureau || !member) throw new Error('Comptes de démonstration non créés')
-  await db.execute(sql`alter sequence member_number_seq restart with 3`)
+  if (!bureau) throw new Error('Compte de démonstration non créé')
 
   const created = new Map<string, { offerId: string; tariffIds: string[] }>()
   for (const [index, offer] of DEMO_OFFERS.entries()) {
@@ -450,7 +398,6 @@ async function main() {
         eventStartsAt: offer.eventInDays !== undefined ? inDays(offer.eventInDays, offer.eventHour) : null,
         validUntil: offer.validForDays !== undefined ? isoDay(offer.validForDays) : null,
         orderDeadline: offer.closesInDays !== undefined ? inDays(offer.closesInDays, 23, 59) : null,
-        maxPerMember: offer.maxPerMember,
         pickupInfo: offer.pickupInfo,
         status: 'PUBLISHED',
         // Dates de publication échelonnées pour que le tri « Nouveautés » ait un sens.
@@ -474,24 +421,36 @@ async function main() {
     created.set(offer.slug, { offerId: row.id, tariffIds: tariffs.map((tariff) => tariff.id) })
   }
 
-  // Quelques commandes de l'adhérent de démonstration, passées par le vrai service métier.
-  async function order(slug: string, quantities: number[]) {
+  // Quelques commandes fictives, pour que la liste du bureau ne soit pas vide.
+  const orderFor = (slug: string) => {
     const target = created.get(slug)
     if (!target) throw new Error(`Offre inconnue : ${slug}`)
-    const { orderId } = await createOrder({
-      userId: member!.id,
-      offerId: target.offerId,
-      idempotencyKey: randomUUID(),
-      lines: target.tariffIds.map((tariffId, i) => ({ tariffId, quantity: quantities[i] ?? 0 })),
-    })
-    return orderId
+    return target.offerId
   }
-  const cinema = await order('cinema-e-billet', [4])
-  await changeOrderStatus(bureau.id, cinema, 'PAID')
-  await changeOrderStatus(bureau.id, cinema, 'DELIVERED')
-  const christmas = await order('arbre-de-noel-amicale', [2, 2])
-  await changeOrderStatus(bureau.id, christmas, 'PAID')
-  await order('match-football-premiere-division', [2])
+  await db.insert(offerRequests).values([
+    {
+      offerId: orderFor('cinema-e-billet'),
+      firstName: 'Alex',
+      lastName: 'Exemple',
+      email: 'alex.exemple@demo.local',
+      paidAt: inDays(-2),
+      paidMarkedById: bureau.id,
+      createdAt: inDays(-3),
+    },
+    {
+      offerId: orderFor('arbre-de-noel-amicale'),
+      firstName: 'Sam',
+      lastName: 'Démonstration',
+      email: 'sam.demonstration@demo.local',
+      createdAt: inDays(-1),
+    },
+    {
+      offerId: orderFor('match-football-premiere-division'),
+      firstName: 'Dominique',
+      lastName: 'Illustration',
+      email: 'dominique.illustration@demo.local',
+    },
+  ])
 
   await db.insert(partners).values(DEMO_PARTNERS)
 
@@ -500,9 +459,8 @@ async function main() {
       slug: 'nouveau-site-amicale',
       title: 'Bienvenue sur le nouveau site de l’Amicale',
       excerpt:
-        'Billetterie, sorties, avantages partenaires : tout se passe désormais en ligne, depuis votre espace adhérent.',
-      body: 'Actualité fictive de démonstration.\n\nLe nouveau site permet de commander vos billets à tarif adhérent, de vous inscrire aux sorties et de suivre vos commandes.\n\nPour y accéder, créez votre compte : le bureau validera votre adhésion.',
-      visibility: 'PUBLIC',
+        'Billetterie, sorties, avantages partenaires : tout se passe désormais en ligne, en quelques clics.',
+      body: 'Actualité fictive de démonstration.\n\nLe nouveau site permet de commander vos billets à tarif adhérent et de vous inscrire aux sorties, directement depuis la fiche de chaque offre.\n\nL’adhésion se fait en ligne sur HelloAsso, grâce au bouton « Adhérer ».',
       status: 'PUBLISHED',
       publishedAt: inDays(-1),
       authorId: bureau.id,
@@ -512,8 +470,7 @@ async function main() {
       title: 'Arbre de Noël : les inscriptions sont ouvertes',
       excerpt:
         'Spectacle, goûter et cadeaux pour les enfants des adhérents : pensez à inscrire chaque enfant avant la date limite.',
-      body: 'Actualité fictive de démonstration.\n\nLes inscriptions se font depuis la billetterie de votre espace adhérent, rubrique « Famille & enfants ».',
-      visibility: 'PUBLIC',
+      body: 'Actualité fictive de démonstration.\n\nLes inscriptions se font depuis la page « Offres », rubrique « Famille & enfants ».',
       status: 'PUBLISHED',
       publishedAt: inDays(-4),
       authorId: bureau.id,
@@ -522,9 +479,8 @@ async function main() {
       slug: 'assemblee-generale',
       title: 'Assemblée générale annuelle',
       excerpt:
-        'Ordre du jour, rapport moral et financier : les documents sont disponibles pour les adhérents.',
-      body: 'Actualité fictive de démonstration, réservée aux adhérents.\n\nL’assemblée générale est l’occasion de faire le bilan de l’année et d’élire le bureau.',
-      visibility: 'MEMBERS',
+        'Ordre du jour, rapport moral et financier : les documents seront présentés lors de l’assemblée.',
+      body: 'Actualité fictive de démonstration.\n\nL’assemblée générale est l’occasion de faire le bilan de l’année et d’élire le bureau.',
       status: 'PUBLISHED',
       publishedAt: inDays(-9),
       authorId: bureau.id,
@@ -534,8 +490,7 @@ async function main() {
       title: 'Trois nouveaux partenaires rejoignent l’Amicale',
       excerpt:
         'Sport, voyages et entretien automobile : de nouvelles réductions permanentes pour les adhérents.',
-      body: 'Actualité fictive de démonstration.\n\nRetrouvez toutes les conditions dans la rubrique « Avantages partenaires » de votre espace.',
-      visibility: 'PUBLIC',
+      body: 'Actualité fictive de démonstration.\n\nRetrouvez toutes les conditions sur la page « Partenaires ».',
       status: 'PUBLISHED',
       publishedAt: inDays(-15),
       authorId: bureau.id,
@@ -546,7 +501,7 @@ async function main() {
     {
       title: 'Arbre de Noël : inscrivez vos enfants',
       body: 'Spectacle, goûter et cadeaux : les inscriptions sont ouvertes dans la billetterie. (Post de démonstration.)',
-      linkUrl: '/espace/billetterie/arbre-de-noel-amicale',
+      linkUrl: '/offres/arbre-de-noel-amicale',
       linkLabel: 'Je m’inscris',
       tone: 'RED',
       published: true,
@@ -555,7 +510,7 @@ async function main() {
     {
       title: 'Grand parc : jusqu’à −41 %',
       body: 'Billets adulte et enfant à tarif adhérent, dans la limite des stocks disponibles. (Post de démonstration.)',
-      linkUrl: '/espace/billetterie/grand-parc-attractions',
+      linkUrl: '/offres/grand-parc-attractions',
       linkLabel: 'Voir l’offre',
       tone: 'AMBER',
       published: true,
@@ -573,7 +528,7 @@ async function main() {
     {
       title: 'Match de football : 40 places',
       body: 'Places en tribune latérale regroupées pour les adhérents. (Post de démonstration.)',
-      linkUrl: '/espace/billetterie/match-football-premiere-division',
+      linkUrl: '/offres/match-football-premiere-division',
       linkLabel: 'Réserver',
       tone: 'BLUE',
       published: true,
@@ -581,11 +536,10 @@ async function main() {
     },
     {
       title: 'Assemblée générale',
-      body: 'Les documents de l’assemblée générale sont disponibles pour les adhérents. (Post de démonstration.)',
+      body: 'Ordre du jour et informations pratiques de l’assemblée générale annuelle. (Post de démonstration.)',
       linkUrl: '/actualites/assemblee-generale',
       linkLabel: 'Lire',
       tone: 'SAND',
-      visibility: 'MEMBERS',
       published: true,
       position: 5,
     },

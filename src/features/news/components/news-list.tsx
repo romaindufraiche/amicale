@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
 import { mediaUrl } from '@/features/media/constants'
 import { formatDate } from '@/lib/dates'
 
@@ -8,7 +7,6 @@ type NewsItem = {
   slug: string
   title: string
   excerpt: string
-  visibility: 'PUBLIC' | 'MEMBERS'
   imageId: string | null
   publishedAt: Date | null
 }
@@ -29,11 +27,6 @@ export function NewsList({ items, headingLevel = 'h2' }: { items: NewsItem[]; he
             ) : null}
           </p>
           <div className="flex max-w-prose flex-col gap-2">
-            {item.visibility === 'MEMBERS' ? (
-              <Badge tone="brand" className="self-start">
-                Réservé aux adhérents
-              </Badge>
-            ) : null}
             <Heading className="font-display text-h3 font-extrabold">
               <Link
                 href={`/actualites/${item.slug}`}

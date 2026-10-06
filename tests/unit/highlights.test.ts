@@ -11,7 +11,7 @@ describe('whatsappUrl', () => {
 
 describe('liens des posts à la une', () => {
   it.each([
-    ['/espace/billetterie', true],
+    ['/offres/aquarium', true],
     ['https://exemple.fr/page', true],
     ['//evil.example', false],
     ['/\\evil.example', false],
@@ -25,7 +25,6 @@ describe('liens des posts à la une', () => {
     linkUrl: '',
     linkLabel: '',
     tone: 'RED',
-    visibility: 'PUBLIC',
     startsAt: '',
     endsAt: '',
     position: '',

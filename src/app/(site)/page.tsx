@@ -50,9 +50,9 @@ const STEPS = [
 
 export default async function HomePage() {
   const [{ rows: latestNews }, offers, highlights] = await Promise.all([
-    listPublishedNews({ includeMembersOnly: false, limit: 3 }),
+    listPublishedNews({ limit: 3 }),
     listPublishedOffers(),
-    listActiveHighlights({ includeMembersOnly: false }),
+    listActiveHighlights(),
   ])
   const now = new Date()
   const today = parisDay(now)

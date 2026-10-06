@@ -5,7 +5,7 @@ Le site n'invente aucune donnée métier. Les informations ci-dessous sont néce
 ## Identité
 
 - [x] Logo officiel reçu (JPEG sur fond blanc), intégré dans l'en-tête.
-- [ ] Idéalement : version vectorielle (SVG) ou PNG transparent, et une variante pour fond sombre (pied de page, carte d'adhérent).
+- [ ] Idéalement : version vectorielle (SVG) ou PNG transparent, et une variante pour fond sombre (pied de page).
 - [ ] **Dénomination exacte** selon les statuts (actuellement « Amicale des Policiers du Val d'Oise », d'après le logo).
 - [ ] Forme juridique (actuellement « Association loi 1901 », à confirmer).
 
@@ -26,22 +26,22 @@ Le site n'invente aucune donnée métier. Les informations ci-dessous sont néce
 ## HelloAsso
 
 - [x] Lien de la page HelloAsso d'adhésion 2026 (renseigné ; à changer chaque année dans **Espace bureau → Réglages**).
-- [ ] Lien de la page HelloAsso de chaque offre → champ « Lien HelloAsso de paiement » de l'offre.
+- [ ] Facultatif : lien de la page HelloAsso de chaque offre → champ « Lien HelloAsso de paiement » de l'offre.
+- [ ] Adresse qui reçoit un email à chaque commande → **Espace bureau → Réglages**.
 
 ## Adhésion
 
-- [ ] Conditions d'adhésion selon les statuts (les situations proposées dans le formulaire sont : personnel actif, retraité·e, personnel administratif, technique ou scientifique, autre situation — à valider).
+- [ ] Conditions d'adhésion selon les statuts (la page « Adhérer » liste : personnel actif, retraité·e, personnel administratif, technique ou scientifique, autre situation — à valider).
 - [ ] Montant et périodicité de la cotisation → `site.membership.feeLabel`
-- [ ] Règle de fin de cotisation (par défaut, le bureau propose le 31 décembre de l'année en cours lors de la validation).
 
 ## Commandes
 
-- [ ] **Modalités de règlement** (IBAN, ordre des chèques, permanence…) → `site.paymentInstructions`. Sans elles, l'adhérent est informé que le bureau le contactera.
+- [ ] Modalités de règlement des offres sans lien HelloAsso (le bureau recontacte la personne par email).
 
 ## Données personnelles
 
 - [ ] Personne à contacter pour les demandes RGPD (si différente du bureau).
-- [ ] Durées de conservation souhaitées (comptes inactifs, commandes, messages).
+- [ ] Durées de conservation souhaitées (commandes, messages).
 
 ## Contenus
 

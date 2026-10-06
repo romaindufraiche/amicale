@@ -1,5 +1,5 @@
 /**
- * Crée (ou promeut) le premier compte administrateur.
+ * Crée (ou promeut) un compte administrateur. Seuls les membres du bureau ont un compte.
  *
  *   pnpm admin:create --email bureau@exemple.fr --first-name Prénom --last-name Nom
  *
@@ -9,10 +9,8 @@
 import 'dotenv/config'
 import { createInterface } from 'node:readline/promises'
 import { parseArgs } from 'node:util'
-import { eq, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { emailField, PASSWORD_MIN } from '@/features/auth/schemas'
-import { defaultMembershipEnd, formatMemberNumber } from '@/features/members/membership'
-import { parisDay } from '@/lib/dates'
 import { hashPassword } from '@/server/auth/password'
 import { db } from '@/server/db/client'
 import { users } from '@/server/db/schema'
@@ -60,19 +58,13 @@ async function main() {
   if (password.length < PASSWORD_MIN)
     throw new Error(`Le mot de passe doit contenir au moins ${PASSWORD_MIN} caractères.`)
 
-  const [seq] = await db.execute<{ value: number }>(sql`select nextval('member_number_seq')::int as value`)
-  const today = parisDay()
   await db.insert(users).values({
     email,
     passwordHash: await hashPassword(password),
     firstName,
     lastName,
-    category: 'ACTIF',
     role: 'ADMIN',
     status: 'ACTIVE',
-    emailVerifiedAt: new Date(),
-    memberNumber: formatMemberNumber(new Date().getFullYear(), seq?.value ?? 1),
-    membershipValidUntil: defaultMembershipEnd(today),
   })
   console.log(`Administrateur ${email} créé.`)
 }

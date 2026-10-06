@@ -6,7 +6,6 @@ import { Pagination } from '@/components/ui/pagination'
 import { NewsList } from '@/features/news/components/news-list'
 import { listPublishedNews } from '@/features/news/queries'
 import { pageCount, parsePage } from '@/lib/pagination'
-import { getCurrentSession } from '@/server/auth/session'
 
 export const metadata: Metadata = {
   title: 'Actualités',
@@ -18,11 +17,7 @@ type Props = { searchParams: Promise<{ page?: string }> }
 
 export default async function NewsIndexPage({ searchParams }: Props) {
   const page = parsePage((await searchParams).page)
-  const session = await getCurrentSession()
-  const { rows, total } = await listPublishedNews({
-    includeMembersOnly: session?.user.status === 'ACTIVE',
-    page,
-  })
+  const { rows, total } = await listPublishedNews({ page })
 
   return (
     <div className="mx-auto flex max-w-page flex-col gap-12 px-4 py-14 sm:px-6 md:py-20 lg:px-8">

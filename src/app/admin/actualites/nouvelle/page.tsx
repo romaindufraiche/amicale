@@ -14,9 +14,7 @@ export default async function NewNewsPage() {
         title="Nouvelle actualité"
         lead="Enregistrée en brouillon, à publier ensuite."
       />
-      <NewsForm
-        initial={{ title: '', slug: '', excerpt: '', body: '', visibility: 'PUBLIC', imageId: null }}
-      />
+      <NewsForm initial={{ title: '', slug: '', excerpt: '', body: '', imageId: null }} />
     </>
   )
 }

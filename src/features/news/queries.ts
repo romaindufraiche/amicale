@@ -1,27 +1,21 @@
 import 'server-only'
-import { and, count, desc, eq, inArray } from 'drizzle-orm'
+import { and, count, desc, eq } from 'drizzle-orm'
 import { PAGE_SIZE } from '@/lib/pagination'
 import { db } from '@/server/db/client'
-import { news, type NewsVisibility } from '@/server/db/schema'
+import { news } from '@/server/db/schema'
 
 const listColumns = {
   id: news.id,
   slug: news.slug,
   title: news.title,
   excerpt: news.excerpt,
-  visibility: news.visibility,
   imageId: news.imageId,
   publishedAt: news.publishedAt,
 }
 
-/** Actualités publiées ; les adhérents connectés voient aussi celles qui leur sont réservées. */
-export async function listPublishedNews(options: {
-  includeMembersOnly: boolean
-  page?: number
-  limit?: number
-}) {
-  const visibilities: NewsVisibility[] = options.includeMembersOnly ? ['PUBLIC', 'MEMBERS'] : ['PUBLIC']
-  const where = and(eq(news.status, 'PUBLISHED'), inArray(news.visibility, visibilities))
+/** Actualités publiées, de la plus récente à la plus ancienne. */
+export async function listPublishedNews(options: { page?: number; limit?: number } = {}) {
+  const where = eq(news.status, 'PUBLISHED')
   const limit = options.limit ?? PAGE_SIZE
   const page = options.page ?? 1
   const [rows, [total]] = await Promise.all([
@@ -62,5 +56,5 @@ export async function listNewsForSitemap() {
   return db
     .select({ slug: news.slug, updatedAt: news.updatedAt })
     .from(news)
-    .where(and(eq(news.status, 'PUBLISHED'), eq(news.visibility, 'PUBLIC')))
+    .where(eq(news.status, 'PUBLISHED'))
 }

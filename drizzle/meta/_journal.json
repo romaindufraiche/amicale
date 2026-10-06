@@ -71,6 +71,13 @@
       "when": 1791281819092,
       "tag": "0009_membership_url_2026",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791283101157,
+      "tag": "0010_remove_member_accounts",
+      "breakpoints": true
     }
   ]
 }

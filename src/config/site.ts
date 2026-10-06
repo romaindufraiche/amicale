@@ -50,13 +50,6 @@ export const site = {
     /** Ex. « 20 € par an ». Non affiché tant qu'il n'est pas renseigné. */
     feeLabel: null as string | null,
   },
-
-  /**
-   * Modalités de règlement des commandes, affichées après une commande.
-   * Tant qu'elles ne sont pas renseignées, l'adhérent est informé que le bureau
-   * le contactera pour le règlement.
-   */
-  paymentInstructions: null as string | null,
 } as const
 
 export type SiteConfig = typeof site

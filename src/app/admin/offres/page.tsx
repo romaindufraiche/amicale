@@ -34,7 +34,7 @@ export default async function AdminOffersPage() {
       <PageHeader
         eyebrow="Espace bureau"
         title="Offres"
-        lead="Billetterie et sorties proposées aux adhérents, rangées par catégorie."
+        lead="Billetterie et sorties proposées sur le site, rangées par catégorie."
         actions={
           <ButtonLink href="/admin/offres/nouvelle">
             <Plus aria-hidden className="size-4" /> Nouvelle offre
@@ -111,9 +111,9 @@ export default async function AdminOffersPage() {
                         ) : null}
                       </Td>
                       <Td className="text-right tabular">
-                        {offer.ordersCount > 0 ? (
-                          <Link href={`/admin/commandes?offre=${offer.id}`} className="link">
-                            {offer.ordersCount}
+                        {offer.requestsCount > 0 ? (
+                          <Link href={`/admin/demandes?offre=${offer.id}`} className="link">
+                            {offer.requestsCount}
                           </Link>
                         ) : (
                           0

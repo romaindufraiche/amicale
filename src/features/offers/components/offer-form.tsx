@@ -24,7 +24,6 @@ export type OfferFormValues = {
   eventStartsAt: string
   validUntil: string
   orderDeadline: string
-  maxPerMember: string
   imageId: string | null
   featured: boolean
   pricesPublic: boolean
@@ -40,8 +39,6 @@ type TariffRow = {
   publicPrice: string
   stock: string
   active: boolean
-  /** Un tarif déjà commandé ne peut pas être supprimé, seulement désactivé. */
-  locked: boolean
 }
 
 type FormDataValues = Record<string, string> | undefined
@@ -61,7 +58,6 @@ const newRow = (): TariffRow => ({
   publicPrice: '',
   stock: '',
   active: true,
-  locked: false,
 })
 
 /** Restaure les lignes de tarifs saisies après une erreur de validation. */
@@ -82,7 +78,6 @@ function rowsFromValues(values: Record<string, string>, fallback: TariffRow[]): 
         publicPrice: get('publicPrice'),
         stock: get('stock'),
         active: get('active') === 'on',
-        locked: fallback.find((row) => row.id === id)?.locked ?? false,
       }
     })
 }
@@ -238,16 +233,6 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
           defaultValue={value('orderDeadline')}
           error={e?.orderDeadline}
         />
-        <TextField
-          name="maxPerMember"
-          type="number"
-          inputMode="numeric"
-          min={1}
-          label="Limite de billets par adhérent"
-          hint="Tous tarifs confondus. Vide = sans limite."
-          defaultValue={value('maxPerMember')}
-          error={e?.maxPerMember}
-        />
         <TextareaField
           name="pickupInfo"
           label="Remise des billets"
@@ -262,8 +247,8 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
       <fieldset className="flex flex-col gap-4">
         <legend className="mb-2 font-display text-h3 font-extrabold">Tarifs</legend>
         <p className="text-sm text-ink-muted">
-          Les montants sont en euros (ex. 12,50). Stock vide = sans limite. Le stock diminue à chaque commande
-          et est restitué en cas d’annulation.
+          Les montants sont en euros (ex. 12,50). Stock : places restantes, à tenir à jour ; vide = sans
+          limite, 0 = l’offre s’affiche « Complet ».
         </p>
         {e?.tariffs ? <p className="text-sm font-semibold text-danger-700">{e.tariffs}</p> : null}
         <ol className="flex flex-col gap-4">
@@ -314,18 +299,16 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
                   label="Actif"
                   defaultChecked={row.active}
                 />
-                {!row.locked ? (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      setRows((current) => current.filter((candidate) => candidate.key !== row.key))
-                    }
-                    disabled={rows.length === 1}
-                  >
-                    <X aria-hidden className="size-4" /> Retirer
-                  </Button>
-                ) : null}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    setRows((current) => current.filter((candidate) => candidate.key !== row.key))
+                  }
+                  disabled={rows.length === 1}
+                >
+                  <X aria-hidden className="size-4" /> Retirer
+                </Button>
               </div>
             </li>
           ))}

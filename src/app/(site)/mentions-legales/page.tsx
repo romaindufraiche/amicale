@@ -65,7 +65,7 @@ export default function LegalNoticePage() {
 
         <h2>Données personnelles</h2>
         <p>
-          Le traitement des données des adhérents est décrit dans la page{' '}
+          Le traitement des données personnelles est décrit dans la page{' '}
           <Link href="/confidentialite">Données personnelles</Link>.
         </p>
 

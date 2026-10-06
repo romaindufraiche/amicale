@@ -10,7 +10,7 @@ test('le bureau publie un post qui apparaît dans le bandeau « À la une »', a
   await page.getByLabel('Lien (facultatif)', { exact: true }).fill('/contact')
   await page.getByRole('button', { name: 'Créer le post' }).click()
   await expect(page.getByText('Post enregistré.')).toBeVisible()
-  await page.goto('/espace')
+  await page.goto('/admin')
   await logout(page)
 
   await page.goto('/')

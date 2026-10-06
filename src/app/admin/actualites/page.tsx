@@ -46,7 +46,6 @@ export default async function AdminNewsPage() {
           <thead>
             <tr>
               <Th>Titre</Th>
-              <Th>Visibilité</Th>
               <Th>Statut</Th>
               <Th>Publication</Th>
             </tr>
@@ -59,7 +58,6 @@ export default async function AdminNewsPage() {
                     {item.title}
                   </Link>
                 </Td>
-                <Td>{item.visibility === 'PUBLIC' ? 'Public' : 'Adhérents'}</Td>
                 <Td>
                   <Badge tone={STATUS_TONE[item.status]}>{PUBLICATION_STATUS_LABELS[item.status]}</Badge>
                 </Td>

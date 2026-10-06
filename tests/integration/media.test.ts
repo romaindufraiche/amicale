@@ -4,7 +4,7 @@ import { getMedia, purgeOrphanMedia, storeImage } from '@/features/media/service
 import { db } from '@/server/db/client'
 import { media } from '@/server/db/schema'
 import { sql } from 'drizzle-orm'
-import { createMember, resetDatabase } from '../support/db'
+import { createBureauUser, resetDatabase } from '../support/db'
 
 async function photo(width: number, height: number) {
   // Photo JPEG avec des métadonnées EXIF, dont une position GPS.
@@ -18,7 +18,7 @@ describe('storeImage', () => {
   beforeEach(resetDatabase)
 
   it('ré-encode en WebP, réduit à 1600 px et supprime les métadonnées', async () => {
-    const admin = await createMember({ role: 'BUREAU' })
+    const admin = await createBureauUser({ role: 'BUREAU' })
     const file = new File([new Uint8Array(await photo(3200, 1800))], 'photo.jpg', { type: 'image/jpeg' })
     const result = await storeImage(file, admin.id)
     expect(result).toMatchObject({ ok: true, width: 1600, height: 900 })
@@ -32,7 +32,7 @@ describe('storeImage', () => {
   })
 
   it('rejette un fichier qui se fait passer pour une image', async () => {
-    const admin = await createMember({ role: 'BUREAU' })
+    const admin = await createBureauUser({ role: 'BUREAU' })
     const fake = new File(['<script>alert(1)</script>'], 'image.png', { type: 'image/png' })
     expect(await storeImage(fake, admin.id)).toEqual({
       ok: false,
@@ -41,7 +41,7 @@ describe('storeImage', () => {
   })
 
   it('rejette les formats non pris en charge et les fichiers trop lourds', async () => {
-    const admin = await createMember({ role: 'BUREAU' })
+    const admin = await createBureauUser({ role: 'BUREAU' })
     const svg = new File(['<svg/>'], 'logo.svg', { type: 'image/svg+xml' })
     expect((await storeImage(svg, admin.id)).ok).toBe(false)
     const huge = new File([new Uint8Array(5 * 1024 * 1024)], 'grande.jpg', { type: 'image/jpeg' })
@@ -52,7 +52,7 @@ describe('storeImage', () => {
   })
 
   it('purge les images jamais rattachées après 24 h', async () => {
-    const admin = await createMember({ role: 'BUREAU' })
+    const admin = await createBureauUser({ role: 'BUREAU' })
     const file = new File([new Uint8Array(await photo(400, 300))], 'photo.jpg', { type: 'image/jpeg' })
     const result = await storeImage(file, admin.id)
     expect(result.ok).toBe(true)

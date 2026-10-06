@@ -10,6 +10,7 @@ import { NavLink } from './nav-link'
 
 const PUBLIC_NAV = [
   { href: '/offres', label: 'Offres' },
+  { href: '/partenaires', label: 'Partenaires' },
   { href: '/adherer', label: 'Adhérer' },
   { href: '/actualites', label: 'Actualités' },
   { href: '/contact', label: 'Contact' },
@@ -17,7 +18,7 @@ const PUBLIC_NAV = [
 
 export async function SiteHeader() {
   const session = await getCurrentSession()
-  const isBureau = session?.user.status === 'ACTIVE' && can(session.user.role, 'admin:access')
+  const isBureau = session ? can(session.user.role, 'admin:access') : false
   const actions = (
     <>
       {isBureau ? (

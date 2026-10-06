@@ -95,7 +95,6 @@ export const offerSchema = z
     eventStartsAt: optionalDateTime,
     validUntil: optionalDate,
     orderDeadline: optionalDateTime,
-    maxPerMember: optionalPositiveInt('Limite par adhérent'),
     imageId: z
       .union([z.uuid(), z.literal('')], { error: 'Image invalide.' })
       .optional()
@@ -118,8 +117,6 @@ export const offerSchema = z
     if (data.kind === 'EVENT' && !data.eventStartsAt) {
       ctx.addIssue({ code: 'custom', path: ['eventStartsAt'], message: 'La date de la sortie est requise.' })
     }
-    if (data.maxPerMember === 0)
-      ctx.addIssue({ code: 'custom', path: ['maxPerMember'], message: 'Doit être supérieur à 0.' })
     if (data.orderDeadline && data.eventStartsAt && data.orderDeadline > data.eventStartsAt) {
       ctx.addIssue({
         code: 'custom',

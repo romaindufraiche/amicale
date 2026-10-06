@@ -29,7 +29,7 @@ export async function saveOfferAction(_previous: FormState, formData: FormData):
     }
 
     revalidatePath('/admin/offres')
-    revalidatePath('/espace/billetterie', 'layout')
+    revalidatePath('/offres', 'layout')
     redirect(`/admin/offres/${result.offerId}?enregistree=1`)
   })
 }
@@ -42,10 +42,10 @@ export async function setOfferStatusAction(_previous: FormState, formData: FormD
     const done = await setOfferStatus(actor.id, parsed.data.offerId, parsed.data.status)
     if (!done) return errorState('Offre introuvable.')
     revalidatePath('/admin/offres', 'layout')
-    revalidatePath('/espace/billetterie', 'layout')
+    revalidatePath('/offres', 'layout')
     const messages = {
-      PUBLISHED: 'Offre mise en ligne : elle est visible des adhérents.',
-      DRAFT: 'Offre repassée en brouillon : elle n’est plus visible des adhérents.',
+      PUBLISHED: 'Offre mise en ligne : elle est visible sur le site.',
+      DRAFT: 'Offre repassée en brouillon : elle n’est plus visible sur le site.',
       ARCHIVED: 'Offre archivée.',
     } as const
     return { status: 'success', message: messages[parsed.data.status] }

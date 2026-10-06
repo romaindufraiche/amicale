@@ -64,8 +64,7 @@ migrations). Vérification : **Settings → Environment Variables** doit lister 
 | `MAIL_OUTBOX_DIR`           | `/tmp/outbox`                                                      |
 
 Avec ces trois dernières lignes, **aucun email n'est envoyé** : c'est suffisant pour une démonstration
-avec les comptes de test. Pour que l'inscription d'un vrai testeur fonctionne (lien de confirmation
-par email), utiliser plutôt un service SMTP, par exemple Brevo (gratuit jusqu'à 300 emails par jour) :
+avec le compte de test. Pour recevoir réellement l'email envoyé à chaque commande, utiliser plutôt un service SMTP, par exemple Brevo (gratuit jusqu'à 300 emails par jour) :
 `MAIL_TRANSPORT=smtp`, `SMTP_HOST=smtp-relay.brevo.com`, `SMTP_PORT=587`, `SMTP_USER` et
 `SMTP_PASSWORD` fournis par Brevo, et supprimer `MAIL_OUTBOX_IN_PRODUCTION` et `MAIL_OUTBOX_DIR`.
 
@@ -85,12 +84,7 @@ La commande refuse de s'exécuter si la base contient déjà de vrais comptes.
 
 ## 5. Envoyer le lien aux testeurs
 
-Adresse : celle affichée par Vercel (**Domains**). Comptes de test (mot de passe `demo-mot-de-passe`) :
-
-| Compte                | Pour tester                                |
-| --------------------- | ------------------------------------------ |
-| `adherent@demo.local` | l'espace adhérent : billetterie, commandes |
-| `bureau@demo.local`   | l'espace bureau (administration)           |
+Adresse : celle affichée par Vercel (**Domains**). Compte de test du bureau (mot de passe `demo-mot-de-passe`) : `bureau@demo.local`. Les visiteurs n'ont besoin d'aucun compte pour consulter les offres et commander.
 
 ⚠️ Ces identifiants sont publics dans ce dépôt : le site de démonstration ne doit contenir **aucune
 donnée réelle**. Pour la mise en production, créer une base neuve, retirer `DEMO_MODE`, configurer

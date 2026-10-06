@@ -20,7 +20,7 @@ export async function savePartnerAction(_previous: FormState, formData: FormData
     if (!savedId) return errorState('Partenaire introuvable.')
 
     revalidatePath('/admin/partenaires', 'layout')
-    revalidatePath('/espace/avantages')
+    revalidatePath('/partenaires')
     redirect(`/admin/partenaires/${savedId}?enregistre=1`)
   })
 }

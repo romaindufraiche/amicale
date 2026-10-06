@@ -4,43 +4,16 @@ import { redirect } from 'next/navigation'
 import { errorState, type FormState, validationError } from '@/lib/form-state'
 import { safeRedirectPath } from '@/lib/safe-redirect'
 import { runFormAction } from '@/server/action'
-import { homePathFor, requireSession } from '@/server/auth/guards'
+import { requireSession } from '@/server/auth/guards'
 import { createSession, destroyCurrentSession } from '@/server/auth/session'
-import { updateOwnProfile } from '@/features/members/service'
 import { consumeRateLimit, formatRetryAfter } from '@/server/rate-limit'
 import { getClientIp, getUserAgent } from '@/server/request-context'
-import {
-  changePasswordSchema,
-  forgotPasswordSchema,
-  loginSchema,
-  profileSchema,
-  registerSchema,
-  resetPasswordSchema,
-} from './schemas'
-import { authenticate, changePassword, registerMember, requestPasswordReset, resetPassword } from './service'
-
-export async function registerAction(_previous: FormState, formData: FormData): Promise<FormState> {
-  return runFormAction('register', formData, async () => {
-    const parsed = registerSchema.safeParse(Object.fromEntries(formData))
-    if (!parsed.success) return validationError(parsed.error, formData)
-
-    const result = await registerMember(parsed.data, await getClientIp())
-    if (!result.ok) {
-      return errorState(
-        `Trop de demandes depuis votre connexion. Réessayez ${formatRetryAfter(result.retryAfterSeconds)}.`,
-        formData,
-      )
-    }
-    redirect(`/inscription/confirmation?email=${encodeURIComponent(parsed.data.email)}`)
-  })
-}
+import { changePasswordSchema, forgotPasswordSchema, loginSchema, resetPasswordSchema } from './schemas'
+import { authenticate, changePassword, requestPasswordReset, resetPassword } from './service'
 
 const LOGIN_ERRORS = {
   INVALID_CREDENTIALS: 'Adresse email ou mot de passe incorrect.',
-  EMAIL_NOT_VERIFIED:
-    "Votre adresse email n'est pas encore confirmée. Nous venons de vous renvoyer le lien de confirmation.",
-  SUSPENDED: 'Votre compte est suspendu. Contactez le bureau de l’Amicale pour en savoir plus.',
-  REJECTED: "Votre demande d'adhésion n'a pas été retenue. Contactez le bureau pour toute question.",
+  SUSPENDED: 'Ce compte est désactivé. Contactez un administrateur du site.',
 } as const
 
 export async function loginAction(_previous: FormState, formData: FormData): Promise<FormState> {
@@ -58,7 +31,7 @@ export async function loginAction(_previous: FormState, formData: FormData): Pro
     }
 
     await createSession(result.userId, await getUserAgent())
-    redirect(safeRedirectPath(parsed.data.next, homePathFor(result.role)))
+    redirect(safeRedirectPath(parsed.data.next))
   })
 }
 
@@ -104,7 +77,7 @@ export async function resetPasswordAction(_previous: FormState, formData: FormDa
 
 export async function changePasswordAction(_previous: FormState, formData: FormData): Promise<FormState> {
   return runFormAction('change-password', formData, async () => {
-    const session = await requireSession('/espace/profil')
+    const session = await requireSession('/admin/compte')
     const parsed = changePasswordSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) return validationError(parsed.error, formData)
 
@@ -126,20 +99,5 @@ export async function changePasswordAction(_previous: FormState, formData: FormD
       }
     }
     return { status: 'success', message: 'Mot de passe modifié. Vos autres sessions ont été déconnectées.' }
-  })
-}
-
-export async function updateProfileAction(_previous: FormState, formData: FormData): Promise<FormState> {
-  return runFormAction('update-profile', formData, async () => {
-    const { user } = await requireSession('/espace/profil')
-    const parsed = profileSchema.safeParse(Object.fromEntries(formData))
-    if (!parsed.success) return validationError(parsed.error, formData)
-
-    await updateOwnProfile(user.id, parsed.data)
-    return {
-      status: 'success',
-      message: 'Vos coordonnées ont été mises à jour.',
-      values: { phone: parsed.data.phone ?? '', assignment: parsed.data.assignment ?? '' },
-    }
   })
 }

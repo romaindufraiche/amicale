@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
-import { SelectField, TextareaField, TextField } from '@/components/ui/fields'
+import { TextareaField, TextField } from '@/components/ui/fields'
 import { FormMessage } from '@/components/ui/form-message'
 import { SubmitButton } from '@/components/ui/submit-button'
 import { ImageDropzone } from '@/features/media/components/image-dropzone'
@@ -14,14 +14,8 @@ export type NewsFormValues = {
   slug: string
   excerpt: string
   body: string
-  visibility: string
   imageId: string | null
 }
-
-const VISIBILITY_OPTIONS = [
-  { value: 'PUBLIC', label: 'Public — visible par tous' },
-  { value: 'MEMBERS', label: 'Adhérents — lecture réservée aux adhérents connectés' },
-]
 
 export function NewsForm({ initial }: { initial: NewsFormValues }) {
   const [state, formAction] = useActionState(saveNewsAction, idleState)
@@ -58,14 +52,6 @@ export function NewsForm({ initial }: { initial: NewsFormValues }) {
         rows={14}
         defaultValue={value('body')}
         error={e?.body}
-      />
-      <SelectField
-        name="visibility"
-        label="Visibilité"
-        required
-        options={VISIBILITY_OPTIONS}
-        defaultValue={value('visibility')}
-        error={e?.visibility}
       />
       <TextField
         name="slug"

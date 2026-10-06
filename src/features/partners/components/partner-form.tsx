@@ -64,7 +64,7 @@ export function PartnerForm({ initial }: { initial: PartnerFormValues }) {
       <TextareaField
         name="howToBenefit"
         label="Comment en bénéficier"
-        hint="Code promo, démarche, justificatif à présenter… Visible uniquement des adhérents à jour de cotisation."
+        hint="Démarche, justificatif à présenter… Attention : visible de tous sur la page publique « Partenaires », n’y mettez pas de code confidentiel."
         required
         rows={4}
         defaultValue={value('howToBenefit')}
@@ -80,7 +80,7 @@ export function PartnerForm({ initial }: { initial: PartnerFormValues }) {
       />
       <CheckboxField
         name="published"
-        label="Visible dans l’espace adhérent"
+        label="Visible sur la page « Partenaires » du site"
         defaultChecked={v ? v.published === 'on' : initial.published}
       />
       <SubmitButton pendingLabel="Enregistrement…" className="self-start">

@@ -44,13 +44,13 @@ describe('dates (heure de Paris)', () => {
 
 describe('safeRedirectPath', () => {
   it.each([
-    ['/espace/commandes', '/espace/commandes'],
-    ['/espace?x=1#a', '/espace?x=1#a'],
-    ['https://evil.example', '/espace'],
-    ['//evil.example', '/espace'],
-    ['/\\evil.example', '/espace'],
-    ['javascript:alert(1)', '/espace'],
-    [undefined, '/espace'],
+    ['/admin/demandes', '/admin/demandes'],
+    ['/admin?x=1#a', '/admin?x=1#a'],
+    ['https://evil.example', '/admin'],
+    ['//evil.example', '/admin'],
+    ['/\\evil.example', '/admin'],
+    ['javascript:alert(1)', '/admin'],
+    [undefined, '/admin'],
   ])('%s → %s', (input, expected) => expect(safeRedirectPath(input)).toBe(expected))
 })
 

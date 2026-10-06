@@ -32,7 +32,7 @@ function DetailItem({
   )
 }
 
-/** Fiche d'une offre (visuel, informations pratiques, description), commune aux pages publique et adhérent. */
+/** Fiche d'une offre (visuel, informations pratiques, description), affichée sur la page publique de l'offre. */
 export function OfferDetails({ offer }: { offer: OfferWithTariffs }) {
   return (
     <article className="flex flex-col gap-8">

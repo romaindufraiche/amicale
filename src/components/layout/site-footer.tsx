@@ -5,6 +5,7 @@ import { Logo } from './logo'
 
 const LINKS = [
   { href: '/offres', label: 'Offres' },
+  { href: '/partenaires', label: 'Partenaires' },
   { href: '/adherer', label: 'Adhérer' },
   { href: '/actualites', label: 'Actualités' },
   { href: '/contact', label: 'Contact' },

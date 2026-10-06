@@ -8,7 +8,7 @@ const PUBLIC_PAGES = [
   '/actualites',
   '/contact',
   '/connexion',
-  '/inscription',
+  '/partenaires',
   '/mentions-legales',
   '/confidentialite',
 ]
@@ -38,9 +38,14 @@ test.describe('pages publiques', () => {
     await expect(page.getByRole('heading', { name: 'Cette page n’existe pas.' })).toBeVisible()
   })
 
-  test('les espaces protégés redirigent vers la connexion', async ({ page }) => {
-    await page.goto('/espace/billetterie')
-    await expect(page).toHaveURL(/\/connexion\?next=%2Fespace/)
+  test('l’espace bureau redirige vers la connexion ; l’ancien espace adhérent n’existe plus', async ({
+    page,
+  }) => {
+    await page.goto('/admin/demandes')
+    await expect(page).toHaveURL(/\/connexion\?next=%2Fadmin/)
+    for (const path of ['/espace', '/espace/billetterie', '/inscription']) {
+      expect((await page.goto(path))?.status()).toBe(404)
+    }
   })
 
   test('un visiteur consulte les offres et leurs tarifs', async ({ page }) => {
@@ -74,11 +79,10 @@ test.describe('pages publiques', () => {
   })
 
   test('les erreurs de validation sont affichées et la saisie conservée', async ({ page }) => {
-    await page.goto('/inscription')
-    await page.getByLabel('Prénom').fill('Alex')
-    await page.getByRole('button', { name: 'Envoyer ma demande d’adhésion' }).click()
+    await page.goto('/contact')
+    await page.getByLabel('Nom et prénom').fill('Alex Exemple')
+    await page.getByRole('button', { name: 'Envoyer le message' }).click()
     await expect(page.getByText('Certains champs sont à corriger.')).toBeVisible()
-    await expect(page.getByLabel('Prénom')).toHaveValue('Alex')
-    await expect(page.getByLabel('Nom', { exact: true })).toHaveAttribute('aria-invalid', 'true')
+    await expect(page.getByLabel('Nom et prénom')).toHaveValue('Alex Exemple')
   })
 })
