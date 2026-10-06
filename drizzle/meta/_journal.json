@@ -64,6 +64,13 @@
       "when": 1791191761937,
       "tag": "0008_orders_email",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791281819092,
+      "tag": "0009_membership_url_2026",
+      "breakpoints": true
     }
   ]
 }

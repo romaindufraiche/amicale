@@ -28,7 +28,7 @@ export function SettingsForm({
         type="url"
         inputMode="url"
         label="Lien HelloAsso d’adhésion"
-        hint="Page HelloAsso où l’on adhère à l’Amicale. Utilisé par tous les boutons « Adhérer » du site. Vide : les boutons mènent à la page « Adhérer » du site."
+        hint="Page HelloAsso où l’on adhère à l’Amicale, utilisée par tous les boutons « Adhérer » du site. À mettre à jour à chaque nouvelle campagne d’adhésion (ex. adhesion-2027). Vide : les boutons mènent à la page « Adhérer » du site."
         placeholder="https://www.helloasso.com/associations/…"
         defaultValue={v?.membershipUrl ?? membershipUrl ?? ''}
         error={e?.membershipUrl}
