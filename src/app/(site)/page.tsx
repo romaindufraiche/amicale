@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Handshake, type LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 import { site } from '@/config/site'
 import { ButtonLink } from '@/components/ui/button'
@@ -30,8 +30,22 @@ const BENEFITS = [
   },
 ] as const
 
-/** Catégories proposées en accès rapide sous le bandeau d'accueil. */
-const QUICK_CATEGORIES = ['CINEMA', 'PARCS', 'SPECTACLES', 'SPORT', 'VOYAGES', 'FAMILLE'] as const
+/** Accès rapide sous le bandeau d'accueil : les catégories d'offres, puis les partenaires et « Divers ». */
+const QUICK_LINKS: { href: string; label: string; icon: LucideIcon; tone: string }[] = [
+  ...(['PARCS', 'CINEMA', 'VOYAGES', 'SPORT', 'EPICERIE', 'PARFUMERIE'] as const).map((category) => ({
+    href: `/offres?categorie=${category}`,
+    label: OFFER_CATEGORY_LABELS[category],
+    icon: CATEGORY_ICONS[category],
+    tone: CATEGORY_TONES[category],
+  })),
+  { href: '/partenaires', label: 'Partenaires', icon: Handshake, tone: 'bg-blue-600 text-white' },
+  {
+    href: '/offres?categorie=AUTRE',
+    label: OFFER_CATEGORY_LABELS.AUTRE,
+    icon: CATEGORY_ICONS.AUTRE,
+    tone: CATEGORY_TONES.AUTRE,
+  },
+]
 
 const STEPS = [
   {
@@ -68,10 +82,9 @@ export default async function HomePage() {
       <section data-surface="dark" className="relative overflow-hidden text-white hero-tricolore">
         <div className="relative mx-auto grid max-w-page items-center gap-12 px-4 pt-14 pb-20 sm:px-6 md:pt-20 md:pb-28 lg:grid-cols-2 lg:px-8 lg:pb-32">
           <div className="flex flex-col gap-7">
-            <Eyebrow tone="onDark">{site.legalName}</Eyebrow>
-            <h1 className="max-w-[16ch] text-h1">
-              L’amicale de celles et ceux qui veillent sur le Val d’Oise.
-            </h1>
+            <Eyebrow tone="onDark" as="h1">
+              {site.legalName}
+            </Eyebrow>
             <p className="max-w-lg text-lead text-blue-100">
               Billetterie à tarifs adhérents, sorties, avantages partenaires : l’{site.shortName} simplifie
               les loisirs des personnels de police du département et fait vivre les liens entre collègues.
@@ -104,23 +117,18 @@ export default async function HomePage() {
           <h2 id="acces-rapide" className="mb-4 font-display text-lead font-extrabold">
             Que cherchez-vous ?
           </h2>
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {QUICK_CATEGORIES.map((category) => {
-              const Icon = CATEGORY_ICONS[category]
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {QUICK_LINKS.map(({ href, label, icon: Icon, tone }) => {
               return (
-                <li key={category}>
+                <li key={href}>
                   <Link
-                    href={`/offres?categorie=${category}`}
+                    href={href}
                     className="group flex h-full items-center gap-3 rounded-md border border-line p-3 transition-colors hover:border-blue-600 hover:bg-blue-50"
                   >
-                    <span
-                      className={`grid size-11 shrink-0 place-items-center rounded-full ${CATEGORY_TONES[category]}`}
-                    >
+                    <span className={`grid size-11 shrink-0 place-items-center rounded-full ${tone}`}>
                       <Icon aria-hidden className="size-5" />
                     </span>
-                    <span className="leading-tight font-semibold group-hover:text-blue-600">
-                      {OFFER_CATEGORY_LABELS[category]}
-                    </span>
+                    <span className="leading-tight font-semibold group-hover:text-blue-600">{label}</span>
                   </Link>
                 </li>
               )

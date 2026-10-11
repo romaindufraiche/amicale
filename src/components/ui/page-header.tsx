@@ -5,14 +5,17 @@ import { cn } from '@/lib/cn'
 export function Eyebrow({
   children,
   tone = 'default',
+  as: Tag = 'p',
   className,
 }: {
   children: ReactNode
   tone?: 'default' | 'onDark'
+  /** `h1` : surtitre servant de titre de page (accueil). */
+  as?: 'p' | 'h1'
   className?: string
 }) {
   return (
-    <p
+    <Tag
       className={cn(
         'flex items-center gap-2.5 label-caps',
         tone === 'onDark' ? 'text-amber-300' : 'text-blue-600',
@@ -21,7 +24,7 @@ export function Eyebrow({
     >
       <span aria-hidden className="h-0.5 w-6 bg-rose-600" />
       {children}
-    </p>
+    </Tag>
   )
 }
 

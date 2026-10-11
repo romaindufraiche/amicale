@@ -31,7 +31,7 @@ Le site n'invente aucune donnée métier. Les informations ci-dessous sont néce
 
 ## Adhésion
 
-- [ ] Conditions d'adhésion selon les statuts (la page « Adhérer » liste : personnel actif, retraité·e, personnel administratif, technique ou scientifique, autre situation — à valider).
+- [x] Conditions d'adhésion : personnel actif ; personnel administratif, technique et scientifique ; policier adjoint ; retraité — tous affectés dans le Val-d'Oise (hors département : adhésion impossible).
 - [ ] Montant et périodicité de la cotisation → `site.membership.feeLabel`
 
 ## Commandes

@@ -1,13 +1,14 @@
 import type { OfferCategory, OfferKind, PublicationStatus } from '@/server/db/schema'
 
+/** Ordre d'affichage des catégories (filtres, accès rapide, espace bureau). */
 export const OFFER_CATEGORY_LABELS: Record<OfferCategory, string> = {
-  CINEMA: 'Cinéma',
   PARCS: 'Parcs & loisirs',
-  SPECTACLES: 'Spectacles & culture',
-  SPORT: 'Sport',
+  CINEMA: 'Cinéma',
   VOYAGES: 'Voyages & séjours',
-  FAMILLE: 'Famille & enfants',
-  AUTRE: 'Autres',
+  SPORT: 'Sport',
+  EPICERIE: 'Épicerie fine',
+  PARFUMERIE: 'Parfumerie',
+  AUTRE: 'Divers',
 }
 
 export const OFFER_CATEGORIES = Object.keys(OFFER_CATEGORY_LABELS) as OfferCategory[]

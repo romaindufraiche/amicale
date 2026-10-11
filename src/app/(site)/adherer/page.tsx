@@ -31,12 +31,12 @@ const STEPS = [
   },
 ] as const
 
-/** Situations ouvrant droit à l'adhésion, telles que présentées jusqu'ici sur le site. */
+/** Situations ouvrant droit à l'adhésion, communiquées par le bureau. */
 const SITUATIONS = [
   'Personnel actif',
-  'Retraité·e',
-  'Personnel administratif, technique ou scientifique',
-  'Autre situation',
+  'Personnel administratif, technique et scientifique',
+  'Policier adjoint',
+  'Retraité',
 ] as const
 
 export default async function JoinPage() {
@@ -96,9 +96,11 @@ export default async function JoinPage() {
               </li>
             ))}
           </ul>
+          <Alert tone="info" title="Toutes ces personnes doivent être affectées dans le Val-d’Oise.">
+            Les personnes affectées hors du département ne peuvent pas adhérer.
+          </Alert>
           <p className="max-w-prose text-ink-muted">
-            Les conditions d’adhésion sont fixées par les statuts de l’association. En cas de doute sur votre
-            situation, écrivez au bureau.
+            En cas de doute sur votre situation, écrivez au bureau.
           </p>
           {site.membership.feeLabel ? (
             <p className="text-lead">

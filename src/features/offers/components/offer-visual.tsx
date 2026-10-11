@@ -1,12 +1,12 @@
 import {
   Clapperboard,
   FerrisWheel,
+  Flower2,
   type LucideIcon,
   Plane,
-  Sparkles,
-  Theater,
+  Shapes,
+  ShoppingBasket,
   Trophy,
-  Users,
 } from 'lucide-react'
 import Image from 'next/image'
 import { mediaUrl } from '@/features/media/constants'
@@ -14,23 +14,23 @@ import { cn } from '@/lib/cn'
 import type { OfferCategory } from '@/server/db/schema'
 
 export const CATEGORY_ICONS: Record<OfferCategory, LucideIcon> = {
-  CINEMA: Clapperboard,
   PARCS: FerrisWheel,
-  SPECTACLES: Theater,
-  SPORT: Trophy,
+  CINEMA: Clapperboard,
   VOYAGES: Plane,
-  FAMILLE: Users,
-  AUTRE: Sparkles,
+  SPORT: Trophy,
+  EPICERIE: ShoppingBasket,
+  PARFUMERIE: Flower2,
+  AUTRE: Shapes,
 }
 
 /** Ambiance de chaque catégorie, tirée exclusivement de la palette de marque. */
 export const CATEGORY_TONES: Record<OfferCategory, string> = {
-  CINEMA: 'bg-night-900 text-amber-300',
   PARCS: 'bg-amber-300 text-ink',
-  SPECTACLES: 'bg-rose-600 text-white',
-  SPORT: 'bg-blue-700 text-white',
+  CINEMA: 'bg-night-900 text-amber-300',
   VOYAGES: 'bg-blue-50 text-blue-700',
-  FAMILLE: 'bg-rose-50 text-rose-700',
+  SPORT: 'bg-blue-700 text-white',
+  EPICERIE: 'bg-rose-600 text-white',
+  PARFUMERIE: 'bg-rose-50 text-rose-700',
   AUTRE: 'bg-sunken text-ink',
 }
 

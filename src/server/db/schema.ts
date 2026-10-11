@@ -136,12 +136,12 @@ export const offerKind = pgEnum('offer_kind', [
 ])
 
 export const offerCategory = pgEnum('offer_category', [
-  'CINEMA',
   'PARCS',
-  'SPECTACLES',
-  'SPORT',
+  'CINEMA',
   'VOYAGES',
-  'FAMILLE',
+  'SPORT',
+  'EPICERIE',
+  'PARFUMERIE',
   'AUTRE',
 ])
 

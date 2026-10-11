@@ -42,7 +42,7 @@ Compte de démonstration du bureau (mot de passe `demo-mot-de-passe`) :
 | ------------------- | -------------------------------------- |
 | `bureau@demo.local` | administrateur (espace bureau complet) |
 
-Le jeu de démonstration contient 17 offres **fictives** (cinéma, parcs, spectacles, sport, voyages, sorties de l'Amicale), 5 partenaires, 4 actualités et 3 commandes, toutes fictives. Aucune enseigne réelle n'est citée. Sans photo, chaque offre affiche un visuel de sa catégorie ; pour ajouter une vraie photo, glissez-déposez-la dans le formulaire de l'offre (espace bureau).
+Le jeu de démonstration contient 19 offres **fictives** (parcs, cinéma, voyages, sport, épicerie fine, parfumerie, divers), 5 partenaires, 4 actualités et 3 commandes, toutes fictives. Aucune enseigne réelle n'est citée. Sans photo, chaque offre affiche un visuel de sa catégorie ; pour ajouter une vraie photo, glissez-déposez-la dans le formulaire de l'offre (espace bureau).
 
 En développement, les emails ne sont pas envoyés : ils sont écrits en JSON dans `.outbox/` (liens de confirmation, de réinitialisation, etc.).
 

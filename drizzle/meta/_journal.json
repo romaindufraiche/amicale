@@ -78,6 +78,13 @@
       "when": 1791283101157,
       "tag": "0010_remove_member_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791734633304,
+      "tag": "0011_offer_categories",
+      "breakpoints": true
     }
   ]
 }

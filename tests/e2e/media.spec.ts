@@ -25,7 +25,7 @@ test('le bureau ajoute une image à une offre par glisser-déposer', async ({ pa
   await page.getByRole('button', { name: 'Enregistrer les modifications' }).click()
   await expect(page.getByText('Offre enregistrée.')).toBeVisible()
 
-  await page.goto('/offres?categorie=FAMILLE')
+  await page.goto('/offres?categorie=PARCS')
   const card = page.getByRole('article').filter({ hasText: 'Aquarium et tunnel des requins' })
   const image = card.locator('img')
   await expect(image).toHaveAttribute('src', /\/media\/[0-9a-f-]+/)
