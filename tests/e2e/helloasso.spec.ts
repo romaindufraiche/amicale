@@ -3,7 +3,6 @@ import { expect, test } from '@playwright/test'
 import { lastEmailTo, login, logout } from './helpers'
 
 const MEMBERSHIP_URL = 'https://www.helloasso.com/associations/exemple/adhesions/adhesion-2026'
-const OFFER_URL = 'https://www.helloasso.com/associations/exemple/evenements/aquarium'
 
 test('adhésion via HelloAsso, commande d’une offre et suivi par le bureau', async ({ page }) => {
   await login(page, 'bureau@demo.local')
@@ -20,12 +19,6 @@ test('adhésion via HelloAsso, commande d’une offre et suivi par le bureau', a
   await page.getByRole('button', { name: 'Enregistrer' }).click()
   await expect(page.getByText('Réglages enregistrés.')).toBeVisible()
 
-  // Lien de paiement propre à une offre.
-  await page.goto('/admin/offres')
-  await page.getByRole('link', { name: 'Aquarium et tunnel des requins' }).click()
-  await page.getByLabel('Lien HelloAsso de paiement').fill(OFFER_URL)
-  await page.getByRole('button', { name: 'Enregistrer les modifications' }).click()
-  await expect(page).toHaveURL(/enregistree=1/)
   await page.goto('/admin')
   await logout(page)
 
@@ -36,11 +29,13 @@ test('adhésion via HelloAsso, commande d’une offre et suivi par le bureau', a
     MEMBERSHIP_URL,
   )
 
-  // Visiteur : bouton « Commander » de la carte, puis formulaire nom, prénom, email.
+  // Visiteur : bouton « Commander » de la carte, nombre de billets, puis nom, prénom, email.
   const lastName = `Testeur${Date.now()}`
   await page.goto('/offres?q=Aquarium')
   await page.getByRole('link', { name: 'Commander : Aquarium et tunnel des requins' }).click()
   await expect(page).toHaveURL(/\/offres\/aquarium#commander$/)
+  await expect(page.getByText('Indiquez vos coordonnées')).toHaveCount(0)
+  await page.getByRole('button', { name: /Ajouter un billet \(Adulte/ }).click()
   await page.getByRole('button', { name: 'Envoyer ma commande' }).click()
   await expect(page.getByText('Certains champs sont à corriger.')).toBeVisible()
   await page.getByLabel('Prénom').fill('Camille')
@@ -48,10 +43,6 @@ test('adhésion via HelloAsso, commande d’une offre et suivi par le bureau', a
   await page.getByLabel('Adresse email').fill('camille@example.fr')
   await page.getByRole('button', { name: 'Envoyer ma commande' }).click()
   await expect(page.getByText('Commande envoyée.')).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Continuer vers le paiement' })).toHaveAttribute(
-    'href',
-    OFFER_URL,
-  )
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()
   expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([])
 
@@ -60,12 +51,14 @@ test('adhésion via HelloAsso, commande d’une offre et suivi par le bureau', a
     JSON.stringify(candidate).includes(lastName),
   )
   expect(email.subject).toBe('Nouvelle commande : Aquarium et tunnel des requins')
+  expect(JSON.stringify(email)).toContain('2 × Adulte')
 
   // Bureau : la commande apparaît, elle est marquée réglée, l'export la contient.
   await login(page, 'bureau@demo.local')
   await page.goto('/admin/demandes')
   const row = page.getByRole('row').filter({ hasText: lastName })
   await expect(row.getByText('Non réglée')).toBeVisible()
+  await expect(row.getByText('2 × Adulte')).toBeVisible()
   await row.getByRole('button', { name: 'Marquer comme réglée' }).click()
   await expect(page.getByText('Commande marquée comme réglée.')).toBeVisible()
   await expect(row.getByText(/^Réglée le/)).toBeVisible()

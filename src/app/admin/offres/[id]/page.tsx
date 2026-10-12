@@ -11,6 +11,7 @@ import { setOfferStatusAction } from '@/features/offers/actions'
 import { OfferForm } from '@/features/offers/components/offer-form'
 import { offerToFormValues } from '@/features/offers/form-values'
 import { PUBLICATION_STATUS_LABELS } from '@/features/offers/labels'
+import { getDocumentInfo } from '@/features/media/service'
 import { getOfferForAdmin } from '@/features/offers/queries'
 import { requirePermission } from '@/server/auth/guards'
 
@@ -25,6 +26,7 @@ export default async function EditOfferPage({ params, searchParams }: Props) {
   const offer = offerId.success ? await getOfferForAdmin(offerId.data) : null
   if (!offer) notFound()
   const saved = (await searchParams).enregistree === '1'
+  const attachment = await getDocumentInfo(offer.attachmentId)
 
   return (
     <>
@@ -71,7 +73,7 @@ export default async function EditOfferPage({ params, searchParams }: Props) {
         }
       />
       {saved ? <Alert tone="success" title="Offre enregistrée." /> : null}
-      <OfferForm key={offer.updatedAt.toISOString()} initial={offerToFormValues(offer)} />
+      <OfferForm key={offer.updatedAt.toISOString()} initial={offerToFormValues(offer, attachment)} />
     </>
   )
 }

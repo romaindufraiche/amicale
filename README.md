@@ -8,12 +8,16 @@ Plateforme web de l'Amicale, pensée comme un site de CSE. **Les adhérents n'on
 **Adhésion.** Les boutons « Adhérer » mènent à la page HelloAsso d'adhésion renseignée par le bureau
 (**Espace bureau → Réglages**) ; tant qu'elle ne l'est pas, ils mènent à la page « Adhérer » du site.
 
-**Commandes.** Chaque offre a un bouton « Commander » qui mène à un formulaire (nom, prénom, email).
-La commande est enregistrée, un email est envoyé à l'adresse choisie dans **Réglages** (à défaut,
-`BUREAU_EMAIL`), et le bureau la retrouve dans **Espace bureau → Commandes** (marquer comme réglée,
-export CSV). Facultatif : si un lien HelloAsso est renseigné dans la fiche de l'offre, la personne y est
-dirigée pour payer après sa commande. Le site ne voit aucune donnée bancaire. Les emails ne partent
-réellement qu'avec un serveur d'envoi configuré (`MAIL_TRANSPORT=smtp`, voir `docs/EXPLOITATION.md`).
+**Commandes.** Chaque offre peut afficher un bouton « Commander » (désactivable offre par offre, par
+exemple pour une offre à réserver directement chez le prestataire). Il mène à un formulaire : nombre de
+billets par tarif, nom, prénom, email. La commande est enregistrée, un email est envoyé à l'adresse
+choisie dans **Réglages** (à défaut, `BUREAU_EMAIL`), et le bureau la retrouve dans **Espace bureau →
+Commandes** (marquer comme réglée, export CSV). Les emails ne partent réellement qu'avec un serveur
+d'envoi configuré (`MAIL_TRANSPORT=smtp`, voir `docs/EXPLOITATION.md`).
+
+**Offres et partenaires.** Visuel par glisser-déposer, fichier joint (PDF ou JPEG), lien vers le site du
+prestataire, ordre d'affichage réglé par des flèches dans l'espace bureau ; les partenaires peuvent être
+supprimés.
 
 > ⚠️ **Avant la mise en production**, le bureau doit fournir les informations listées dans
 > [`docs/CONTENU.md`](docs/CONTENU.md) : logo en fichier, coordonnées, mentions légales,

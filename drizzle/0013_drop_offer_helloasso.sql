@@ -1,0 +1,1 @@
+ALTER TABLE "offers" DROP COLUMN "helloasso_url";

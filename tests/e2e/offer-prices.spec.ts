@@ -18,7 +18,6 @@ test('le bureau masque les tarifs d’une offre sur le site', async ({ page }) =
 
   // Plus aucun prix, ni sur la fiche ni sur le catalogue ; la commande reste possible.
   await page.goto('/offres/thermes-et-spa')
-  await expect(page.getByText('Les tarifs sont indiqués sur la page de paiement.')).toBeVisible()
   await expect(page.getByRole('main').getByText(/€/)).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Envoyer ma commande' })).toBeVisible()
   await page.goto('/offres?q=Thermes')

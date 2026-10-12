@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { offerFormToObject, offerSchema } from '@/features/offers/schemas'
-import { offerRequestSchema, parseRequestFilters, requestFiltersQuery } from '@/features/requests/schemas'
+import {
+  offerRequestFormToObject,
+  offerRequestSchema,
+  parseRequestFilters,
+  requestFiltersQuery,
+} from '@/features/requests/schemas'
 import { isHttpsUrl } from '@/lib/https-url'
 import { can } from '@/server/auth/permissions'
 
@@ -47,12 +52,25 @@ describe('offerSchema', () => {
     )
   })
 
-  it('valide le lien de paiement d’une offre', () => {
-    const parse = (helloassoUrl: string) =>
-      offerSchema.safeParse(offerFormToObject(form({ ...base, helloassoUrl })))
-    expect(parse('').data?.helloassoUrl).toBeNull()
-    expect(parse(' https://www.helloasso.com/x ').data?.helloassoUrl).toBe('https://www.helloasso.com/x')
-    expect(parse('http://exemple.fr').error?.issues[0]?.path).toEqual(['helloassoUrl'])
+  it('valide le lien du prestataire et rend le résumé facultatif', () => {
+    const parse = (extra: Record<string, string>) =>
+      offerSchema.safeParse(offerFormToObject(form({ ...base, ...extra })))
+    expect(parse({ providerUrl: '' }).data?.providerUrl).toBeNull()
+    expect(parse({ providerUrl: ' https://www.campings.com ' }).data?.providerUrl).toBe(
+      'https://www.campings.com',
+    )
+    expect(parse({ providerUrl: 'javascript:alert(1)' }).error?.issues[0]?.path).toEqual(['providerUrl'])
+    expect(parse({ summary: '' }).data?.summary).toBeNull()
+  })
+
+  it('n’exige des tarifs que si le bouton « Commander » est affiché', () => {
+    const withoutTariffs = Object.fromEntries(
+      Object.entries(base).filter(([key]) => !key.startsWith('tariffs.')),
+    )
+    const parse = (extra: Record<string, string>) =>
+      offerSchema.safeParse(offerFormToObject(form({ ...withoutTariffs, ...extra })))
+    expect(parse({ orderable: 'on' }).error?.issues[0]?.path).toEqual(['tariffs'])
+    expect(parse({}).success).toBe(true)
   })
 
   it('exige une date pour une sortie et refuse un prix public inférieur', () => {
@@ -80,7 +98,26 @@ describe('offerRequestSchema', () => {
     firstName: ' Camille ',
     lastName: 'Exemple',
     email: ' Camille@Example.FR ',
+    quantities: [{ tariffId: '6f1c7a4e-2b7d-4c55-9a0e-3d2f5b8c1a91', quantity: '1' }],
   }
+
+  it('lit les quantités par tarif', () => {
+    const data = form({
+      offerId: valid.offerId,
+      firstName: 'Camille',
+      lastName: 'Exemple',
+      email: 'camille@example.fr',
+      [`qty.${valid.offerId}`]: '3',
+    })
+    expect(offerRequestSchema.parse(offerRequestFormToObject(data)).quantities).toEqual([
+      { tariffId: valid.offerId, quantity: 3 },
+    ])
+    expect(offerRequestSchema.safeParse({ ...valid, quantities: [] }).success).toBe(false)
+    expect(
+      offerRequestSchema.safeParse({ ...valid, quantities: [{ tariffId: valid.offerId, quantity: '99' }] })
+        .success,
+    ).toBe(false)
+  })
 
   it('normalise la saisie', () => {
     expect(offerRequestSchema.parse(valid)).toMatchObject({

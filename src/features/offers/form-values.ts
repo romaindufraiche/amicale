@@ -1,6 +1,7 @@
 import 'server-only'
 import { centsToInput } from '@/lib/money'
 import { toParisDateTimeInput } from '@/lib/dates'
+import type { AttachedDocument } from '@/features/media/components/document-upload'
 import type { OfferFormValues } from './components/offer-form'
 import type { OfferWithTariffs } from './queries'
 
@@ -11,6 +12,10 @@ export const EMPTY_OFFER: OfferFormValues = {
   category: 'CINEMA',
   summary: '',
   description: '',
+  providerUrl: '',
+  attachment: null,
+  // La plupart des offres sont des e-billets : case cochée par défaut.
+  eTickets: true,
   pickupInfo: '',
   location: '',
   eventStartsAt: '',
@@ -19,20 +24,26 @@ export const EMPTY_OFFER: OfferFormValues = {
   imageId: null,
   featured: false,
   pricesPublic: true,
-  helloassoUrl: '',
+  orderable: true,
   tariffs: [],
 }
 
 /** Convertit une offre en base en valeurs de formulaire (montants en euros, dates à l'heure de Paris). */
-export function offerToFormValues(offer: OfferWithTariffs): OfferFormValues {
+export function offerToFormValues(
+  offer: OfferWithTariffs,
+  attachment: AttachedDocument | null,
+): OfferFormValues {
   return {
     id: offer.id,
     title: offer.title,
     slug: offer.slug,
     kind: offer.kind,
     category: offer.category,
-    summary: offer.summary,
+    summary: offer.summary ?? '',
     description: offer.description,
+    providerUrl: offer.providerUrl ?? '',
+    attachment,
+    eTickets: offer.eTickets,
     pickupInfo: offer.pickupInfo ?? '',
     location: offer.location ?? '',
     eventStartsAt: toParisDateTimeInput(offer.eventStartsAt),
@@ -41,7 +52,7 @@ export function offerToFormValues(offer: OfferWithTariffs): OfferFormValues {
     imageId: offer.imageId,
     featured: offer.featured,
     pricesPublic: offer.pricesPublic,
-    helloassoUrl: offer.helloassoUrl ?? '',
+    orderable: offer.orderable,
     tariffs: offer.tariffs.map((tariff) => ({
       key: tariff.id,
       id: tariff.id,

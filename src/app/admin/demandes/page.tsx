@@ -1,4 +1,4 @@
-import { Download, ExternalLink } from 'lucide-react'
+import { Download } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ActionForm } from '@/components/ui/action-form'
@@ -9,6 +9,7 @@ import { PageHeader } from '@/components/ui/page-header'
 import { Table, Td, Th } from '@/components/ui/table'
 import { deleteRequestAction, setRequestPaidAction } from '@/features/requests/actions'
 import { listOffersWithRequests, listRequestsForAdmin } from '@/features/requests/queries'
+import { formatRequestLines } from '@/features/requests/service'
 import {
   parseRequestFilters,
   REQUEST_FILTER_LABELS,
@@ -32,7 +33,7 @@ export default async function RequestsPage({ searchParams }: Props) {
       <PageHeader
         eyebrow="Espace bureau"
         title="Commandes"
-        lead="Commandes passées depuis la fiche des offres. Chaque nouvelle commande vous est aussi envoyée par email. Marquez une commande comme réglée une fois le paiement reçu."
+        lead="Commandes passées depuis la fiche des offres. Chaque nouvelle commande vous est aussi envoyée par email. Marquez une commande comme réglée une fois le règlement reçu."
         actions={
           <a
             href={`/admin/demandes/export${requestFiltersQuery(filters)}`}
@@ -94,7 +95,7 @@ export default async function RequestsPage({ searchParams }: Props) {
             <tr>
               <Th>Date</Th>
               <Th>Personne</Th>
-              <Th>Offre</Th>
+              <Th>Offre et billets</Th>
               <Th>Règlement</Th>
               <Th>
                 <span className="sr-only">Actions</span>
@@ -119,19 +120,11 @@ export default async function RequestsPage({ searchParams }: Props) {
                   <Link href={`/admin/offres/${request.offerId}`} className="link">
                     {request.offerTitle}
                   </Link>
-                  {request.offerHelloassoUrl ? (
-                    <p>
-                      <a
-                        href={request.offerHelloassoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-caption link"
-                      >
-                        Page HelloAsso <ExternalLink aria-hidden className="size-3" />
-                        <span className="sr-only">(nouvel onglet)</span>
-                      </a>
-                    </p>
-                  ) : null}
+                  <p className="text-ink-muted">
+                    {request.lines.length > 0
+                      ? formatRequestLines(request.lines)
+                      : `${request.quantity} billet${request.quantity > 1 ? 's' : ''}`}
+                  </p>
                 </Td>
                 <Td>
                   {request.paidAt ? (

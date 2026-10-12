@@ -7,14 +7,18 @@ export const partnerSchema = z.object({
   advantage: z
     .string()
     .trim()
-    .min(5, { error: 'Décrivez l’avantage en une phrase.' })
-    .max(160, { error: '160 caractères maximum.' }),
+    .max(160, { error: '160 caractères maximum.' })
+    .transform((value) => (value === '' ? null : value)),
   description: z
     .string()
     .trim()
     .max(2000)
     .transform((value) => (value === '' ? null : value)),
-  howToBenefit: z.string().trim().min(5, { error: 'Indiquez comment en bénéficier.' }).max(1000),
+  howToBenefit: z
+    .string()
+    .trim()
+    .max(1000)
+    .transform((value) => (value === '' ? null : value)),
   websiteUrl: z
     .string()
     .trim()
@@ -24,6 +28,14 @@ export const partnerSchema = z.object({
     })
     .refine((value) => value === '' || URL.canParse(value), { error: 'Adresse web invalide (https://…).' })
     .transform((value) => (value === '' ? null : value)),
+  imageId: z
+    .union([z.uuid(), z.literal('')], { error: 'Image invalide.' })
+    .optional()
+    .transform((value) => value || null),
+  attachmentId: z
+    .union([z.uuid(), z.literal('')], { error: 'Fichier invalide.' })
+    .optional()
+    .transform((value) => value || null),
   published: z
     .string()
     .optional()

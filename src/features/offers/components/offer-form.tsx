@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { CheckboxField, SelectField, TextareaField, TextField } from '@/components/ui/fields'
 import { FormMessage } from '@/components/ui/form-message'
 import { SubmitButton } from '@/components/ui/submit-button'
+import { type AttachedDocument, DocumentUpload } from '@/features/media/components/document-upload'
 import { ImageDropzone } from '@/features/media/components/image-dropzone'
 import { idleState } from '@/lib/form-state'
 import { saveOfferAction } from '../actions'
@@ -15,10 +16,13 @@ export type OfferFormValues = {
   id?: string
   title: string
   slug: string
-  kind: 'TICKET' | 'EVENT'
+  kind: 'TICKET' | 'EVENT' | 'OTHER'
   category: string
   summary: string
   description: string
+  providerUrl: string
+  attachment: AttachedDocument | null
+  eTickets: boolean
   pickupInfo: string
   location: string
   eventStartsAt: string
@@ -27,7 +31,7 @@ export type OfferFormValues = {
   imageId: string | null
   featured: boolean
   pricesPublic: boolean
-  helloassoUrl: string
+  orderable: boolean
   tariffs: TariffRow[]
 }
 
@@ -44,7 +48,7 @@ type TariffRow = {
 type FormDataValues = Record<string, string> | undefined
 
 const CATEGORY_OPTIONS = OFFER_CATEGORIES.map((value) => ({ value, label: OFFER_CATEGORY_LABELS[value] }))
-const KIND_OPTIONS = (['TICKET', 'EVENT'] as const).map((value) => ({
+const KIND_OPTIONS = (['TICKET', 'EVENT', 'OTHER'] as const).map((value) => ({
   value,
   label: OFFER_KIND_LABELS[value],
 }))
@@ -88,7 +92,7 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
   const e = state.fieldErrors
   const [kind, setKind] = useState(v?.kind ?? initial.kind)
   const [rows, setRows] = useState<TariffRow[]>(() =>
-    initial.tariffs.length > 0 ? initial.tariffs : [newRow()],
+    initial.id || initial.tariffs.length > 0 ? initial.tariffs : [newRow()],
   )
   const [restoredFrom, setRestoredFrom] = useState<FormDataValues>(undefined)
 
@@ -98,8 +102,12 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
     setRows(rowsFromValues(v, rows))
   }
 
-  const value = (name: Exclude<keyof OfferFormValues, 'tariffs' | 'featured' | 'pricesPublic'>) =>
-    v?.[name] ?? initial[name] ?? ''
+  const value = (
+    name: Exclude<
+      keyof OfferFormValues,
+      'tariffs' | 'featured' | 'pricesPublic' | 'orderable' | 'eTickets' | 'attachment'
+    >,
+  ) => v?.[name] ?? initial[name] ?? ''
 
   return (
     <form action={formAction} className="flex flex-col gap-10" noValidate>
@@ -122,7 +130,7 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
           required
           options={KIND_OPTIONS}
           value={kind}
-          onChange={(event) => setKind(event.target.value as 'TICKET' | 'EVENT')}
+          onChange={(event) => setKind(event.target.value as OfferFormValues['kind'])}
           error={e?.kind}
         />
         <SelectField
@@ -136,8 +144,7 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
         <TextField
           name="summary"
           label="Résumé"
-          hint="Une ou deux phrases, affichées dans le catalogue (220 caractères max.)."
-          required
+          hint="Une ou deux phrases affichées sur la carte de l’offre dans le catalogue (220 caractères max.)."
           maxLength={220}
           defaultValue={value('summary')}
           error={e?.summary}
@@ -153,11 +160,31 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
           error={e?.description}
           className="md:col-span-2"
         />
+        <TextField
+          name="providerUrl"
+          type="url"
+          inputMode="url"
+          label="Site du prestataire"
+          hint="Lien affiché sur la fiche de l’offre (bouton « Site du prestataire »)."
+          placeholder="https://"
+          defaultValue={value('providerUrl')}
+          error={e?.providerUrl}
+          className="md:col-span-2"
+        />
+        <div className="md:col-span-2">
+          <DocumentUpload
+            name="attachmentId"
+            label="Fichier joint (PDF ou JPEG)"
+            hint="Brochure, programme, conditions… 4 Mo maximum. Téléchargeable depuis la fiche de l’offre."
+            defaultDocument={initial.attachment}
+            error={e?.attachmentId}
+          />
+        </div>
         <div className="md:col-span-2">
           <ImageDropzone
             name="imageId"
             label="Visuel de l’offre"
-            hint="Sans image, un visuel de la catégorie est affiché."
+            hint="JPEG, PNG ou WebP, jusqu’à 30 Mo (réduite automatiquement). Idéal : format paysage 16:9, au moins 1600 × 900 px. Sans image, un visuel de la catégorie est affiché."
             defaultMediaId={v ? v.imageId || null : initial.imageId}
             error={e?.imageId}
           />
@@ -174,33 +201,39 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
             <>
               Afficher les tarifs sur le site
               <span className="block text-sm text-ink-muted">
-                Décoché : l’offre est visible, mais ses tarifs ne s’affichent que sur la page de paiement
-                HelloAsso.
+                Décoché : l’offre est visible, mais ses tarifs ne sont pas affichés.
               </span>
             </>
           }
           defaultChecked={v ? v.pricesPublic === 'on' : initial.pricesPublic}
           className="md:col-span-2"
         />
-        <TextField
-          name="helloassoUrl"
-          type="url"
-          inputMode="url"
-          label="Lien HelloAsso de paiement"
-          hint="Page HelloAsso de cette offre. Après avoir laissé ses coordonnées, la personne y est dirigée pour payer. Vide : le bureau la recontacte pour le règlement."
-          placeholder="https://www.helloasso.com/associations/…"
-          defaultValue={value('helloassoUrl')}
-          error={e?.helloassoUrl}
+        <CheckboxField
+          name="orderable"
+          label={
+            <>
+              Afficher le bouton « Commander »
+              <span className="block text-sm text-ink-muted">
+                Décoché : pas de commande sur le site (offre à réserver directement chez le prestataire).
+              </span>
+            </>
+          }
+          defaultChecked={v ? v.orderable === 'on' : initial.orderable}
           className="md:col-span-2"
         />
-        <TextField
-          name="slug"
-          label="Adresse de la page"
-          hint="Générée depuis le titre si laissée vide. Ex. : parc-asterix-2026"
-          defaultValue={value('slug')}
-          error={e?.slug}
-          className="md:col-span-2"
-        />
+        <details className="md:col-span-2" open={Boolean(e?.slug)}>
+          <summary className="cursor-pointer text-sm font-semibold">
+            Réglage avancé : adresse de la page
+          </summary>
+          <TextField
+            name="slug"
+            label="Adresse de la page"
+            hint="Fin de l’adresse web de l’offre, ex. adpvo.fr/offres/parc-asterix. Laissez vide : elle est créée automatiquement à partir du titre."
+            defaultValue={value('slug')}
+            error={e?.slug}
+            className="mt-4"
+          />
+        </details>
       </fieldset>
 
       <fieldset className="grid gap-6 md:grid-cols-2">
@@ -218,13 +251,18 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
             <TextField name="location" label="Lieu" defaultValue={value('location')} error={e?.location} />
           </>
         ) : (
-          <TextField
-            name="validUntil"
-            type="date"
-            label="Billets valables jusqu’au"
-            defaultValue={value('validUntil')}
-            error={e?.validUntil}
-          />
+          <>
+            <TextField
+              name="validUntil"
+              type="date"
+              label={kind === 'OTHER' ? 'Offre valable jusqu’au' : 'Billets valables jusqu’au'}
+              defaultValue={value('validUntil')}
+              error={e?.validUntil}
+            />
+            {kind === 'OTHER' ? (
+              <TextField name="location" label="Lieu" defaultValue={value('location')} error={e?.location} />
+            ) : null}
+          </>
         )}
         <TextField
           name="orderDeadline"
@@ -233,10 +271,16 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
           defaultValue={value('orderDeadline')}
           error={e?.orderDeadline}
         />
+        <CheckboxField
+          name="eTickets"
+          label="E-billets envoyés par email"
+          defaultChecked={v ? v.eTickets === 'on' : initial.eTickets}
+          className="md:col-span-2"
+        />
         <TextareaField
           name="pickupInfo"
-          label="Remise des billets"
-          hint="Ex. : e-billets envoyés par email, retrait lors de la permanence…"
+          label="Remise des billets : précisions"
+          hint="Ex. : retrait lors de la permanence, délai d’envoi… Affiché sous la mention « E-billets » si la case est cochée."
           rows={3}
           defaultValue={value('pickupInfo')}
           error={e?.pickupInfo}
@@ -248,7 +292,7 @@ export function OfferForm({ initial }: { initial: OfferFormValues }) {
         <legend className="mb-2 font-display text-h3 font-extrabold">Tarifs</legend>
         <p className="text-sm text-ink-muted">
           Les montants sont en euros (ex. 12,50). Stock : places restantes, à tenir à jour ; vide = sans
-          limite, 0 = l’offre s’affiche « Complet ».
+          limite, 0 = l’offre s’affiche « Complet ». Facultatifs si le bouton « Commander » est désactivé.
         </p>
         {e?.tariffs ? <p className="text-sm font-semibold text-danger-700">{e.tariffs}</p> : null}
         <ol className="flex flex-col gap-4">

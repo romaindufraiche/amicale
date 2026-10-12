@@ -8,23 +8,23 @@ import { requirePermission } from '@/server/auth/guards'
 import { logger } from '@/server/logger'
 import { formatRetryAfter } from '@/server/rate-limit'
 import { getClientIp } from '@/server/request-context'
-import { offerRequestSchema } from './schemas'
+import { offerRequestFormToObject, offerRequestSchema } from './schemas'
 import { deleteRequest, setRequestPaid, submitOfferRequest } from './service'
 
-/** État de succès : `paymentUrl` vide si l'offre n'a pas encore de page HelloAsso. */
-export type OfferRequestState = FormState & { paymentUrl?: string | null }
+const UNAVAILABLE_MESSAGES = {
+  UNAVAILABLE: 'Cette offre n’est plus disponible à la commande.',
+  INVALID_TARIFF: 'Un des tarifs choisis n’est plus disponible. Rechargez la page.',
+  STOCK: 'Il ne reste pas assez de places pour cette quantité. Réduisez le nombre de billets.',
+} as const
 
-export async function submitOfferRequestAction(
-  _previous: OfferRequestState,
-  formData: FormData,
-): Promise<OfferRequestState> {
+export async function submitOfferRequestAction(_previous: FormState, formData: FormData): Promise<FormState> {
   return runFormAction('offer-request', formData, async () => {
-    const parsed = offerRequestSchema.safeParse(Object.fromEntries(formData))
+    const parsed = offerRequestSchema.safeParse(offerRequestFormToObject(formData))
     if (!parsed.success) {
       // Robot détecté par le champ piège : rien n'est enregistré.
       if (parsed.error.issues.some((issue) => issue.path[0] === 'website')) {
         logger.warn('offer_request.honeypot')
-        return { status: 'success', message: 'Commande envoyée.', paymentUrl: null }
+        return { status: 'success', message: 'Commande envoyée.' }
       }
       return validationError(parsed.error, formData)
     }
@@ -34,12 +34,12 @@ export async function submitOfferRequestAction(
       return errorState(
         result.reason === 'RATE_LIMITED'
           ? `Vous avez envoyé plusieurs commandes récemment. Réessayez ${formatRetryAfter(result.retryAfterSeconds)}.`
-          : 'Cette offre n’est plus disponible à la commande.',
+          : UNAVAILABLE_MESSAGES[result.reason],
         formData,
       )
     }
     revalidatePath('/admin', 'layout')
-    return { status: 'success', message: 'Commande envoyée.', paymentUrl: result.helloassoUrl }
+    return { status: 'success', message: 'Commande envoyée.' }
   })
 }
 

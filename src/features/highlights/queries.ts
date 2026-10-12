@@ -30,6 +30,24 @@ export async function listActiveHighlights() {
 
 export type ActiveHighlight = Awaited<ReturnType<typeof listActiveHighlights>>[number]
 
+/** Post publié et dans sa période d'affichage, pour sa page de détail. */
+export async function getActiveHighlight(id: string) {
+  const now = new Date()
+  const [row] = await db
+    .select()
+    .from(highlights)
+    .where(
+      and(
+        eq(highlights.id, id),
+        eq(highlights.published, true),
+        or(isNull(highlights.startsAt), lte(highlights.startsAt, now)),
+        or(isNull(highlights.endsAt), gt(highlights.endsAt, now)),
+      ),
+    )
+    .limit(1)
+  return row ?? null
+}
+
 export async function listHighlightsForAdmin() {
   return db.select().from(highlights).orderBy(asc(highlights.position), desc(highlights.createdAt))
 }

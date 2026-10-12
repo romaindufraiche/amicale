@@ -1,6 +1,7 @@
 import type { Offer, OfferTariff } from '@/server/db/schema'
 
-type OfferTiming = Pick<Offer, 'status' | 'kind' | 'orderDeadline' | 'eventStartsAt' | 'validUntil'>
+type OfferTiming = Pick<Offer, 'status' | 'kind' | 'orderDeadline' | 'eventStartsAt' | 'validUntil'> &
+  Partial<Pick<Offer, 'orderable'>>
 
 export type OfferAvailability =
   | { open: true }
@@ -9,7 +10,8 @@ export type OfferAvailability =
 /**
  * Une offre est commandable si elle est en ligne, que la date limite n'est pas
  * dépassée, que la sortie n'a pas eu lieu, que les billets sont encore valables
- * et qu'il reste au moins une place sur un tarif actif.
+ * et qu'il reste au moins une place sur un tarif actif (sauf offre sans commande sur le site,
+ * dont les tarifs sont facultatifs).
  */
 export function offerAvailability(
   offer: OfferTiming,
@@ -24,6 +26,7 @@ export function offerAvailability(
   }
   if (offer.validUntil && offer.validUntil < today) return { open: false, reason: 'EXPIRED' }
   const activeTariffs = tariffs.filter((tariff) => tariff.active)
+  if (offer.orderable === false) return { open: true }
   if (
     activeTariffs.length === 0 ||
     activeTariffs.every((tariff) => tariff.stock !== null && tariff.stock <= 0)

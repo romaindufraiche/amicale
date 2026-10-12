@@ -8,8 +8,25 @@ const nameField = (label: string) =>
     .min(1, { error: `${label} est requis.` })
     .max(60, { error: '60 caractères maximum.' })
 
+export const MAX_TICKETS_PER_TARIFF = 20
+
+const quantityField = z
+  .string()
+  .trim()
+  .refine((value) => /^\d{1,2}$/.test(value) && Number(value) <= MAX_TICKETS_PER_TARIFF, {
+    error: `Nombre de billets : de 0 à ${MAX_TICKETS_PER_TARIFF}.`,
+  })
+  .transform(Number)
+
 export const offerRequestSchema = z.object({
   offerId: z.uuid({ error: 'Offre invalide.' }),
+  /** Nombre de billets par tarif (champs `qty.<id du tarif>` du formulaire). */
+  quantities: z
+    .array(z.object({ tariffId: z.uuid(), quantity: quantityField }))
+    .max(12)
+    .refine((lines) => lines.some((line) => line.quantity > 0), {
+      error: 'Indiquez le nombre de billets souhaité.',
+    }),
   firstName: nameField('Le prénom'),
   lastName: nameField('Le nom'),
   email: emailField,
@@ -18,6 +35,18 @@ export const offerRequestSchema = z.object({
 })
 
 export type OfferRequestInput = z.infer<typeof offerRequestSchema>
+
+/** Reconstitue l'objet du formulaire de commande (les quantités arrivent en `qty.<id du tarif>`). */
+export function offerRequestFormToObject(formData: FormData) {
+  const fields: Record<string, string> = {}
+  const quantities: { tariffId: string; quantity: string }[] = []
+  for (const [key, value] of formData.entries()) {
+    if (typeof value !== 'string' || key.startsWith('$')) continue
+    if (key.startsWith('qty.')) quantities.push({ tariffId: key.slice(4), quantity: value })
+    else fields[key] = value
+  }
+  return { ...fields, quantities }
+}
 
 export const REQUEST_FILTERS = ['toutes', 'a-regler', 'reglees'] as const
 export type RequestFilter = (typeof REQUEST_FILTERS)[number]

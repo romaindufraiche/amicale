@@ -7,7 +7,7 @@ import { errorState, formValues, type FormState, validationError } from '@/lib/f
 import { runFormAction } from '@/server/action'
 import { requirePermission } from '@/server/auth/guards'
 import { offerFormToObject, offerSchema, offerStatusSchema } from './schemas'
-import { createOffer, setOfferStatus, updateOffer } from './service'
+import { createOffer, moveOffer, setOfferStatus, updateOffer } from './service'
 
 export async function saveOfferAction(_previous: FormState, formData: FormData): Promise<FormState> {
   return runFormAction('save-offer', formData, async () => {
@@ -50,4 +50,17 @@ export async function setOfferStatusAction(_previous: FormState, formData: FormD
     } as const
     return { status: 'success', message: messages[parsed.data.status] }
   })
+}
+
+const moveSchema = z.object({ id: z.uuid(), direction: z.enum(['up', 'down']) })
+
+/** Monte ou descend une offre d'un cran (flèches de la liste du bureau). */
+export async function moveOfferAction(formData: FormData): Promise<void> {
+  const actor = await requirePermission('offers:manage')
+  const parsed = moveSchema.safeParse(Object.fromEntries(formData))
+  if (!parsed.success) return
+  await moveOffer(actor.id, parsed.data.id, parsed.data.direction)
+  revalidatePath('/admin/offres')
+  revalidatePath('/offres', 'layout')
+  revalidatePath('/')
 }

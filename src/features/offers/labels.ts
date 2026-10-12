@@ -16,6 +16,7 @@ export const OFFER_CATEGORIES = Object.keys(OFFER_CATEGORY_LABELS) as OfferCateg
 export const OFFER_KIND_LABELS: Record<OfferKind, string> = {
   TICKET: 'Billetterie',
   EVENT: 'Sortie',
+  OTHER: 'Autre',
 }
 
 export const PUBLICATION_STATUS_LABELS: Record<PublicationStatus, string> = {

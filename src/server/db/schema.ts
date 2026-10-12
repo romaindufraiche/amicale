@@ -126,6 +126,28 @@ export const media = pgTable(
   ],
 )
 
+/**
+ * Fichiers joints par le bureau (PDF, ou photo JPEG ré-encodée sans métadonnées),
+ * servis en téléchargement par `/media/fichiers/<id>`.
+ */
+export const documents = pgTable(
+  'documents',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    mimeType: text().notNull(),
+    /** Nom d'origine nettoyé, proposé au téléchargement. */
+    fileName: text().notNull(),
+    data: bytea().notNull(),
+    sizeBytes: integer().notNull(),
+    createdById: uuid().references(() => users.id, { onDelete: 'set null' }),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index('documents_created_at_idx').on(t.createdAt),
+    check('documents_mime_type', sql`${t.mimeType} in ('application/pdf', 'image/jpeg')`),
+  ],
+)
+
 // ─── Billetterie & sorties ───────────────────────────────────────────────────
 
 export const offerKind = pgEnum('offer_kind', [
@@ -133,6 +155,8 @@ export const offerKind = pgEnum('offer_kind', [
   'TICKET',
   /** Sortie ou événement organisé par l'Amicale, à date fixe. */
   'EVENT',
+  /** Autre (réduction, bon d'achat, séjour…) : ni date de sortie ni validité imposées. */
+  'OTHER',
 ])
 
 export const offerCategory = pgEnum('offer_category', [
@@ -155,9 +179,16 @@ export const offers = pgTable(
     title: text().notNull(),
     kind: offerKind().notNull(),
     category: offerCategory().notNull(),
-    summary: text().notNull(),
+    /** Accroche facultative affichée sur la carte du catalogue. */
+    summary: text(),
     description: text().notNull(),
-    /** Modalités de retrait ou de remise des billets. */
+    /** Site du prestataire, proposé sur la fiche de l'offre. */
+    providerUrl: text(),
+    /** Fichier joint (PDF ou JPEG) téléchargeable depuis la fiche. */
+    attachmentId: uuid().references(() => documents.id, { onDelete: 'set null' }),
+    /** Billets électroniques envoyés par email (mention standard sur la fiche). */
+    eTickets: boolean().notNull().default(false),
+    /** Précisions sur le retrait ou la remise des billets. */
     pickupInfo: text(),
     location: text(),
     eventStartsAt: timestamp({ withTimezone: true }),
@@ -170,8 +201,10 @@ export const offers = pgTable(
     featured: boolean().notNull().default(false),
     /** Tarifs affichés sur le site public ; sinon visibles seulement sur la page de paiement. */
     pricesPublic: boolean().notNull().default(true),
-    /** Page HelloAsso de l'offre, vers laquelle la personne est dirigée après sa demande. */
-    helloassoUrl: text(),
+    /** Bouton « Commander » ; désactivé pour une offre à réserver directement chez le prestataire. */
+    orderable: boolean().notNull().default(true),
+    /** Ordre d'affichage choisi par le bureau (les plus petits en premier). */
+    position: integer().notNull().default(0),
     status: publicationStatus().notNull().default('DRAFT'),
     publishedAt: timestamp({ withTimezone: true }),
     ...timestamps,
@@ -226,6 +259,10 @@ export const offerRequests = pgTable(
     lastName: text().notNull(),
     email: text().notNull(),
     phone: text(),
+    /** Nombre total de billets demandés. */
+    quantity: integer().notNull().default(1),
+    /** Détail par tarif, libellés copiés au moment de la commande. */
+    lines: jsonb().$type<{ label: string; quantity: number }[]>().notNull().default([]),
     /** Règlement constaté par le bureau. */
     paidAt: timestamp({ withTimezone: true }),
     paidMarkedById: uuid().references(() => users.id, { onDelete: 'set null' }),
@@ -234,6 +271,7 @@ export const offerRequests = pgTable(
   (t) => [
     index('offer_requests_offer_id_idx').on(t.offerId),
     index('offer_requests_created_at_idx').on(t.createdAt),
+    check('offer_requests_quantity_positive', sql`${t.quantity} > 0`),
   ],
 )
 
@@ -245,12 +283,16 @@ export const partners = pgTable(
     id: uuid().primaryKey().defaultRandom(),
     name: text().notNull(),
     category: offerCategory().notNull(),
-    /** Résumé de l'avantage, ex. « Tarif préférentiel sur l'abonnement annuel ». */
-    advantage: text().notNull(),
+    /** Résumé facultatif de l'avantage, ex. « Tarif préférentiel sur l'abonnement annuel ». */
+    advantage: text(),
     description: text(),
-    /** Code ou démarche pour bénéficier de l'avantage, affiché sur la page publique « Partenaires ». */
-    howToBenefit: text().notNull(),
+    /** Démarche pour bénéficier de l'avantage, affichée sur la page publique « Partenaires ». */
+    howToBenefit: text(),
     websiteUrl: text(),
+    imageId: uuid().references(() => media.id, { onDelete: 'set null' }),
+    attachmentId: uuid().references(() => documents.id, { onDelete: 'set null' }),
+    /** Ordre d'affichage choisi par le bureau (les plus petits en premier). */
+    position: integer().notNull().default(0),
     published: boolean().notNull().default(false),
     ...timestamps,
   },
@@ -384,4 +426,5 @@ export type News = typeof news.$inferSelect
 export type Highlight = typeof highlights.$inferSelect
 export type HighlightTone = (typeof highlightTone.enumValues)[number]
 export type Media = typeof media.$inferSelect
+export type DocumentFile = typeof documents.$inferSelect
 export type ContactMessage = typeof contactMessages.$inferSelect

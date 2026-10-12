@@ -1,5 +1,5 @@
 import 'server-only'
-import { and, eq, notInArray } from 'drizzle-orm'
+import { and, asc, desc, eq, gt, lt, notInArray, sql } from 'drizzle-orm'
 import { recordAudit } from '@/features/audit/service'
 import { db, type Transaction } from '@/server/db/client'
 import { offers, offerTariffs, type PublicationStatus } from '@/server/db/schema'
@@ -16,16 +16,19 @@ function offerColumns(input: OfferInput) {
     category: input.category,
     summary: input.summary,
     description: input.description,
+    providerUrl: input.providerUrl,
+    attachmentId: input.attachmentId,
+    eTickets: input.eTickets,
     pickupInfo: input.pickupInfo,
-    location: input.location,
-    // Une date de sortie n'a de sens que pour une sortie ; une validité, pour un billet.
+    // Le lieu concerne les sorties (et les offres « Autre ») ; une validité, les billets.
+    location: input.kind === 'TICKET' ? null : input.location,
     eventStartsAt: input.kind === 'EVENT' ? input.eventStartsAt : null,
-    validUntil: input.kind === 'TICKET' ? input.validUntil : null,
+    validUntil: input.kind === 'EVENT' ? null : input.validUntil,
     orderDeadline: input.orderDeadline,
     imageId: input.imageId,
     featured: input.featured,
     pricesPublic: input.pricesPublic,
-    helloassoUrl: input.helloassoUrl,
+    orderable: input.orderable,
   }
 }
 
@@ -71,7 +74,14 @@ async function saveTariffs(tx: Transaction, offerId: string, tariffs: OfferInput
 export async function createOffer(actorId: string, input: OfferInput): Promise<OfferSaveResult> {
   try {
     const offerId = await db.transaction(async (tx) => {
-      const [offer] = await tx.insert(offers).values(offerColumns(input)).returning({ id: offers.id })
+      // Une nouvelle offre apparaît en tête ; le bureau la déplace ensuite s'il le souhaite.
+      const [first] = await tx
+        .select({ value: sql<number>`coalesce(min(${offers.position}), 1)` })
+        .from(offers)
+      const [offer] = await tx
+        .insert(offers)
+        .values({ ...offerColumns(input), position: (first?.value ?? 1) - 1 })
+        .returning({ id: offers.id })
       if (!offer) throw new Error('Insertion d’offre sans retour')
       await saveTariffs(tx, offer.id, input.tariffs)
       await recordAudit(tx, {
@@ -142,6 +152,42 @@ export async function setOfferStatus(
       entityId: offerId,
       details: { status },
     })
+    return true
+  })
+}
+
+/**
+ * Monte ou descend une offre d'un cran parmi les offres de la même catégorie
+ * (échange de position avec sa voisine). Renvoie `false` si elle est déjà en bout de liste.
+ */
+export async function moveOffer(
+  actorId: string,
+  offerId: string,
+  direction: 'up' | 'down',
+): Promise<boolean> {
+  return db.transaction(async (tx) => {
+    const [current] = await tx
+      .select({ id: offers.id, position: offers.position, category: offers.category })
+      .from(offers)
+      .where(eq(offers.id, offerId))
+      .for('update')
+    if (!current) return false
+    const [neighbor] = await tx
+      .select({ id: offers.id, position: offers.position })
+      .from(offers)
+      .where(
+        and(
+          eq(offers.category, current.category),
+          direction === 'up' ? lt(offers.position, current.position) : gt(offers.position, current.position),
+        ),
+      )
+      .orderBy(direction === 'up' ? desc(offers.position) : asc(offers.position))
+      .limit(1)
+      .for('update')
+    if (!neighbor) return false
+    await tx.update(offers).set({ position: neighbor.position }).where(eq(offers.id, current.id))
+    await tx.update(offers).set({ position: current.position }).where(eq(offers.id, neighbor.id))
+    await recordAudit(tx, { actorId, action: 'offer.moved', entityType: 'offer', entityId: offerId })
     return true
   })
 }

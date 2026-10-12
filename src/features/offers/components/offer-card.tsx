@@ -64,14 +64,19 @@ export function OfferCard({
 
       <div className="flex flex-1 flex-col gap-2 p-5">
         <p className="label-caps text-ink-muted">
-          {OFFER_CATEGORY_LABELS[offer.category]} · {offer.kind === 'EVENT' ? 'Sortie' : 'E-billet'}
+          {OFFER_CATEGORY_LABELS[offer.category]}
+          {offer.kind === 'OTHER' ? null : ` · ${offer.kind === 'EVENT' ? 'Sortie' : 'Billetterie'}`}
         </p>
         <Heading className={cn('font-display font-extrabold', size === 'large' ? 'text-h2' : 'text-h3')}>
           <Link href={href} className="group-hover:text-blue-600 after:absolute after:inset-0">
             {offer.title}
           </Link>
         </Heading>
-        <p className={cn('text-ink-muted', size === 'default' && 'line-clamp-2 text-sm')}>{offer.summary}</p>
+        {offer.summary ? (
+          <p className={cn('text-ink-muted', size === 'default' && 'line-clamp-2 text-sm')}>
+            {offer.summary}
+          </p>
+        ) : null}
         <p className="mt-auto flex items-center gap-1.5 pt-2 text-sm">
           {offer.eventStartsAt ? (
             <>
@@ -99,7 +104,9 @@ export function OfferCard({
             {AVAILABILITY_LABELS[availability.reason]}
           </p>
         ) : hidePrices ? (
-          <p className="text-sm font-semibold">Tarif indiqué à la commande</p>
+          <p className="text-sm font-semibold">
+            {offer.orderable ? 'Tarif indiqué à la commande' : 'Détails sur la fiche de l’offre'}
+          </p>
         ) : (
           <>
             <div className="flex flex-col">
@@ -117,7 +124,7 @@ export function OfferCard({
           </>
         )}
       </div>
-      {availability.open ? (
+      {availability.open && offer.orderable ? (
         <div className="bg-sunken px-5 pb-5">
           {/* Au-dessus du lien de la carte, qui couvre toute sa surface. */}
           <Link href={`${href}#commander`} className={buttonClasses('primary', 'sm', 'relative z-10 w-full')}>

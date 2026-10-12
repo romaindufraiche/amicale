@@ -4,7 +4,9 @@ import Link from 'next/link'
 import { Badge, type BadgeTone } from '@/components/ui/badge'
 import { ButtonLink } from '@/components/ui/button'
 import { PageHeader } from '@/components/ui/page-header'
+import { ReorderButtons } from '@/components/ui/reorder-buttons'
 import { Table, Td, Th } from '@/components/ui/table'
+import { moveOfferAction } from '@/features/offers/actions'
 import { CATEGORY_ICONS } from '@/features/offers/components/offer-visual'
 import {
   OFFER_CATEGORIES,
@@ -34,7 +36,7 @@ export default async function AdminOffersPage() {
       <PageHeader
         eyebrow="Espace bureau"
         title="Offres"
-        lead="Billetterie et sorties proposées sur le site, rangées par catégorie."
+        lead="Billetterie et sorties proposées sur le site, rangées par catégorie. Les flèches règlent l’ordre d’affichage sur le site."
         actions={
           <ButtonLink href="/admin/offres/nouvelle">
             <Plus aria-hidden className="size-4" /> Nouvelle offre
@@ -75,6 +77,9 @@ export default async function AdminOffersPage() {
               <Table caption={`Offres de la catégorie ${OFFER_CATEGORY_LABELS[category]}`}>
                 <thead>
                   <tr>
+                    <Th>
+                      <span className="sr-only">Ordre</span>
+                    </Th>
                     <Th>Offre</Th>
                     <Th>Type</Th>
                     <Th>Date / clôture</Th>
@@ -84,8 +89,17 @@ export default async function AdminOffersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((offer) => (
+                  {items.map((offer, index) => (
                     <tr key={offer.id}>
+                      <Td className="w-0">
+                        <ReorderButtons
+                          action={moveOfferAction}
+                          id={offer.id}
+                          label={offer.title}
+                          isFirst={index === 0}
+                          isLast={index === items.length - 1}
+                        />
+                      </Td>
                       <Td>
                         <Link href={`/admin/offres/${offer.id}`} className="font-semibold link">
                           {offer.title}
@@ -98,6 +112,11 @@ export default async function AdminOffersPage() {
                         {!offer.pricesPublic ? (
                           <Badge tone="neutral" className="ml-2">
                             Tarifs masqués sur le site
+                          </Badge>
+                        ) : null}
+                        {!offer.orderable ? (
+                          <Badge tone="neutral" className="ml-2">
+                            Sans commande
                           </Badge>
                         ) : null}
                       </Td>

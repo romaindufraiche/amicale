@@ -18,6 +18,8 @@ export default async function NewPartnerPage() {
           description: '',
           howToBenefit: '',
           websiteUrl: '',
+          imageId: null,
+          attachment: null,
           published: false,
         }}
       />

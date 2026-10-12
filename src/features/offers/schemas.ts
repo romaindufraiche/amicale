@@ -62,6 +62,12 @@ const optionalCents = z.string().transform((value, ctx) => {
   return cents
 })
 
+/** Case à cocher : présente (« on ») ou absente du formulaire. */
+const checkbox = z
+  .string()
+  .optional()
+  .transform((value) => value === 'on')
+
 export const tariffSchema = z.object({
   id: z.union([z.uuid(), z.literal('')]).transform((value) => (value === '' ? null : value)),
   label: z.string().trim().min(1, { error: 'Libellé requis.' }).max(80, { error: '80 caractères maximum.' }),
@@ -78,18 +84,20 @@ export const offerSchema = z
   .object({
     title: z.string().trim().min(3, { error: 'Titre requis (3 caractères minimum).' }).max(120),
     slug: z.string().trim().max(80),
-    kind: z.enum(['TICKET', 'EVENT'], { error: 'Type invalide.' }),
+    kind: z.enum(['TICKET', 'EVENT', 'OTHER'], { error: 'Type invalide.' }),
     category: z.enum(OFFER_CATEGORIES, { error: 'Catégorie invalide.' }),
-    summary: z
-      .string()
-      .trim()
-      .min(10, { error: 'Résumé requis (10 caractères minimum).' })
-      .max(220, { error: '220 caractères maximum.' }),
+    summary: optionalText(220),
     description: z
       .string()
       .trim()
       .min(20, { error: 'Description requise (20 caractères minimum).' })
       .max(8000),
+    providerUrl: optionalHttpsUrl,
+    attachmentId: z
+      .union([z.uuid(), z.literal('')], { error: 'Fichier invalide.' })
+      .optional()
+      .transform((value) => value || null),
+    eTickets: checkbox,
     pickupInfo: optionalText(500),
     location: optionalText(200),
     eventStartsAt: optionalDateTime,
@@ -107,13 +115,20 @@ export const offerSchema = z
       .string()
       .optional()
       .transform((value) => value === 'on'),
-    helloassoUrl: optionalHttpsUrl,
-    tariffs: z.array(tariffSchema).min(1, { error: 'Ajoutez au moins un tarif.' }).max(12),
+    orderable: checkbox,
+    tariffs: z.array(tariffSchema).max(12),
   })
   .transform((data) => ({ ...data, slug: slugify(data.slug || data.title) }))
   .superRefine((data, ctx) => {
     if (data.slug.length < 3)
       ctx.addIssue({ code: 'custom', path: ['slug'], message: 'Adresse de page trop courte.' })
+    if (data.orderable && data.tariffs.length === 0) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['tariffs'],
+        message: 'Ajoutez au moins un tarif (ou décochez le bouton « Commander »).',
+      })
+    }
     if (data.kind === 'EVENT' && !data.eventStartsAt) {
       ctx.addIssue({ code: 'custom', path: ['eventStartsAt'], message: 'La date de la sortie est requise.' })
     }
@@ -158,7 +173,11 @@ export function offerFormToObject(formData: FormData) {
   }
   const rows = [...tariffs.entries()]
     .sort(([a], [b]) => a - b)
-    .map(([, row]) => ({ id: '', publicPrice: '', stock: '', ...row }))
+    .map(([, row]): Record<string, string> => ({ id: '', publicPrice: '', stock: '', ...row }))
+    // Ligne de tarif laissée entièrement vide : ignorée (tarifs facultatifs sans commande).
+    .filter((row) =>
+      Boolean(row.id || ['label', 'memberPrice', 'publicPrice', 'stock'].some((key) => row[key]?.trim())),
+    )
   return { ...fields, tariffs: rows }
 }
 

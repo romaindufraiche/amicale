@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { recordAudit } from '@/features/audit/service'
 import { exportRequestsForAdmin } from '@/features/requests/queries'
 import { parseRequestFilters } from '@/features/requests/schemas'
+import { formatRequestLines } from '@/features/requests/service'
 import { can } from '@/server/auth/permissions'
 import { getCurrentSession } from '@/server/auth/session'
 import { db } from '@/server/db/client'
@@ -26,10 +27,12 @@ export async function GET(request: NextRequest) {
   })
 
   const csv = toCsv(
-    ['Date', 'Offre', 'Nom', 'Prénom', 'Email', 'Réglée le'],
+    ['Date', 'Offre', 'Billets', 'Quantité', 'Nom', 'Prénom', 'Email', 'Réglée le'],
     rows.map((row) => [
       formatShortDate(row.createdAt),
       row.offerTitle,
+      formatRequestLines(row.lines),
+      row.quantity,
       row.lastName,
       row.firstName,
       row.email,

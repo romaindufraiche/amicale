@@ -4,6 +4,8 @@ import { useActionState } from 'react'
 import { CheckboxField, SelectField, TextareaField, TextField } from '@/components/ui/fields'
 import { FormMessage } from '@/components/ui/form-message'
 import { SubmitButton } from '@/components/ui/submit-button'
+import { type AttachedDocument, DocumentUpload } from '@/features/media/components/document-upload'
+import { ImageDropzone } from '@/features/media/components/image-dropzone'
 import { OFFER_CATEGORIES, OFFER_CATEGORY_LABELS } from '@/features/offers/labels'
 import { idleState } from '@/lib/form-state'
 import { savePartnerAction } from '../actions'
@@ -16,6 +18,8 @@ export type PartnerFormValues = {
   description: string
   howToBenefit: string
   websiteUrl: string
+  imageId: string | null
+  attachment: AttachedDocument | null
   published: boolean
 }
 
@@ -25,7 +29,8 @@ export function PartnerForm({ initial }: { initial: PartnerFormValues }) {
   const [state, formAction] = useActionState(savePartnerAction, idleState)
   const v = state.values
   const e = state.fieldErrors
-  const value = (name: Exclude<keyof PartnerFormValues, 'published'>) => v?.[name] ?? initial[name] ?? ''
+  const value = (name: Exclude<keyof PartnerFormValues, 'published' | 'imageId' | 'attachment'>) =>
+    v?.[name] ?? initial[name] ?? ''
   return (
     <form action={formAction} className="flex max-w-prose flex-col gap-6" noValidate>
       {initial.id ? <input type="hidden" name="partnerId" value={initial.id} /> : null}
@@ -48,8 +53,7 @@ export function PartnerForm({ initial }: { initial: PartnerFormValues }) {
       <TextField
         name="advantage"
         label="Avantage"
-        hint="Une phrase courte, ex. « Tarif préférentiel sur l’abonnement annuel »."
-        required
+        hint="Facultatif. Une phrase courte, ex. « Tarif préférentiel sur l’abonnement annuel »."
         maxLength={160}
         defaultValue={value('advantage')}
         error={e?.advantage}
@@ -64,8 +68,7 @@ export function PartnerForm({ initial }: { initial: PartnerFormValues }) {
       <TextareaField
         name="howToBenefit"
         label="Comment en bénéficier"
-        hint="Démarche, justificatif à présenter… Attention : visible de tous sur la page publique « Partenaires », n’y mettez pas de code confidentiel."
-        required
+        hint="Facultatif. Démarche, justificatif à présenter… Attention : visible de tous sur la page publique « Partenaires », n’y mettez pas de code confidentiel."
         rows={4}
         defaultValue={value('howToBenefit')}
         error={e?.howToBenefit}
@@ -73,10 +76,24 @@ export function PartnerForm({ initial }: { initial: PartnerFormValues }) {
       <TextField
         name="websiteUrl"
         type="url"
-        label="Site web"
+        label="Site du partenaire"
         placeholder="https://"
         defaultValue={value('websiteUrl')}
         error={e?.websiteUrl}
+      />
+      <ImageDropzone
+        name="imageId"
+        label="Visuel du partenaire"
+        hint="Logo ou photo. JPEG, PNG ou WebP, jusqu’à 30 Mo (réduite automatiquement)."
+        defaultMediaId={v ? v.imageId || null : initial.imageId}
+        error={e?.imageId}
+      />
+      <DocumentUpload
+        name="attachmentId"
+        label="Fichier joint (PDF ou JPEG)"
+        hint="Brochure, conditions… 4 Mo maximum."
+        defaultDocument={initial.attachment}
+        error={e?.attachmentId}
       />
       <CheckboxField
         name="published"

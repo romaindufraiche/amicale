@@ -74,7 +74,7 @@ const DEMO_OFFERS: DemoOffer[] = [
     eventInDays: 75,
     eventHour: 14,
     closesInDays: 50,
-    pickupInfo: 'Accueil sur place sur présentation de votre numéro d’adhérent.',
+    pickupInfo: 'Accueil sur place sur présentation de votre justificatif d’adhésion.',
     tariffs: [
       { label: 'Enfant (jusqu’à 12 ans)', member: 0, stock: 120 },
       { label: 'Adulte accompagnant', member: 500, stock: 150 },
@@ -420,7 +420,10 @@ async function main() {
         eventStartsAt: offer.eventInDays !== undefined ? inDays(offer.eventInDays, offer.eventHour) : null,
         validUntil: offer.validForDays !== undefined ? isoDay(offer.validForDays) : null,
         orderDeadline: offer.closesInDays !== undefined ? inDays(offer.closesInDays, 23, 59) : null,
-        pickupInfo: offer.pickupInfo,
+        // Mention standard « E-billets envoyés par email » : case à cocher plutôt que texte.
+        eTickets: offer.pickupInfo === E_TICKETS,
+        pickupInfo: offer.pickupInfo === E_TICKETS ? null : offer.pickupInfo,
+        position: index + 1,
         status: 'PUBLISHED',
         // Dates de publication échelonnées pour que le tri « Nouveautés » ait un sens.
         publishedAt: inDays(-index),
@@ -577,9 +580,7 @@ async function main() {
   console.log(
     `Données de démonstration créées : ${DEMO_OFFERS.length} offres, ${DEMO_PARTNERS.length} partenaires, 4 actualités, 5 posts à la une.`,
   )
-  console.log(
-    `Comptes (mot de passe « ${DEMO_PASSWORD} ») : bureau@demo.local, adherent@demo.local, demande@demo.local, retraite@demo.local`,
-  )
+  console.log(`Compte du bureau (mot de passe « ${DEMO_PASSWORD} ») : bureau@demo.local`)
 }
 
 main()

@@ -10,8 +10,10 @@ import { HIGHLIGHT_TONES } from '../labels'
 import type { ActiveHighlight } from '../queries'
 
 function HighlightCard({ item, hidden }: { item: ActiveHighlight; hidden: boolean }) {
-  const external = item.linkUrl?.startsWith('https://')
-  const label = item.linkLabel ?? 'En savoir plus'
+  // Sans lien renseigné, le post mène à sa page de détail : il est toujours cliquable.
+  const href = item.linkUrl ?? `/a-la-une/${item.id}`
+  const external = href.startsWith('https://')
+  const label = item.linkLabel ?? (item.linkUrl ? 'En savoir plus' : 'Lire la suite')
   return (
     <article
       className={cn(
@@ -31,28 +33,26 @@ function HighlightCard({ item, hidden }: { item: ActiveHighlight; hidden: boolea
       <div className="flex flex-1 flex-col gap-3 p-6">
         <h3 className="font-display text-h3 font-extrabold">{item.title}</h3>
         <p className="line-clamp-3">{item.body}</p>
-        {item.linkUrl ? (
-          external ? (
-            <a
-              href={item.linkUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              tabIndex={hidden ? -1 : undefined}
-              className="mt-auto inline-flex items-center gap-1.5 font-semibold underline-offset-4 group-hover:underline after:absolute after:inset-0"
-            >
-              {label} <ArrowRight aria-hidden className="size-4" />
-              <span className="sr-only">(nouvel onglet)</span>
-            </a>
-          ) : (
-            <Link
-              href={item.linkUrl}
-              tabIndex={hidden ? -1 : undefined}
-              className="mt-auto inline-flex items-center gap-1.5 font-semibold underline-offset-4 group-hover:underline after:absolute after:inset-0"
-            >
-              {label} <ArrowRight aria-hidden className="size-4" />
-            </Link>
-          )
-        ) : null}
+        {external ? (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            tabIndex={hidden ? -1 : undefined}
+            className="mt-auto inline-flex items-center gap-1.5 font-semibold underline-offset-4 group-hover:underline after:absolute after:inset-0"
+          >
+            {label} <ArrowRight aria-hidden className="size-4" />
+            <span className="sr-only">(nouvel onglet)</span>
+          </a>
+        ) : (
+          <Link
+            href={href}
+            tabIndex={hidden ? -1 : undefined}
+            className="mt-auto inline-flex items-center gap-1.5 font-semibold underline-offset-4 group-hover:underline after:absolute after:inset-0"
+          >
+            {label} <ArrowRight aria-hidden className="size-4" />
+          </Link>
+        )}
       </div>
     </article>
   )

@@ -25,7 +25,8 @@ const requestColumns = {
   createdAt: offerRequests.createdAt,
   offerId: offers.id,
   offerTitle: offers.title,
-  offerHelloassoUrl: offers.helloassoUrl,
+  quantity: offerRequests.quantity,
+  lines: offerRequests.lines,
 }
 
 export async function listRequestsForAdmin(filters: AdminRequestFilters, limit = 300) {

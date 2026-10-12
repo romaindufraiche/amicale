@@ -1,6 +1,18 @@
-import { CalendarDays, Clock, type LucideIcon, MapPin, Ticket, TimerOff } from 'lucide-react'
+import {
+  CalendarDays,
+  Clock,
+  ExternalLink,
+  FileText,
+  type LucideIcon,
+  MapPin,
+  Ticket,
+  TimerOff,
+} from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { buttonClasses } from '@/components/ui/button'
+import { documentUrl } from '@/features/media/constants'
+import type { DocumentInfo } from '@/features/media/service'
 import { formatDate, formatDateTime } from '@/lib/dates'
 import { toParagraphs } from '@/lib/text'
 import { OFFER_CATEGORY_LABELS, OFFER_KIND_LABELS } from '../labels'
@@ -33,7 +45,13 @@ function DetailItem({
 }
 
 /** Fiche d'une offre (visuel, informations pratiques, description), affichée sur la page publique de l'offre. */
-export function OfferDetails({ offer }: { offer: OfferWithTariffs }) {
+export function OfferDetails({
+  offer,
+  attachment,
+}: {
+  offer: OfferWithTariffs
+  attachment: DocumentInfo | null
+}) {
   return (
     <article className="flex flex-col gap-8">
       <OfferVisual
@@ -48,7 +66,7 @@ export function OfferDetails({ offer }: { offer: OfferWithTariffs }) {
           <span className="label-caps text-ink-muted">{OFFER_CATEGORY_LABELS[offer.category]}</span>
         </div>
         <h1 className="text-h1">{offer.title}</h1>
-        <p className="max-w-prose text-lead text-ink-muted">{offer.summary}</p>
+        {offer.summary ? <p className="max-w-prose text-lead text-ink-muted">{offer.summary}</p> : null}
       </header>
 
       <dl className="grid gap-4 rounded-md bg-surface p-6 sm:grid-cols-2">
@@ -63,7 +81,7 @@ export function OfferDetails({ offer }: { offer: OfferWithTariffs }) {
           </DetailItem>
         ) : null}
         {offer.validUntil ? (
-          <DetailItem icon={Clock} label="Validité des billets">
+          <DetailItem icon={Clock} label={offer.kind === 'OTHER' ? 'Validité' : 'Validité des billets'}>
             Jusqu’au {formatDate(offer.validUntil)}
           </DetailItem>
         ) : null}
@@ -72,9 +90,11 @@ export function OfferDetails({ offer }: { offer: OfferWithTariffs }) {
             {formatDateTime(offer.orderDeadline)}
           </DetailItem>
         ) : null}
-        {offer.pickupInfo ? (
+        {offer.eTickets || offer.pickupInfo ? (
           <DetailItem icon={Ticket} label="Remise des billets" wide multiline>
-            {offer.pickupInfo}
+            {[offer.eTickets ? 'E-billets envoyés par email.' : null, offer.pickupInfo]
+              .filter(Boolean)
+              .join('\n')}
           </DetailItem>
         ) : null}
       </dl>
@@ -86,6 +106,34 @@ export function OfferDetails({ offer }: { offer: OfferWithTariffs }) {
           </p>
         ))}
       </div>
+
+      {offer.providerUrl || attachment ? (
+        <div className="flex flex-wrap gap-3">
+          {offer.providerUrl ? (
+            <a
+              href={offer.providerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonClasses('secondary', 'md')}
+            >
+              Site du prestataire <ExternalLink aria-hidden className="size-4" />
+              <span className="sr-only">(nouvel onglet)</span>
+            </a>
+          ) : null}
+          {attachment ? (
+            <a
+              href={documentUrl(attachment.id)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonClasses('secondary', 'md')}
+            >
+              <FileText aria-hidden className="size-4" />
+              {attachment.mimeType === 'application/pdf' ? 'Documentation (PDF)' : 'Document joint (image)'}
+              <span className="sr-only">(nouvel onglet)</span>
+            </a>
+          ) : null}
+        </div>
+      ) : null}
     </article>
   )
 }

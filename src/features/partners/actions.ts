@@ -7,7 +7,7 @@ import { errorState, type FormState, validationError } from '@/lib/form-state'
 import { runFormAction } from '@/server/action'
 import { requirePermission } from '@/server/auth/guards'
 import { partnerSchema } from './schemas'
-import { savePartner } from './service'
+import { deletePartner, movePartner, savePartner } from './service'
 
 export async function savePartnerAction(_previous: FormState, formData: FormData): Promise<FormState> {
   return runFormAction('save-partner', formData, async () => {
@@ -22,5 +22,30 @@ export async function savePartnerAction(_previous: FormState, formData: FormData
     revalidatePath('/admin/partenaires', 'layout')
     revalidatePath('/partenaires')
     redirect(`/admin/partenaires/${savedId}?enregistre=1`)
+  })
+}
+
+const moveSchema = z.object({ id: z.uuid(), direction: z.enum(['up', 'down']) })
+
+/** Monte ou descend un partenaire d'un cran (flèches de la liste du bureau). */
+export async function movePartnerAction(formData: FormData): Promise<void> {
+  const actor = await requirePermission('partners:manage')
+  const parsed = moveSchema.safeParse(Object.fromEntries(formData))
+  if (!parsed.success) return
+  await movePartner(actor.id, parsed.data.id, parsed.data.direction)
+  revalidatePath('/admin/partenaires')
+  revalidatePath('/partenaires')
+}
+
+export async function deletePartnerAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  return runFormAction('delete-partner', formData, async () => {
+    const actor = await requirePermission('partners:manage')
+    const partnerId = z.uuid().safeParse(formData.get('partnerId'))
+    if (!partnerId.success || !(await deletePartner(actor.id, partnerId.data))) {
+      return errorState('Partenaire introuvable.')
+    }
+    revalidatePath('/admin/partenaires', 'layout')
+    revalidatePath('/partenaires')
+    redirect('/admin/partenaires?supprime=1')
   })
 }

@@ -26,7 +26,6 @@ Le site n'invente aucune donnée métier. Les informations ci-dessous sont néce
 ## HelloAsso
 
 - [x] Lien de la page HelloAsso d'adhésion 2026 (renseigné ; à changer chaque année dans **Espace bureau → Réglages**).
-- [ ] Facultatif : lien de la page HelloAsso de chaque offre → champ « Lien HelloAsso de paiement » de l'offre.
 - [ ] Adresse qui reçoit un email à chaque commande → **Espace bureau → Réglages**.
 
 ## Adhésion

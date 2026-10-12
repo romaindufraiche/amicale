@@ -31,12 +31,12 @@ async function tariffsFor(offerIds: string[]) {
 
 export type OfferTariffView = Awaited<ReturnType<typeof tariffsFor>>[number]
 
-export type OfferSort = 'date' | 'prix' | 'recent'
+export type OfferSort = 'ordre' | 'date' | 'prix' | 'recent'
 
 export type CatalogFilters = { category?: OfferCategory; search?: string; sort?: OfferSort }
 
 /**
- * Offres en ligne du catalogue. Par défaut, les sorties datées d'abord puis les plus récentes.
+ * Offres en ligne du catalogue. Par défaut, dans l'ordre choisi par le bureau.
  * Le tri par prix se fait après chargement (le prix d'appel dépend des tarifs actifs).
  */
 export async function listPublishedOffers(filters: CatalogFilters = {}) {
@@ -57,7 +57,9 @@ export async function listPublishedOffers(filters: CatalogFilters = {}) {
     .orderBy(
       ...(filters.sort === 'recent'
         ? [desc(offers.publishedAt)]
-        : [sql`${offers.eventStartsAt} asc nulls last`, desc(offers.publishedAt)]),
+        : filters.sort === 'date'
+          ? [sql`${offers.eventStartsAt} asc nulls last`, asc(offers.position)]
+          : [asc(offers.position), desc(offers.publishedAt)]),
     )
   const tariffs = await tariffsFor(rows.map((row) => row.id))
   const result = rows.map((offer) => ({
@@ -112,12 +114,13 @@ export async function listOffersForAdmin(status?: PublicationStatus) {
       pricesPublic: offers.pricesPublic,
       eventStartsAt: offers.eventStartsAt,
       orderDeadline: offers.orderDeadline,
+      orderable: offers.orderable,
       updatedAt: offers.updatedAt,
       requestsCount: sql<number>`(select count(*)::int from ${offerRequests} where ${offerRequests.offerId} = ${offers.id})`,
     })
     .from(offers)
     .where(status ? eq(offers.status, status) : undefined)
-    .orderBy(desc(offers.updatedAt))
+    .orderBy(asc(offers.position), desc(offers.updatedAt))
   return rows
 }
 

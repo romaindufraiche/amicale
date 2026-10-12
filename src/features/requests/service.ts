@@ -14,15 +14,19 @@ import { consumeRateLimit } from '@/server/rate-limit'
 import type { OfferRequestInput } from './schemas'
 
 export type SubmitRequestResult =
-  | { ok: true; helloassoUrl: string | null }
+  | { ok: true; requestId: string }
   | { ok: false; reason: 'RATE_LIMITED'; retryAfterSeconds: number }
-  | { ok: false; reason: 'UNAVAILABLE' }
+  | { ok: false; reason: 'UNAVAILABLE' | 'INVALID_TARIFF' | 'STOCK' }
+
+/** « 2 × Adulte, 1 × Enfant » */
+export function formatRequestLines(lines: readonly { label: string; quantity: number }[]): string {
+  return lines.map((line) => `${line.quantity} × ${line.label}`).join(', ')
+}
 
 /**
- * Enregistre une commande, prévient le bureau par email, puis renvoie le lien de paiement
- * HelloAsso de l'offre s'il existe.
- * L'offre est relue en base : un formulaire falsifié ne peut viser ni une offre fermée, ni un
- * autre lien de paiement.
+ * Enregistre une commande puis prévient le bureau par email.
+ * L'offre et ses tarifs sont relus en base : un formulaire falsifié ne peut viser ni une offre
+ * fermée ou sans commande, ni le tarif d'une autre offre.
  */
 export async function submitOfferRequest(
   input: Omit<OfferRequestInput, 'website'>,
@@ -33,12 +37,33 @@ export async function submitOfferRequest(
 
   const offer = await getPublishedOfferById(input.offerId)
   const now = new Date()
-  if (!offer || !offerAvailability(offer, offer.tariffs, now, parisDay(now)).open) {
+  if (!offer || !offer.orderable || !offerAvailability(offer, offer.tariffs, now, parisDay(now)).open) {
     return { ok: false, reason: 'UNAVAILABLE' }
   }
 
-  const [saved] = await db.insert(offerRequests).values(input).returning({ id: offerRequests.id })
-  logger.info('offer_request.received', { requestId: saved?.id, offerId: offer.id })
+  const lines: { label: string; quantity: number }[] = []
+  for (const { tariffId, quantity } of input.quantities) {
+    if (quantity === 0) continue
+    const tariff = offer.tariffs.find((candidate) => candidate.id === tariffId && candidate.active)
+    if (!tariff) return { ok: false, reason: 'INVALID_TARIFF' }
+    if (tariff.stock !== null && quantity > tariff.stock) return { ok: false, reason: 'STOCK' }
+    lines.push({ label: tariff.label, quantity })
+  }
+  const quantity = lines.reduce((total, line) => total + line.quantity, 0)
+
+  const [saved] = await db
+    .insert(offerRequests)
+    .values({
+      offerId: offer.id,
+      firstName: input.firstName,
+      lastName: input.lastName,
+      email: input.email,
+      quantity,
+      lines,
+    })
+    .returning({ id: offerRequests.id })
+  if (!saved) throw new Error('Insertion de commande sans retour')
+  logger.info('offer_request.received', { requestId: saved.id, offerId: offer.id, quantity })
   const { ordersEmail } = await getSiteSettings()
   await sendEmail(
     ordersEmail ?? env.BUREAU_EMAIL,
@@ -46,21 +71,19 @@ export async function submitOfferRequest(
       subject: `Nouvelle commande : ${offer.title}`,
       paragraphs: [
         `Offre : ${offer.title}`,
+        `Billets : ${formatRequestLines(lines)} (${quantity} au total)`,
         `Nom : ${input.lastName}`,
         `Prénom : ${input.firstName}`,
         `Email : ${input.email}`,
-        offer.helloassoUrl
-          ? 'La personne a été dirigée vers la page de paiement HelloAsso de l’offre.'
-          : 'Aucun lien de paiement n’est renseigné pour cette offre : recontactez la personne pour le règlement.',
       ],
       action: { label: 'Voir les commandes', url: `${env.APP_URL}/admin/demandes?offre=${offer.id}` },
     },
     { replyTo: input.email },
   )
-  return { ok: true, helloassoUrl: offer.helloassoUrl }
+  return { ok: true, requestId: saved.id }
 }
 
-/** Le bureau indique avoir constaté (ou non) le paiement sur HelloAsso. */
+/** Le bureau indique avoir reçu (ou non) le règlement. */
 export async function setRequestPaid(actorId: string, requestId: string, paid: boolean): Promise<boolean> {
   return db.transaction(async (tx) => {
     const updated = await tx

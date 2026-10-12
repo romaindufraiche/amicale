@@ -7,3 +7,11 @@ export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as
 export function mediaUrl(id: string): string {
   return `/media/${id}`
 }
+
+/** Fichiers joints (PDF, ou photo JPEG) : envoyés tels quels, d'où la limite de la requête. */
+export const MAX_DOCUMENT_BYTES = 4 * 1024 * 1024
+export const ACCEPTED_DOCUMENT_TYPES = ['application/pdf', 'image/jpeg'] as const
+
+export function documentUrl(id: string): string {
+  return `/media/fichiers/${id}`
+}
