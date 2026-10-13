@@ -47,6 +47,7 @@ function QuantityStepper({
         >
           <Minus aria-hidden className="size-4" />
         </button>
+        {/* Flèches natives masquées (boutons − / + dédiés) : le chiffre reste centré. */}
         <input
           id={id}
           name={`qty.${tariff.id}`}
@@ -56,7 +57,7 @@ function QuantityStepper({
           max={max}
           value={quantity}
           onChange={(event) => set(Number.parseInt(event.target.value, 10))}
-          className="h-10 w-14 rounded-sm border border-line-strong bg-surface text-center font-semibold tabular focus-visible:border-blue-500"
+          className="h-10 w-14 [appearance:textfield] rounded-sm border border-line-strong bg-surface p-0 text-center font-semibold tabular focus-visible:border-blue-500 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
         <button
           type="button"
