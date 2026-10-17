@@ -9,7 +9,8 @@ import { PageHeader } from '@/components/ui/page-header'
 import { Table, Td, Th } from '@/components/ui/table'
 import { deleteRequestAction, setRequestPaidAction } from '@/features/requests/actions'
 import { listOffersWithRequests, listRequestsForAdmin } from '@/features/requests/queries'
-import { formatRequestLines } from '@/features/requests/service'
+import { formatRequestLines, requestTotalCents } from '@/features/requests/service'
+import { formatPrice } from '@/lib/money'
 import {
   parseRequestFilters,
   REQUEST_FILTER_LABELS,
@@ -20,6 +21,11 @@ import { formatDateTime } from '@/lib/dates'
 import { requirePermission } from '@/server/auth/guards'
 
 export const metadata: Metadata = { title: 'Commandes' }
+
+function formatTotal(lines: Parameters<typeof requestTotalCents>[0]): string {
+  const total = requestTotalCents(lines)
+  return total === null ? '—' : formatPrice(total)
+}
 
 type Props = { searchParams: Promise<Record<string, string | undefined>> }
 
@@ -96,6 +102,7 @@ export default async function RequestsPage({ searchParams }: Props) {
               <Th>Date</Th>
               <Th>Personne</Th>
               <Th>Offre et billets</Th>
+              <Th className="text-right">Total</Th>
               <Th>Règlement</Th>
               <Th>
                 <span className="sr-only">Actions</span>
@@ -125,6 +132,9 @@ export default async function RequestsPage({ searchParams }: Props) {
                       ? formatRequestLines(request.lines)
                       : `${request.quantity} billet${request.quantity > 1 ? 's' : ''}`}
                   </p>
+                </Td>
+                <Td className="text-right font-semibold whitespace-nowrap tabular">
+                  {formatTotal(request.lines)}
                 </Td>
                 <Td>
                   {request.paidAt ? (

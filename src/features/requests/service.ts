@@ -5,8 +5,9 @@ import { getPublishedOfferById } from '@/features/offers/queries'
 import { offerAvailability } from '@/features/offers/rules'
 import { getSiteSettings } from '@/features/settings/queries'
 import { parisDay } from '@/lib/dates'
+import { formatPrice } from '@/lib/money'
 import { db } from '@/server/db/client'
-import { offerRequests } from '@/server/db/schema'
+import { offerRequests, type RequestLine } from '@/server/db/schema'
 import { env } from '@/server/env'
 import { logger } from '@/server/logger'
 import { sendEmail } from '@/server/mail/transport'
@@ -18,9 +19,20 @@ export type SubmitRequestResult =
   | { ok: false; reason: 'RATE_LIMITED'; retryAfterSeconds: number }
   | { ok: false; reason: 'UNAVAILABLE' | 'INVALID_TARIFF' | 'STOCK' }
 
-/** « 2 × Adulte, 1 × Enfant » */
-export function formatRequestLines(lines: readonly { label: string; quantity: number }[]): string {
-  return lines.map((line) => `${line.quantity} × ${line.label}`).join(', ')
+/** « 2 × Adulte (12,00 €), 1 × Enfant (8,00 €) » */
+export function formatRequestLines(lines: readonly RequestLine[]): string {
+  return lines
+    .map(
+      (line) =>
+        `${line.quantity} × ${line.label}${line.unitPriceCents === undefined ? '' : ` (${formatPrice(line.unitPriceCents)})`}`,
+    )
+    .join(', ')
+}
+
+/** Total d'une commande en centimes ; `null` pour une commande passée avant l'enregistrement des prix. */
+export function requestTotalCents(lines: readonly RequestLine[]): number | null {
+  if (lines.length === 0 || lines.some((line) => line.unitPriceCents === undefined)) return null
+  return lines.reduce((total, line) => total + line.quantity * (line.unitPriceCents ?? 0), 0)
 }
 
 /**
@@ -41,13 +53,13 @@ export async function submitOfferRequest(
     return { ok: false, reason: 'UNAVAILABLE' }
   }
 
-  const lines: { label: string; quantity: number }[] = []
+  const lines: RequestLine[] = []
   for (const { tariffId, quantity } of input.quantities) {
     if (quantity === 0) continue
     const tariff = offer.tariffs.find((candidate) => candidate.id === tariffId && candidate.active)
     if (!tariff) return { ok: false, reason: 'INVALID_TARIFF' }
     if (tariff.stock !== null && quantity > tariff.stock) return { ok: false, reason: 'STOCK' }
-    lines.push({ label: tariff.label, quantity })
+    lines.push({ label: tariff.label, quantity, unitPriceCents: tariff.memberPriceCents })
   }
   const quantity = lines.reduce((total, line) => total + line.quantity, 0)
 
@@ -72,6 +84,7 @@ export async function submitOfferRequest(
       paragraphs: [
         `Offre : ${offer.title}`,
         `Billets : ${formatRequestLines(lines)} (${quantity} au total)`,
+        `Total : ${formatPrice(requestTotalCents(lines) ?? 0)}`,
         `Nom : ${input.lastName}`,
         `Prénom : ${input.firstName}`,
         `Email : ${input.email}`,

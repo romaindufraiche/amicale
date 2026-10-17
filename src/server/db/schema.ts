@@ -244,6 +244,8 @@ export const offerTariffs = pgTable(
   ],
 )
 
+export type RequestLine = { label: string; quantity: number; unitPriceCents?: number }
+
 /**
  * Commande passée depuis la fiche d'une offre (nom, prénom, email). Le bureau la suit dans
  * son espace et note le règlement une fois reçu.
@@ -261,8 +263,11 @@ export const offerRequests = pgTable(
     phone: text(),
     /** Nombre total de billets demandés. */
     quantity: integer().notNull().default(1),
-    /** Détail par tarif, libellés copiés au moment de la commande. */
-    lines: jsonb().$type<{ label: string; quantity: number }[]>().notNull().default([]),
+    /**
+     * Détail par tarif, libellé et prix unitaire (centimes) copiés au moment de la commande :
+     * une modification ultérieure du tarif ne change pas le total d'une commande passée.
+     */
+    lines: jsonb().$type<RequestLine[]>().notNull().default([]),
     /** Règlement constaté par le bureau. */
     paidAt: timestamp({ withTimezone: true }),
     paidMarkedById: uuid().references(() => users.id, { onDelete: 'set null' }),

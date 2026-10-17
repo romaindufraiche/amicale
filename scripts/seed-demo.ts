@@ -458,6 +458,8 @@ async function main() {
       firstName: 'Alex',
       lastName: 'Exemple',
       email: 'alex.exemple@demo.local',
+      quantity: 4,
+      lines: [{ label: 'Place de cinéma', quantity: 4, unitPriceCents: 750 }],
       paidAt: inDays(-2),
       paidMarkedById: bureau.id,
       createdAt: inDays(-3),
@@ -467,6 +469,11 @@ async function main() {
       firstName: 'Sam',
       lastName: 'Démonstration',
       email: 'sam.demonstration@demo.local',
+      quantity: 3,
+      lines: [
+        { label: 'Enfant (jusqu’à 12 ans)', quantity: 2, unitPriceCents: 0 },
+        { label: 'Adulte accompagnant', quantity: 1, unitPriceCents: 500 },
+      ],
       createdAt: inDays(-1),
     },
     {
@@ -474,6 +481,8 @@ async function main() {
       firstName: 'Dominique',
       lastName: 'Illustration',
       email: 'dominique.illustration@demo.local',
+      quantity: 2,
+      lines: [{ label: 'Tribune latérale', quantity: 2, unitPriceCents: 2500 }],
     },
   ])
 

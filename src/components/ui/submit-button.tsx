@@ -14,6 +14,9 @@ type SubmitButtonProps = {
   className?: string
   name?: string
   value?: string
+  /** Désactivé tant que le formulaire n'est pas complet. */
+  disabled?: boolean
+  'aria-describedby'?: string
 }
 
 /**
@@ -28,6 +31,8 @@ export function SubmitButton({
   className,
   name,
   value,
+  disabled = false,
+  'aria-describedby': describedBy,
 }: SubmitButtonProps) {
   const { pending } = useFormStatus()
   return (
@@ -35,7 +40,8 @@ export function SubmitButton({
       type="submit"
       name={name}
       value={value}
-      disabled={pending}
+      disabled={pending || disabled}
+      aria-describedby={describedBy}
       aria-busy={pending || undefined}
       className={buttonClasses(variant, size, className)}
     >

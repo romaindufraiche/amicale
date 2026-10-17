@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { moveOffer } from '@/features/offers/service'
 import { deletePartner, savePartner } from '@/features/partners/service'
 import { listRequestsForAdmin } from '@/features/requests/queries'
-import { setRequestPaid, submitOfferRequest } from '@/features/requests/service'
+import { requestTotalCents, setRequestPaid, submitOfferRequest } from '@/features/requests/service'
 import { updateSiteSettings } from '@/features/settings/service'
 import { getSiteSettings } from '@/features/settings/queries'
 import { db } from '@/server/db/client'
@@ -53,11 +53,13 @@ describe('submitOfferRequest', () => {
       email: 'camille@example.fr',
       quantity: 3,
       lines: [
-        { label: 'Adulte', quantity: 2 },
-        { label: 'Enfant', quantity: 1 },
+        { label: 'Adulte', quantity: 2, unitPriceCents: 1000 },
+        { label: 'Enfant', quantity: 1, unitPriceCents: 500 },
       ],
       paidAt: null,
     })
+    expect(requestTotalCents(rows[0]!.lines)).toBe(2500)
+    expect(requestTotalCents([{ label: 'Ancienne commande', quantity: 2 }])).toBeNull()
   })
 
   it('refuse le tarif d’une autre offre, une quantité au-delà du stock et une offre sans commande', async () => {
@@ -95,7 +97,9 @@ describe('submitOfferRequest', () => {
     const sent = emails.find((email) => email.to === 'commandes@example.org')
     expect(sent?.subject).toBe('Nouvelle commande : Sortie au zoo')
     expect(JSON.stringify(sent)).toContain('camille@example.fr')
-    expect(JSON.stringify(sent)).toContain('2 × Adulte')
+    // Les montants sont formatés avec une espace insécable avant « € ».
+    expect(sent?.text).toMatch(/2 × Adulte \(10,00\s€\)/)
+    expect(sent?.text).toMatch(/Total : 20,00\s€/)
   })
 
   it('refuse une offre non publiée, complète ou close', async () => {

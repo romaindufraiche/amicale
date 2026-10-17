@@ -74,8 +74,21 @@ function QuantityStepper({
 }
 
 /** Commande d'une offre : nombre de billets, nom, prénom et email ; le bureau est prévenu par email. */
+/** Prénom, nom et email remplis, et au moins un billet : la commande peut partir. */
+function isComplete(form: HTMLFormElement): boolean {
+  const data = new FormData(form)
+  const filled = (name: string) => String(data.get(name) ?? '').trim() !== ''
+  const tickets = [...data.entries()]
+    .filter(([key]) => key.startsWith('qty.'))
+    .reduce((total, [, value]) => total + (Number(value) || 0), 0)
+  return filled('firstName') && filled('lastName') && filled('email') && tickets > 0
+}
+
 export function OfferRequestForm({ offerId, tariffs }: { offerId: string; tariffs: OrderableTariff[] }) {
   const [state, formAction] = useActionState<FormState, FormData>(submitOfferRequestAction, idleState)
+  // Bouton « Envoyer » actif seulement quand le formulaire est complet (contrôle refait côté serveur).
+  const [complete, setComplete] = useState(false)
+  const hintId = useId()
 
   if (state.status === 'success') {
     return (
@@ -88,7 +101,17 @@ export function OfferRequestForm({ offerId, tariffs }: { offerId: string; tariff
   const v = state.values
   const e = state.fieldErrors
   return (
-    <form action={formAction} className="flex flex-col gap-5" noValidate>
+    <form
+      action={formAction}
+      className="flex flex-col gap-5"
+      noValidate
+      onInput={(event) => setComplete(isComplete(event.currentTarget))}
+      onClick={(event) => {
+        // Boutons − / + : la quantité change au rendu suivant, on relit le formulaire ensuite.
+        const form = event.currentTarget
+        requestAnimationFrame(() => setComplete(isComplete(form)))
+      }}
+    >
       <FormMessage state={state} />
       <input type="hidden" name="offerId" value={offerId} />
       <fieldset className="flex flex-col gap-3">
@@ -133,7 +156,18 @@ export function OfferRequestForm({ offerId, tariffs }: { offerId: string; tariff
         <label htmlFor="request-website">Ne pas remplir</label>
         <input id="request-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
-      <SubmitButton pendingLabel="Envoi…">Envoyer ma commande</SubmitButton>
+      <SubmitButton
+        pendingLabel="Envoi…"
+        disabled={!complete}
+        aria-describedby={complete ? undefined : hintId}
+      >
+        Envoyer ma commande
+      </SubmitButton>
+      {!complete ? (
+        <p id={hintId} className="-mt-3 text-sm text-ink-muted">
+          Renseignez votre prénom, votre nom et votre email pour envoyer la commande.
+        </p>
+      ) : null}
       <p className="text-caption text-ink-muted">
         Vos coordonnées sont transmises au bureau de l’Amicale pour le suivi de votre commande.{' '}
         <Link href="/confidentialite" className="link">
