@@ -9,6 +9,7 @@ import { mediaUrl } from '@/features/media/constants'
 import { getPublishedNews } from '@/features/news/queries'
 import { formatDate } from '@/lib/dates'
 import { toParagraphs } from '@/lib/text'
+import { FramedImage } from '@/features/media/components/framed-image'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -64,8 +65,7 @@ export default async function NewsPage({ params }: Props) {
         <p className="text-lead text-ink-muted">{item.excerpt}</p>
       </header>
       {item.imageId ? (
-        // eslint-disable-next-line @next/next/no-img-element -- image déjà optimisée au téléversement
-        <img src={mediaUrl(item.imageId)} alt="" className="aspect-[16/9] w-full rounded-lg object-cover" />
+        <FramedImage mediaId={item.imageId} eager className="aspect-[16/9] w-full rounded-lg" />
       ) : (
         <div className="brand-rule w-24" aria-hidden />
       )}

@@ -2,9 +2,10 @@ import { ExternalLink, FileText } from 'lucide-react'
 import type { Metadata } from 'next'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PageHeader } from '@/components/ui/page-header'
-import { documentUrl, mediaUrl } from '@/features/media/constants'
+import { documentUrl } from '@/features/media/constants'
 import { OFFER_CATEGORY_LABELS } from '@/features/offers/labels'
 import { listPublishedPartners } from '@/features/partners/queries'
+import { FramedImage } from '@/features/media/components/framed-image'
 
 export const metadata: Metadata = {
   title: 'Partenaires',
@@ -34,12 +35,9 @@ export default async function PartnersPage() {
               className="flex flex-col gap-4 overflow-hidden rounded-md border-t-4 border-blue-600 bg-surface p-6 shadow-raised"
             >
               {partner.imageId ? (
-                // eslint-disable-next-line @next/next/no-img-element -- image déjà optimisée au téléversement
-                <img
-                  src={mediaUrl(partner.imageId)}
-                  alt=""
-                  loading="lazy"
-                  className="-mx-6 -mt-6 aspect-[16/9] w-[calc(100%+3rem)] max-w-none object-cover"
+                <FramedImage
+                  mediaId={partner.imageId}
+                  className="-mx-6 -mt-6 aspect-[16/9] w-[calc(100%+3rem)] max-w-none"
                 />
               ) : null}
               <div className="flex flex-col gap-1">

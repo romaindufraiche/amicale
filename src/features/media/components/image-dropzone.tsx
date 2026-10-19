@@ -190,8 +190,8 @@ export function ImageDropzone({
       </p>
       {lowRes && mediaId && !message ? (
         <p className="text-sm text-ink-muted">
-          Image de petite taille : elle risque d’apparaître floue. Pour un rendu net, préférez une
-          image d’au moins 1200 pixels de large.
+          Image de petite taille : elle risque d’apparaître floue. Pour un rendu net, préférez une image d’au
+          moins 1200 pixels de large.
         </p>
       ) : null}
     </div>

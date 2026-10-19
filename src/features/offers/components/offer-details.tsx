@@ -54,12 +54,7 @@ export function OfferDetails({
 }) {
   return (
     <article className="flex flex-col gap-8">
-      <OfferVisual
-        category={offer.category}
-        imageId={offer.imageId}
-        sizes="(min-width: 1024px) 800px, 100vw"
-        className="aspect-[21/9] rounded-lg"
-      />
+      <OfferVisual category={offer.category} imageId={offer.imageId} className="aspect-[21/9] rounded-lg" />
       <header className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone={offer.kind === 'EVENT' ? 'info' : 'neutral'}>{OFFER_KIND_LABELS[offer.kind]}</Badge>

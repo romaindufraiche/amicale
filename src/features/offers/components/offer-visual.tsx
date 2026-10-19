@@ -8,10 +8,9 @@ import {
   ShoppingBasket,
   Trophy,
 } from 'lucide-react'
-import Image from 'next/image'
-import { mediaUrl } from '@/features/media/constants'
 import { cn } from '@/lib/cn'
 import type { OfferCategory } from '@/server/db/schema'
+import { FramedImage } from '@/features/media/components/framed-image'
 
 export const CATEGORY_ICONS: Record<OfferCategory, LucideIcon> = {
   PARCS: FerrisWheel,
@@ -42,31 +41,14 @@ export const CATEGORY_TONES: Record<OfferCategory, string> = {
 export function OfferVisual({
   category,
   imageId,
-  sizes,
   className,
 }: {
   category: OfferCategory
   imageId: string | null
-  sizes: string
   className?: string
 }) {
   if (imageId) {
-    return (
-      <div className={cn('relative overflow-hidden bg-sunken', className)}>
-        {/* Image déjà redimensionnée et convertie en WebP au téléversement.
-            Fond : la même image floutée remplit le cadre ; devant : l'image entière,
-            jamais rognée (logos, affiches et photos de tous formats restent lisibles). */}
-        <Image
-          src={mediaUrl(imageId)}
-          alt=""
-          fill
-          sizes={sizes}
-          unoptimized
-          className="scale-125 object-cover opacity-60 blur-2xl saturate-150"
-        />
-        <Image src={mediaUrl(imageId)} alt="" fill sizes={sizes} unoptimized className="object-contain p-3" />
-      </div>
-    )
+    return <FramedImage mediaId={imageId} className={className} />
   }
 
   const Icon = CATEGORY_ICONS[category]

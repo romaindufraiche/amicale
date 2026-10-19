@@ -7,8 +7,8 @@ import { z } from 'zod'
 import { buttonClasses } from '@/components/ui/button'
 import { Eyebrow } from '@/components/ui/page-header'
 import { getActiveHighlight } from '@/features/highlights/queries'
-import { mediaUrl } from '@/features/media/constants'
 import { toParagraphs } from '@/lib/text'
+import { FramedImage } from '@/features/media/components/framed-image'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -38,8 +38,7 @@ export default async function HighlightPage({ params }: Props) {
         <h1 className="text-h1">{item.title}</h1>
       </header>
       {item.imageId ? (
-        // eslint-disable-next-line @next/next/no-img-element -- image déjà optimisée au téléversement
-        <img src={mediaUrl(item.imageId)} alt="" className="aspect-[16/9] w-full rounded-lg object-cover" />
+        <FramedImage mediaId={item.imageId} eager className="aspect-[16/9] w-full rounded-lg" />
       ) : (
         <div className="brand-rule w-24" aria-hidden />
       )}

@@ -46,11 +46,6 @@ export function OfferCard({
         <OfferVisual
           category={offer.category}
           imageId={offer.imageId}
-          sizes={
-            size === 'large'
-              ? '(min-width: 1024px) 600px, 100vw'
-              : '(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw'
-          }
           className={cn(
             'transition-transform duration-300 group-hover:scale-[1.02]',
             size === 'large' ? 'aspect-[16/9]' : 'aspect-[16/10]',

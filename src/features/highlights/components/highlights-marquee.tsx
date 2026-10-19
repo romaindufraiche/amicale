@@ -4,10 +4,10 @@ import { ArrowRight, Pause, Play } from 'lucide-react'
 import Link from 'next/link'
 import { type CSSProperties, useId, useState } from 'react'
 import { Eyebrow } from '@/components/ui/page-header'
-import { mediaUrl } from '@/features/media/constants'
 import { cn } from '@/lib/cn'
 import { HIGHLIGHT_TONES } from '../labels'
 import type { ActiveHighlight } from '../queries'
+import { FramedImage } from '@/features/media/components/framed-image'
 
 function HighlightCard({ item, hidden }: { item: ActiveHighlight; hidden: boolean }) {
   // Sans lien renseigné, le post mène à sa page de détail : il est toujours cliquable.
@@ -21,15 +21,7 @@ function HighlightCard({ item, hidden }: { item: ActiveHighlight; hidden: boolea
         HIGHLIGHT_TONES[item.tone].classes,
       )}
     >
-      {item.imageId ? (
-        // eslint-disable-next-line @next/next/no-img-element -- image déjà optimisée au téléversement
-        <img
-          src={mediaUrl(item.imageId)}
-          alt=""
-          loading="lazy"
-          className="aspect-[16/9] w-full object-cover"
-        />
-      ) : null}
+      {item.imageId ? <FramedImage mediaId={item.imageId} className="aspect-[16/9] w-full" /> : null}
       <div className="flex flex-1 flex-col gap-3 p-6">
         <h3 className="font-display text-h3 font-extrabold">{item.title}</h3>
         <p className="line-clamp-3">{item.body}</p>

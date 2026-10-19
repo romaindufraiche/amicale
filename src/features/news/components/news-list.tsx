@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { mediaUrl } from '@/features/media/constants'
 import { formatDate } from '@/lib/dates'
+import { FramedImage } from '@/features/media/components/framed-image'
 
 type NewsItem = {
   id: string
@@ -38,12 +38,9 @@ export function NewsList({ items, headingLevel = 'h2' }: { items: NewsItem[]; he
             <p className="text-ink-muted">{item.excerpt}</p>
           </div>
           {item.imageId ? (
-            // eslint-disable-next-line @next/next/no-img-element -- image déjà optimisée au téléversement
-            <img
-              src={mediaUrl(item.imageId)}
-              alt=""
-              loading="lazy"
-              className="order-first aspect-[16/9] w-full rounded-md object-cover md:order-none md:w-64"
+            <FramedImage
+              mediaId={item.imageId}
+              className="order-first aspect-[16/9] w-full rounded-md md:order-none md:w-64 md:shrink-0"
             />
           ) : null}
         </li>
