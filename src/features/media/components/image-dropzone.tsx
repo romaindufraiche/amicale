@@ -8,6 +8,9 @@ import { uploadImageAction } from '../actions'
 import { ACCEPTED_IMAGE_TYPES, MAX_SOURCE_BYTES, MAX_UPLOAD_BYTES, mediaUrl } from '../constants'
 import { isAcceptedImage, prepareImage } from '../prepare-image'
 
+/** En dessous de cette largeur, l'image paraîtra floue sur les cartes (écrans haute densité). */
+const MIN_SHARP_WIDTH = 800
+
 type Status = { state: 'idle' } | { state: 'uploading' } | { state: 'error'; message: string }
 
 /**
@@ -30,6 +33,7 @@ export function ImageDropzone({
 }) {
   const [mediaId, setMediaId] = useState(defaultMediaId)
   const [status, setStatus] = useState<Status>({ state: 'idle' })
+  const [lowRes, setLowRes] = useState(false)
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const id = useId()
@@ -63,6 +67,7 @@ export function ImageDropzone({
       const result = await uploadImageAction(data)
       if (result.ok) {
         setMediaId(result.id)
+        setLowRes(result.width < MIN_SHARP_WIDTH)
         setStatus({ state: 'idle' })
       } else {
         setStatus({ state: 'error', message: result.message })
@@ -183,6 +188,12 @@ export function ImageDropzone({
       >
         {message ?? (uploading ? 'Envoi de l’image en cours.' : mediaId ? 'Image ajoutée.' : '')}
       </p>
+      {lowRes && mediaId && !message ? (
+        <p className="text-sm text-ink-muted">
+          Image de petite taille : elle risque d’apparaître floue. Pour un rendu net, préférez une
+          image d’au moins 1200 pixels de large.
+        </p>
+      ) : null}
     </div>
   )
 }

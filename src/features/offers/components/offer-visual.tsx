@@ -53,8 +53,18 @@ export function OfferVisual({
   if (imageId) {
     return (
       <div className={cn('relative overflow-hidden bg-sunken', className)}>
-        {/* Image déjà redimensionnée et convertie en WebP au téléversement. */}
-        <Image src={mediaUrl(imageId)} alt="" fill sizes={sizes} unoptimized className="object-cover" />
+        {/* Image déjà redimensionnée et convertie en WebP au téléversement.
+            Fond : la même image floutée remplit le cadre ; devant : l'image entière,
+            jamais rognée (logos, affiches et photos de tous formats restent lisibles). */}
+        <Image
+          src={mediaUrl(imageId)}
+          alt=""
+          fill
+          sizes={sizes}
+          unoptimized
+          className="scale-125 object-cover opacity-60 blur-2xl saturate-150"
+        />
+        <Image src={mediaUrl(imageId)} alt="" fill sizes={sizes} unoptimized className="object-contain p-3" />
       </div>
     )
   }
