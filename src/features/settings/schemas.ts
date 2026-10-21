@@ -10,6 +10,11 @@ export const settingsSchema = z.object({
     .transform((value) => (value ?? '').trim())
     .pipe(z.union([z.literal(''), emailField]))
     .transform((value) => (value === '' ? null : value)),
+  /** Case à cocher : présente (« on ») ou absente du formulaire. */
+  membershipOpen: z
+    .string()
+    .optional()
+    .transform((value) => value === 'on'),
 })
 
 export type SettingsInput = z.infer<typeof settingsSchema>

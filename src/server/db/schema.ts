@@ -271,6 +271,9 @@ export const offerRequests = pgTable(
     /** Règlement constaté par le bureau. */
     paidAt: timestamp({ withTimezone: true }),
     paidMarkedById: uuid().references(() => users.id, { onDelete: 'set null' }),
+    /** Commande traitée par le bureau (billets transmis, personne recontactée…). */
+    processedAt: timestamp({ withTimezone: true }),
+    processedById: uuid().references(() => users.id, { onDelete: 'set null' }),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
@@ -387,6 +390,8 @@ export const siteSettings = pgTable(
     membershipUrl: text(),
     /** Adresse qui reçoit un email à chaque commande ; à défaut, `BUREAU_EMAIL`. */
     ordersEmail: text(),
+    /** Faux : les boutons « Adhérer en ligne » sont masqués (adhésions fermées). */
+    membershipOpen: boolean().notNull().default(true),
     updatedById: uuid().references(() => users.id, { onDelete: 'set null' }),
     updatedAt: timestamp({ withTimezone: true })
       .notNull()
@@ -395,6 +400,15 @@ export const siteSettings = pgTable(
   },
   (t) => [check('site_settings_single_row', sql`${t.id} = 1`)],
 )
+
+/**
+ * Compteur de visites du site public, une ligne par jour (heure de Paris).
+ * Aucune donnée personnelle : seul le nombre de visites est conservé.
+ */
+export const siteVisits = pgTable('site_visits', {
+  day: date().primaryKey(),
+  visits: integer().notNull().default(0),
+})
 
 // ─── Journal d'audit ─────────────────────────────────────────────────────────
 

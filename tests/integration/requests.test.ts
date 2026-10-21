@@ -4,12 +4,18 @@ import { eq } from 'drizzle-orm'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { moveOffer } from '@/features/offers/service'
 import { deletePartner, savePartner } from '@/features/partners/service'
-import { listRequestsForAdmin } from '@/features/requests/queries'
-import { requestTotalCents, setRequestPaid, submitOfferRequest } from '@/features/requests/service'
+import { countUnprocessedRequests, listRequestsForAdmin } from '@/features/requests/queries'
+import {
+  requestTotalCents,
+  setRequestPaid,
+  setRequestProcessed,
+  submitOfferRequest,
+} from '@/features/requests/service'
 import { updateSiteSettings } from '@/features/settings/service'
 import { getSiteSettings } from '@/features/settings/queries'
+import { getVisitStats, recordVisit } from '@/features/visits/service'
 import { db } from '@/server/db/client'
-import { auditLogs, offerRequests, offers, partners } from '@/server/db/schema'
+import { auditLogs, offerRequests, offers, partners, rateLimits } from '@/server/db/schema'
 import { createBureauUser, createOffer, resetDatabase } from '../support/db'
 
 const PERSON = { firstName: 'Camille', lastName: 'Exemple', email: 'camille@example.fr' }
@@ -78,7 +84,11 @@ describe('submitOfferRequest', () => {
 
   it('envoie un email à l’adresse de réception des commandes', async () => {
     const admin = await createBureauUser({ role: 'ADMIN' })
-    await updateSiteSettings(admin.id, { membershipUrl: null, ordersEmail: 'commandes@example.org' })
+    await updateSiteSettings(admin.id, {
+      membershipUrl: null,
+      ordersEmail: 'commandes@example.org',
+      membershipOpen: true,
+    })
     const created = await createOffer({ title: 'Sortie au zoo' })
     const before = Date.now()
     await submitOfferRequest(order(created, 2), '203.0.113.9')
@@ -127,6 +137,50 @@ describe('submitOfferRequest', () => {
   })
 })
 
+describe('setRequestProcessed', () => {
+  beforeEach(resetDatabase)
+
+  it('marque une commande traitée puis non traitée, indépendamment du règlement', async () => {
+    const admin = await createBureauUser({ role: 'BUREAU' })
+    const created = await createOffer()
+    await submitOfferRequest(order(created), '203.0.113.4')
+    const [request] = await db.select().from(offerRequests)
+    if (!request) throw new Error('request not created')
+    expect(await countUnprocessedRequests()).toBe(1)
+
+    expect(await setRequestProcessed(admin.id, request.id, true)).toBe(true)
+    expect(await setRequestProcessed(admin.id, request.id, true)).toBe(false)
+    expect(await countUnprocessedRequests()).toBe(0)
+    expect(await listRequestsForAdmin({ status: 'traitees' })).toHaveLength(1)
+    expect(await listRequestsForAdmin({ status: 'a-traiter' })).toHaveLength(0)
+    // Traitée ne veut pas dire réglée.
+    expect(await listRequestsForAdmin({ status: 'a-regler' })).toHaveLength(1)
+
+    expect(await setRequestProcessed(admin.id, request.id, false)).toBe(true)
+    expect(await listRequestsForAdmin({ status: 'a-traiter' })).toHaveLength(1)
+    const actions = (await db.select().from(auditLogs)).map((entry) => entry.action)
+    expect(actions).toEqual(expect.arrayContaining(['offer_request.processed', 'offer_request.unprocessed']))
+  })
+})
+
+describe('compteur de visites', () => {
+  beforeEach(resetDatabase)
+
+  const BROWSER = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/130.0 Safari/537.36'
+
+  it('compte une visite par personne et par demi-heure, sans les robots', async () => {
+    expect(await recordVisit('203.0.113.1', BROWSER)).toBe(true)
+    expect(await recordVisit('203.0.113.1', BROWSER)).toBe(false)
+    expect(await recordVisit('203.0.113.2', BROWSER)).toBe(true)
+    expect(await recordVisit('203.0.113.3', 'Googlebot/2.1')).toBe(false)
+    expect(await recordVisit('203.0.113.4', null)).toBe(false)
+    expect(await getVisitStats()).toEqual({ today: 2, last7Days: 2, last30Days: 2, total: 2 })
+    // Aucune adresse IP n'est conservée.
+    const keys = (await db.select().from(rateLimits)).map((row) => row.key)
+    expect(keys.join()).not.toContain('203.0.113')
+  })
+})
+
 describe('setRequestPaid', () => {
   beforeEach(resetDatabase)
 
@@ -157,15 +211,17 @@ describe('réglages du site', () => {
 
   it('crée puis met à jour la ligne unique de réglages', async () => {
     const admin = await createBureauUser({ role: 'ADMIN' })
-    expect(await getSiteSettings()).toEqual({ membershipUrl: null, ordersEmail: null })
-    await updateSiteSettings(admin.id, { membershipUrl: HELLOASSO, ordersEmail: null })
+    expect(await getSiteSettings()).toEqual({ membershipUrl: null, ordersEmail: null, membershipOpen: true })
+    await updateSiteSettings(admin.id, { membershipUrl: HELLOASSO, ordersEmail: null, membershipOpen: true })
     await updateSiteSettings(admin.id, {
       membershipUrl: `${HELLOASSO}/adhesion`,
       ordersEmail: 'tresorier@example.org',
+      membershipOpen: false,
     })
     expect(await getSiteSettings()).toEqual({
       membershipUrl: `${HELLOASSO}/adhesion`,
       ordersEmail: 'tresorier@example.org',
+      membershipOpen: false,
     })
   })
 })

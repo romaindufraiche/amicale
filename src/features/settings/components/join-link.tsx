@@ -12,10 +12,11 @@ type JoinLinkProps = {
 
 /**
  * Bouton « Adhérer » : page HelloAsso d'adhésion renseignée par le bureau ou, à défaut,
- * page « Adhérer » du site.
+ * page « Adhérer » du site. Rien n'est affiché quand le bureau a fermé les adhésions.
  */
 export async function JoinLink({ variant, size, className, children = 'Adhérer' }: JoinLinkProps) {
-  const { membershipUrl } = await getSiteSettings()
+  const { membershipUrl, membershipOpen } = await getSiteSettings()
+  if (!membershipOpen) return null
   const classes = buttonClasses(variant, size, className)
   return membershipUrl ? (
     <a href={membershipUrl} rel="noopener noreferrer" className={classes}>

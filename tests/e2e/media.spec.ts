@@ -27,7 +27,7 @@ test('le bureau ajoute une image à une offre par glisser-déposer', async ({ pa
 
   await page.goto('/offres?categorie=PARCS')
   const card = page.getByRole('article').filter({ hasText: 'Aquarium et tunnel des requins' })
-  const image = card.locator('img')
+  const image = card.locator('img:not([aria-hidden])')
   await expect(image).toHaveAttribute('src', /\/media\/[0-9a-f-]+/)
   const response = await page.request.get((await image.getAttribute('src'))!)
   expect(response.headers()['content-type']).toBe('image/webp')
@@ -71,5 +71,5 @@ test('une photo lourde est réduite dans le navigateur puis ajoutée à une actu
   await expect(page.getByText('Actualité enregistrée.')).toBeVisible()
 
   await page.goto('/actualites/assemblee-generale')
-  await expect(page.locator('article img')).toHaveAttribute('src', /\/media\/[0-9a-f-]+/)
+  await expect(page.locator('article img:not([aria-hidden])')).toHaveAttribute('src', /\/media\/[0-9a-f-]+/)
 })

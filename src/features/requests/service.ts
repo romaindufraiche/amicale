@@ -120,6 +120,38 @@ export async function setRequestPaid(actorId: string, requestId: string, paid: b
   })
 }
 
+/** Marque une commande comme traitée (ou la repasse en non traitée). Faux si rien n'a changé. */
+export async function setRequestProcessed(
+  actorId: string,
+  requestId: string,
+  processed: boolean,
+): Promise<boolean> {
+  return db.transaction(async (tx) => {
+    const updated = await tx
+      .update(offerRequests)
+      .set(
+        processed
+          ? { processedAt: new Date(), processedById: actorId }
+          : { processedAt: null, processedById: null },
+      )
+      .where(
+        and(
+          eq(offerRequests.id, requestId),
+          processed ? isNull(offerRequests.processedAt) : isNotNull(offerRequests.processedAt),
+        ),
+      )
+      .returning({ id: offerRequests.id })
+    if (updated.length === 0) return false
+    await recordAudit(tx, {
+      actorId,
+      action: processed ? 'offer_request.processed' : 'offer_request.unprocessed',
+      entityType: 'offer_request',
+      entityId: requestId,
+    })
+    return true
+  })
+}
+
 export async function deleteRequest(actorId: string, requestId: string): Promise<boolean> {
   return db.transaction(async (tx) => {
     const deleted = await tx

@@ -40,7 +40,7 @@ const SITUATIONS = [
 ] as const
 
 export default async function JoinPage() {
-  const { membershipUrl } = await getSiteSettings()
+  const { membershipUrl, membershipOpen } = await getSiteSettings()
   return (
     <div className="mx-auto flex max-w-page flex-col gap-16 px-4 py-14 sm:px-6 md:py-20 lg:px-8">
       <PageHeader
@@ -49,7 +49,11 @@ export default async function JoinPage() {
         lead={`L’${site.shortName} rassemble les personnels de police du ${site.department.name}. L’adhésion et la cotisation se font en ligne, sur HelloAsso.`}
         actions={membershipUrl ? <JoinLink>Adhérer en ligne</JoinLink> : null}
       />
-      {!membershipUrl ? (
+      {!membershipOpen ? (
+        <Alert tone="info" title="Les adhésions sont actuellement fermées.">
+          Elles rouvriront prochainement. Pour toute question, <Link href="/contact">écrivez au bureau</Link>.
+        </Alert>
+      ) : !membershipUrl ? (
         <Alert tone="info" title="L’adhésion en ligne ouvre bientôt.">
           En attendant, <Link href="/contact">écrivez au bureau</Link> pour adhérer.
         </Alert>

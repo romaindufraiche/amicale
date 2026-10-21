@@ -61,6 +61,10 @@ test('adhésion via HelloAsso, commande d’une offre et suivi par le bureau', a
   await expect(row.getByText('Non réglée')).toBeVisible()
   await expect(row.getByText('2 × Adulte (16,00 €)')).toBeVisible()
   await expect(row.getByText('32,00 €')).toBeVisible()
+  await expect(row.getByText('À traiter')).toBeVisible()
+  await row.getByRole('button', { name: 'Marquer comme traitée' }).click()
+  await expect(page.getByText('Commande marquée comme traitée.')).toBeVisible()
+  await expect(row.getByText(/^Traitée le/)).toBeVisible()
   await row.getByRole('button', { name: 'Marquer comme réglée' }).click()
   await expect(page.getByText('Commande marquée comme réglée.')).toBeVisible()
   await expect(row.getByText(/^Réglée le/)).toBeVisible()
@@ -72,4 +76,27 @@ test('adhésion via HelloAsso, commande d’une offre et suivi par le bureau', a
   const file = await download
   const csv = await (await file.createReadStream()).toArray()
   expect(Buffer.concat(csv).toString('utf8')).toContain(lastName)
+})
+
+test('le bureau ferme puis rouvre les adhésions', async ({ page }) => {
+  await login(page, 'bureau@demo.local')
+  await page.goto('/admin/reglages')
+  await page.getByLabel('Afficher les boutons « Adhérer en ligne »').uncheck()
+  await page.getByRole('button', { name: 'Enregistrer' }).click()
+  await expect(page.getByText('Réglages enregistrés.')).toBeVisible()
+
+  try {
+    await page.goto('/')
+    await expect(page.getByRole('link', { name: 'Adhérer en ligne' })).toHaveCount(0)
+    await expect(page.getByRole('link', { name: 'Adhérer à l’Amicale' })).toHaveCount(0)
+    await page.goto('/adherer')
+    await expect(page.getByText('Les adhésions sont actuellement fermées.')).toBeVisible()
+  } finally {
+    await page.goto('/admin/reglages')
+    await page.getByLabel('Afficher les boutons « Adhérer en ligne »').check()
+    await page.getByRole('button', { name: 'Enregistrer' }).click()
+    await expect(page.getByText('Réglages enregistrés.')).toBeVisible()
+  }
+  await page.goto('/')
+  await expect(page.getByRole('link', { name: 'Adhérer en ligne' })).toBeVisible()
 })

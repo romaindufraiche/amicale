@@ -21,6 +21,7 @@ export async function saveSettingsAction(_previous: FormState, formData: FormDat
       values: {
         membershipUrl: parsed.data.membershipUrl ?? '',
         ordersEmail: parsed.data.ordersEmail ?? '',
+        membershipOpen: parsed.data.membershipOpen ? 'on' : '',
       },
     }
   })

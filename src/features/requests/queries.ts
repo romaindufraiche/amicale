@@ -1,16 +1,19 @@
 import 'server-only'
-import { and, asc, count, desc, eq, isNotNull, isNull } from 'drizzle-orm'
+import { and, asc, count, desc, eq, isNotNull, isNull, type SQL } from 'drizzle-orm'
 import { db } from '@/server/db/client'
 import { offerRequests, offers } from '@/server/db/schema'
 import type { AdminRequestFilters } from './schemas'
 
+const STATUS_CONDITIONS: Partial<Record<AdminRequestFilters['status'], () => SQL>> = {
+  'a-traiter': () => isNull(offerRequests.processedAt),
+  traitees: () => isNotNull(offerRequests.processedAt),
+  'a-regler': () => isNull(offerRequests.paidAt),
+  reglees: () => isNotNull(offerRequests.paidAt),
+}
+
 function filterConditions(filters: AdminRequestFilters) {
   return and(
-    filters.status === 'a-regler'
-      ? isNull(offerRequests.paidAt)
-      : filters.status === 'reglees'
-        ? isNotNull(offerRequests.paidAt)
-        : undefined,
+    STATUS_CONDITIONS[filters.status]?.(),
     filters.offerId ? eq(offerRequests.offerId, filters.offerId) : undefined,
   )
 }
@@ -22,6 +25,7 @@ const requestColumns = {
   email: offerRequests.email,
   phone: offerRequests.phone,
   paidAt: offerRequests.paidAt,
+  processedAt: offerRequests.processedAt,
   createdAt: offerRequests.createdAt,
   offerId: offers.id,
   offerTitle: offers.title,
@@ -62,5 +66,13 @@ export async function listOffersWithRequests() {
 
 export async function countUnpaidRequests(): Promise<number> {
   const [row] = await db.select({ value: count() }).from(offerRequests).where(isNull(offerRequests.paidAt))
+  return row?.value ?? 0
+}
+
+export async function countUnprocessedRequests(): Promise<number> {
+  const [row] = await db
+    .select({ value: count() })
+    .from(offerRequests)
+    .where(isNull(offerRequests.processedAt))
   return row?.value ?? 0
 }

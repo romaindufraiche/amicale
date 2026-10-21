@@ -27,7 +27,18 @@ export async function GET(request: NextRequest) {
   })
 
   const csv = toCsv(
-    ['Date', 'Offre', 'Billets', 'Quantité', 'Total (€)', 'Nom', 'Prénom', 'Email', 'Réglée le'],
+    [
+      'Date',
+      'Offre',
+      'Billets',
+      'Quantité',
+      'Total (€)',
+      'Nom',
+      'Prénom',
+      'Email',
+      'Traitée le',
+      'Réglée le',
+    ],
     rows.map((row) => [
       formatShortDate(row.createdAt),
       row.offerTitle,
@@ -40,6 +51,7 @@ export async function GET(request: NextRequest) {
       row.lastName,
       row.firstName,
       row.email,
+      row.processedAt ? formatShortDate(row.processedAt) : null,
       row.paidAt ? formatShortDate(row.paidAt) : null,
     ]),
   )

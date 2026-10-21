@@ -9,7 +9,7 @@ import { logger } from '@/server/logger'
 import { formatRetryAfter } from '@/server/rate-limit'
 import { getClientIp } from '@/server/request-context'
 import { offerRequestFormToObject, offerRequestSchema } from './schemas'
-import { deleteRequest, setRequestPaid, submitOfferRequest } from './service'
+import { deleteRequest, setRequestPaid, setRequestProcessed, submitOfferRequest } from './service'
 
 const UNAVAILABLE_MESSAGES = {
   UNAVAILABLE: 'Cette offre n’est plus disponible à la commande.',
@@ -43,7 +43,11 @@ export async function submitOfferRequestAction(_previous: FormState, formData: F
   })
 }
 
-const requestIdSchema = z.object({ requestId: z.uuid(), paid: z.enum(['0', '1']).optional() })
+const requestIdSchema = z.object({
+  requestId: z.uuid(),
+  paid: z.enum(['0', '1']).optional(),
+  processed: z.enum(['0', '1']).optional(),
+})
 
 export async function setRequestPaidAction(_previous: FormState, formData: FormData): Promise<FormState> {
   return runFormAction('set-request-paid', formData, async () => {
@@ -58,6 +62,26 @@ export async function setRequestPaidAction(_previous: FormState, formData: FormD
     return {
       status: 'success',
       message: paid ? 'Commande marquée comme réglée.' : 'Commande repassée en non réglée.',
+    }
+  })
+}
+
+export async function setRequestProcessedAction(
+  _previous: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return runFormAction('set-request-processed', formData, async () => {
+    const actor = await requirePermission('requests:manage')
+    const parsed = requestIdSchema.safeParse(Object.fromEntries(formData))
+    if (!parsed.success) return errorState('Action invalide.')
+    const processed = parsed.data.processed !== '0'
+    if (!(await setRequestProcessed(actor.id, parsed.data.requestId, processed))) {
+      return errorState('Commande introuvable ou déjà mise à jour.')
+    }
+    revalidatePath('/admin', 'layout')
+    return {
+      status: 'success',
+      message: processed ? 'Commande marquée comme traitée.' : 'Commande repassée en non traitée.',
     }
   })
 }

@@ -7,8 +7,16 @@ import { buttonClasses } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PageHeader } from '@/components/ui/page-header'
 import { Table, Td, Th } from '@/components/ui/table'
-import { deleteRequestAction, setRequestPaidAction } from '@/features/requests/actions'
-import { listOffersWithRequests, listRequestsForAdmin } from '@/features/requests/queries'
+import {
+  deleteRequestAction,
+  setRequestPaidAction,
+  setRequestProcessedAction,
+} from '@/features/requests/actions'
+import {
+  countUnprocessedRequests,
+  listOffersWithRequests,
+  listRequestsForAdmin,
+} from '@/features/requests/queries'
 import { formatRequestLines, requestTotalCents } from '@/features/requests/service'
 import { formatPrice } from '@/lib/money'
 import {
@@ -17,7 +25,8 @@ import {
   REQUEST_FILTERS,
   requestFiltersQuery,
 } from '@/features/requests/schemas'
-import { formatDateTime } from '@/lib/dates'
+import { cn } from '@/lib/cn'
+import { formatDateTime, formatShortDate } from '@/lib/dates'
 import { requirePermission } from '@/server/auth/guards'
 
 export const metadata: Metadata = { title: 'Commandes' }
@@ -32,14 +41,18 @@ type Props = { searchParams: Promise<Record<string, string | undefined>> }
 export default async function RequestsPage({ searchParams }: Props) {
   await requirePermission('requests:manage', '/admin/demandes')
   const filters = parseRequestFilters(await searchParams)
-  const [requests, offers] = await Promise.all([listRequestsForAdmin(filters), listOffersWithRequests()])
+  const [requests, offers, unprocessed] = await Promise.all([
+    listRequestsForAdmin(filters),
+    listOffersWithRequests(),
+    countUnprocessedRequests(),
+  ])
 
   return (
     <>
       <PageHeader
         eyebrow="Espace bureau"
         title="Commandes"
-        lead="Commandes passées depuis la fiche des offres. Chaque nouvelle commande vous est aussi envoyée par email. Marquez une commande comme réglée une fois le règlement reçu."
+        lead="Commandes passées depuis la fiche des offres. Chaque nouvelle commande vous est aussi envoyée par email. Marquez une commande comme traitée une fois prise en charge, et comme réglée une fois le règlement reçu."
         actions={
           <a
             href={`/admin/demandes/export${requestFiltersQuery(filters)}`}
@@ -53,7 +66,7 @@ export default async function RequestsPage({ searchParams }: Props) {
       <form method="get" action="/admin/demandes" className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="filtre-statut" className="text-sm font-semibold">
-            Règlement
+            Statut
           </label>
           <select
             id="filtre-statut"
@@ -91,6 +104,17 @@ export default async function RequestsPage({ searchParams }: Props) {
         </button>
       </form>
 
+      <p className="font-semibold" role="status">
+        {unprocessed === 0
+          ? 'Toutes les commandes sont traitées.'
+          : `${unprocessed} commande${unprocessed > 1 ? 's' : ''} à traiter.`}{' '}
+        {unprocessed > 0 && filters.status !== 'a-traiter' ? (
+          <Link href="/admin/demandes?statut=a-traiter" className="link">
+            Afficher seulement celles-ci
+          </Link>
+        ) : null}
+      </p>
+
       {requests.length === 0 ? (
         <EmptyState title="Aucune commande">
           Les commandes apparaissent ici dès qu’une personne remplit le formulaire « Commander » d’une offre.
@@ -103,7 +127,7 @@ export default async function RequestsPage({ searchParams }: Props) {
               <Th>Personne</Th>
               <Th>Offre et billets</Th>
               <Th className="text-right">Total</Th>
-              <Th>Règlement</Th>
+              <Th>Suivi</Th>
               <Th>
                 <span className="sr-only">Actions</span>
               </Th>
@@ -111,7 +135,7 @@ export default async function RequestsPage({ searchParams }: Props) {
           </thead>
           <tbody>
             {requests.map((request) => (
-              <tr key={request.id} className="align-top">
+              <tr key={request.id} className={cn('align-top', !request.processedAt && 'bg-warning-50/60')}>
                 <Td className="whitespace-nowrap tabular">{formatDateTime(request.createdAt)}</Td>
                 <Td>
                   <p className="font-semibold">
@@ -137,14 +161,36 @@ export default async function RequestsPage({ searchParams }: Props) {
                   {formatTotal(request.lines)}
                 </Td>
                 <Td>
-                  {request.paidAt ? (
-                    <Badge tone="success">Réglée le {formatDateTime(request.paidAt)}</Badge>
-                  ) : (
-                    <Badge tone="warning">Non réglée</Badge>
-                  )}
+                  <div className="flex flex-col items-start gap-1.5">
+                    {request.processedAt ? (
+                      <Badge tone="success">Traitée le {formatShortDate(request.processedAt)}</Badge>
+                    ) : (
+                      <Badge tone="danger">À traiter</Badge>
+                    )}
+                    {request.paidAt ? (
+                      <Badge tone="success">Réglée le {formatShortDate(request.paidAt)}</Badge>
+                    ) : (
+                      <Badge tone="warning">Non réglée</Badge>
+                    )}
+                  </div>
                 </Td>
                 <Td>
                   <div className="flex flex-col gap-2">
+                    {request.processedAt ? (
+                      <ActionForm
+                        action={setRequestProcessedAction}
+                        fields={{ requestId: request.id, processed: '0' }}
+                        label="Repasser en non traitée"
+                        variant="ghost"
+                      />
+                    ) : (
+                      <ActionForm
+                        action={setRequestProcessedAction}
+                        fields={{ requestId: request.id, processed: '1' }}
+                        label="Marquer comme traitée"
+                        variant="primary"
+                      />
+                    )}
                     {request.paidAt ? (
                       <ActionForm
                         action={setRequestPaidAction}

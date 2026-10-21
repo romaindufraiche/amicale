@@ -48,11 +48,13 @@ export function offerRequestFormToObject(formData: FormData) {
   return { ...fields, quantities }
 }
 
-export const REQUEST_FILTERS = ['toutes', 'a-regler', 'reglees'] as const
+export const REQUEST_FILTERS = ['toutes', 'a-traiter', 'traitees', 'a-regler', 'reglees'] as const
 export type RequestFilter = (typeof REQUEST_FILTERS)[number]
 
 export const REQUEST_FILTER_LABELS: Record<RequestFilter, string> = {
   toutes: 'Toutes',
+  'a-traiter': 'Non traitées',
+  traitees: 'Traitées',
   'a-regler': 'Non réglées',
   reglees: 'Réglées',
 }
