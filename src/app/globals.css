@@ -341,3 +341,17 @@
 .town .town-alarm {
   animation: town-alarm 0.5s infinite;
 }
+
+.town .town-still .town-step-a {
+  animation: none;
+}
+
+.town .town-still .town-step-b {
+  animation: none;
+  visibility: hidden;
+}
+
+/* Fin liseré blanc : les personnages restent visibles sur les fonds sombres. */
+.town .town-agent {
+  filter: drop-shadow(0 0 0.6px #fff) drop-shadow(0 0 0.6px #fff);
+}

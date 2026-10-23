@@ -94,7 +94,9 @@ export function HighlightsMarquee({
         ) : null}
       </div>
 
+      {/* Bandeau en mouvement : les petits personnages ne s'y posent pas. */}
       <div
+        data-town-ignore
         className={cn(
           'group/marquee overflow-hidden',
           fullBleed ? 'px-0' : '-mx-4 px-4 sm:mx-0 sm:px-0',

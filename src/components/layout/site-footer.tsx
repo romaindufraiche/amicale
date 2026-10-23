@@ -21,7 +21,7 @@ export function SiteFooter() {
   const hasContact = contact.email || contact.phone || contact.postalAddress
 
   return (
-    <footer data-surface="dark" className="mt-auto bg-blue-900 text-white">
+    <footer data-surface="dark" data-town-street className="mt-auto bg-blue-900 text-white">
       <div className="brand-rule" aria-hidden />
       <div className="mx-auto grid max-w-page gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
         <div className="flex flex-col gap-4">
@@ -84,8 +84,7 @@ export function SiteFooter() {
           )}
         </div>
       </div>
-      {/* Marge basse : laisse la place aux petits personnages qui se promènent en bas de l'écran. */}
-      <div className="border-t border-blue-800 pb-12">
+      <div className="border-t border-blue-800">
         <div className="mx-auto flex max-w-page flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-5 text-caption text-line sm:px-6 lg:px-8">
           <p>
             © {new Date().getFullYear()} {site.legalName} · {site.legal.legalForm}

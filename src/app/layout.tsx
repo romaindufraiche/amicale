@@ -51,7 +51,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <html lang="fr" className={`${archivo.variable} ${sourceSans.variable}`}>
-      <body className="flex min-h-dvh flex-col">
+      <body className="relative flex min-h-dvh flex-col">
         <a
           href="#contenu"
           className="sr-only z-50 bg-ink px-4 py-3 font-bold text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
