@@ -57,6 +57,7 @@ Défini dans `src/server/db/schema.ts`, migrations SQL versionnées dans `drizzl
 | `offers` / `offer_tariffs` | offres (billetterie ou sortie) et leurs tarifs, prix adhérent/public, stock                     |
 | `offer_requests`           | commandes passées sur le site (offre, billets par tarif, nom, prénom, email), règlement noté    |
 | `site_settings`            | réglages modifiables par le bureau (adhésions ouvertes, lien HelloAsso), une seule ligne        |
+| `classifieds`              | petites annonces entre collègues (vente, location, prêt, don, troc), épinglables                |
 | `site_visits`              | nombre de visites du site public par jour, sans aucune donnée personnelle                       |
 | `orders` / `order_lines`   | commandes, lignes avec libellé et prix **copiés** au moment de la commande                      |
 | `documents`                | fichiers joints aux offres et partenaires (PDF vérifié, JPEG ré-encodé), `/media/fichiers/<id>` |

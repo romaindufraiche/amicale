@@ -20,6 +20,7 @@ export default async function SettingsPage() {
       <SettingsForm
         membershipUrl={settings.membershipUrl}
         membershipOpen={settings.membershipOpen}
+        memberCount={settings.memberCount}
         ordersEmail={settings.ordersEmail}
         defaultOrdersEmail={env.BUREAU_EMAIL}
       />

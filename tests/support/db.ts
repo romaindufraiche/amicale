@@ -6,7 +6,7 @@ type NewOfferTariffInput = Omit<typeof offerTariffs.$inferInsert, 'offerId' | 'p
 
 export async function resetDatabase() {
   await db.execute(
-    sql`truncate audit_logs, contact_messages, highlights, media, news, partners, offer_requests, site_settings, offer_tariffs, offers, user_tokens, sessions, rate_limits, site_visits, users restart identity cascade`,
+    sql`truncate audit_logs, contact_messages, highlights, media, news, partners, offer_requests, site_settings, offer_tariffs, offers, user_tokens, sessions, rate_limits, site_visits, classifieds, users restart identity cascade`,
   )
 }
 

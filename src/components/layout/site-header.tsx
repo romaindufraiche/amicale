@@ -12,6 +12,7 @@ const PUBLIC_NAV = [
   { href: '/offres', label: 'Offres' },
   { href: '/adherer', label: 'Adhérer' },
   { href: '/actualites', label: 'Actualités' },
+  { href: '/annonces', label: 'Annonces' },
   { href: '/contact', label: 'Contact' },
 ] as const
 

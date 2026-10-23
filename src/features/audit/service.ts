@@ -14,6 +14,7 @@ export type AuditEntry = {
     | 'partner'
     | 'contact_message'
     | 'highlight'
+    | 'classified'
     | 'site_settings'
   entityId: string
   details?: Record<string, string | number | boolean | null>

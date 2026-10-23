@@ -88,6 +88,7 @@ describe('submitOfferRequest', () => {
       membershipUrl: null,
       ordersEmail: 'commandes@example.org',
       membershipOpen: true,
+      memberCount: null,
     })
     const created = await createOffer({ title: 'Sortie au zoo' })
     const before = Date.now()
@@ -211,17 +212,29 @@ describe('réglages du site', () => {
 
   it('crée puis met à jour la ligne unique de réglages', async () => {
     const admin = await createBureauUser({ role: 'ADMIN' })
-    expect(await getSiteSettings()).toEqual({ membershipUrl: null, ordersEmail: null, membershipOpen: true })
-    await updateSiteSettings(admin.id, { membershipUrl: HELLOASSO, ordersEmail: null, membershipOpen: true })
+    expect(await getSiteSettings()).toEqual({
+      membershipUrl: null,
+      ordersEmail: null,
+      membershipOpen: true,
+      memberCount: null,
+    })
+    await updateSiteSettings(admin.id, {
+      membershipUrl: HELLOASSO,
+      ordersEmail: null,
+      membershipOpen: true,
+      memberCount: null,
+    })
     await updateSiteSettings(admin.id, {
       membershipUrl: `${HELLOASSO}/adhesion`,
       ordersEmail: 'tresorier@example.org',
       membershipOpen: false,
+      memberCount: 412,
     })
     expect(await getSiteSettings()).toEqual({
       membershipUrl: `${HELLOASSO}/adhesion`,
       ordersEmail: 'tresorier@example.org',
       membershipOpen: false,
+      memberCount: 412,
     })
   })
 })

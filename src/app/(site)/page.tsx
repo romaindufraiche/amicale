@@ -14,6 +14,7 @@ import { offerAvailability } from '@/features/offers/rules'
 import { parisDay } from '@/lib/dates'
 import { listPublishedNews } from '@/features/news/queries'
 import { JoinLink } from '@/features/settings/components/join-link'
+import { MemberCount } from '@/features/settings/components/member-count'
 
 const BENEFITS = [
   {
@@ -80,8 +81,8 @@ export default async function HomePage() {
     <>
       {/* ─── Ouverture : bandeau tricolore (dégradé bleu, blanc, rouge) ─── */}
       <section data-surface="dark" className="relative overflow-hidden text-white hero-tricolore">
-        <div className="relative mx-auto grid max-w-page items-center gap-12 px-4 pt-14 pb-20 sm:px-6 md:pt-20 md:pb-28 lg:grid-cols-2 lg:px-8 lg:pb-32">
-          <div className="flex flex-col gap-7">
+        <div className="relative mx-auto grid max-w-page items-center gap-6 px-4 pt-8 pb-12 sm:px-6 md:pt-10 md:pb-20 lg:grid-cols-2 lg:px-8">
+          <div className="flex flex-col gap-5">
             <Eyebrow tone="onDark" as="h1">
               {site.legalName}
             </Eyebrow>
@@ -95,6 +96,7 @@ export default async function HomePage() {
                 Voir les offres
               </ButtonLink>
             </div>
+            <MemberCount className="text-blue-100" />
           </div>
 
           {/* Le « 95 » du département, posé sur la bande blanche du drapeau. */}
@@ -102,7 +104,9 @@ export default async function HomePage() {
             aria-hidden
             className="hidden justify-self-center text-center select-none lg:block lg:translate-x-8"
           >
-            <p className="font-display text-display font-black tracking-tighter text-flag-blue">95</p>
+            <p className="font-display text-[7rem] leading-none font-black tracking-tighter text-flag-blue">
+              95
+            </p>
             <p className="mt-2 label-caps text-ink">{site.department.name}</p>
           </div>
         </div>
@@ -111,24 +115,28 @@ export default async function HomePage() {
       {/* ─── Accès rapide aux catégories, à cheval sur le bandeau ─── */}
       <nav
         aria-labelledby="acces-rapide"
-        className="relative z-10 mx-auto max-w-page px-4 pt-8 sm:px-6 md:-mt-16 md:pt-0 lg:px-8"
+        className="relative z-10 mx-auto max-w-page px-4 pt-6 sm:px-6 md:-mt-12 md:pt-0 lg:px-8"
       >
-        <div className="rounded-lg bg-surface p-5 shadow-overlay sm:p-6">
-          <h2 id="acces-rapide" className="mb-4 font-display text-lead font-extrabold">
+        <div className="rounded-lg bg-surface p-4 shadow-overlay sm:p-5">
+          <h2 id="acces-rapide" className="mb-3 font-display text-lead font-extrabold">
             Que cherchez-vous ?
           </h2>
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <ul className="grid grid-cols-4 gap-2 lg:grid-cols-8">
             {QUICK_LINKS.map(({ href, label, icon: Icon, tone }) => {
               return (
                 <li key={href}>
                   <Link
                     href={href}
-                    className="group flex h-full items-center gap-3 rounded-md border border-line p-3 transition-colors hover:border-blue-600 hover:bg-blue-50"
+                    className="group flex h-full flex-col items-center gap-1.5 rounded-md border border-line px-1 py-2.5 text-center transition-colors hover:border-blue-600 hover:bg-blue-50 sm:gap-2"
                   >
-                    <span className={`grid size-11 shrink-0 place-items-center rounded-full ${tone}`}>
+                    <span
+                      className={`grid size-9 shrink-0 place-items-center rounded-full sm:size-10 ${tone}`}
+                    >
                       <Icon aria-hidden className="size-5" />
                     </span>
-                    <span className="leading-tight font-semibold group-hover:text-blue-600">{label}</span>
+                    <span className="text-xs leading-tight font-semibold group-hover:text-blue-600 sm:text-sm">
+                      {label}
+                    </span>
                   </Link>
                 </li>
               )
@@ -139,7 +147,7 @@ export default async function HomePage() {
 
       {/* ─── À la une : posts du bureau, défilement automatique ─── */}
       {highlights.length > 0 ? (
-        <div className="py-16">
+        <div className="pt-8 pb-16">
           <HighlightsMarquee items={highlights} fullBleed />
         </div>
       ) : null}

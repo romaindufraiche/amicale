@@ -256,3 +256,62 @@
     );
   }
 }
+
+/*
+ * Petits personnages (src/components/town) : pas des jambes et gyrophares en deux temps.
+ * Rien ne bouge si le visiteur a demandé à réduire les animations.
+ */
+@keyframes town-flip {
+  0%,
+  49.9% {
+    visibility: visible;
+  }
+  50%,
+  100% {
+    visibility: hidden;
+  }
+}
+
+@keyframes town-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 1px rgb(59 130 246 / 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 3px rgb(59 130 246 / 0.9));
+  }
+}
+
+.town .town-step-a,
+.town .town-blink-a {
+  animation: town-flip 0.42s infinite;
+}
+
+.town .town-step-b,
+.town .town-blink-b {
+  animation: town-flip 0.42s infinite;
+  animation-delay: -0.21s;
+}
+
+.town .town-beacon-glow {
+  animation: town-glow 0.6s infinite;
+}
+
+.town .town-lantern {
+  animation: town-glow 2.4s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .town .town-step-a,
+  .town .town-blink-a,
+  .town .town-beacon-glow,
+  .town .town-lantern {
+    animation: none;
+  }
+
+  .town .town-step-b,
+  .town .town-blink-b {
+    animation: none;
+    visibility: hidden;
+  }
+}

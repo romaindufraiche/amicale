@@ -381,6 +381,27 @@ export const contactMessages = pgTable(
 
 // ─── Réglages du site ───────────────────────────────────────────────────────
 
+// ─── Annonces entre collègues ────────────────────────────────────────────────
+
+export const classifiedKind = pgEnum('classified_kind', ['VENTE', 'LOCATION', 'PRET', 'DON', 'TROC'])
+
+/** Petites annonces des collègues (vente, location, prêt, don, troc), saisies par le bureau. */
+export const classifieds = pgTable(
+  'classifieds',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    kind: classifiedKind().notNull(),
+    title: text().notNull(),
+    description: text().notNull(),
+    imageId: uuid().references(() => media.id, { onDelete: 'set null' }),
+    /** Épinglée : affichée en tête de la rubrique. */
+    pinned: boolean().notNull().default(false),
+    published: boolean().notNull().default(true),
+    ...timestamps,
+  },
+  (t) => [index('classifieds_published_idx').on(t.published, t.pinned, t.createdAt)],
+)
+
 /** Réglages modifiables depuis l'espace bureau ; une seule ligne (id = 1). */
 export const siteSettings = pgTable(
   'site_settings',
@@ -392,6 +413,8 @@ export const siteSettings = pgTable(
     ordersEmail: text(),
     /** Faux : les boutons « Adhérer en ligne » sont masqués (adhésions fermées). */
     membershipOpen: boolean().notNull().default(true),
+    /** Nombre d'adhérents affiché sous le bouton « Adhérer », mis à jour à la main ; vide : masqué. */
+    memberCount: integer(),
     updatedById: uuid().references(() => users.id, { onDelete: 'set null' }),
     updatedAt: timestamp({ withTimezone: true })
       .notNull()
@@ -443,6 +466,8 @@ export type SiteSettings = typeof siteSettings.$inferSelect
 export type Partner = typeof partners.$inferSelect
 export type News = typeof news.$inferSelect
 export type Highlight = typeof highlights.$inferSelect
+export type Classified = typeof classifieds.$inferSelect
+export type ClassifiedKind = (typeof classifiedKind.enumValues)[number]
 export type HighlightTone = (typeof highlightTone.enumValues)[number]
 export type Media = typeof media.$inferSelect
 export type DocumentFile = typeof documents.$inferSelect

@@ -19,6 +19,7 @@ export async function updateSiteSettings(actorId: string, input: SettingsInput):
         membershipUrl: input.membershipUrl,
         ordersEmail: input.ordersEmail,
         membershipOpen: input.membershipOpen,
+        memberCount: input.memberCount,
       },
     })
   })

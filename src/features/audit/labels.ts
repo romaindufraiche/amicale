@@ -21,6 +21,8 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   'partner.deleted': 'Partenaire supprimé',
   'contact.handled': 'Message traité',
   'offer_request.paid': 'Paiement de demande noté',
+  'offer_request.processed': 'Commande marquée traitée',
+  'offer_request.unprocessed': 'Commande repassée en non traitée',
   'offer_request.unpaid': 'Paiement de demande retiré',
   'offer_request.deleted': 'Demande supprimée',
   'offer_requests.exported': 'Demandes exportées',
@@ -28,6 +30,9 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   'highlight.created': 'Post « À la une » créé',
   'highlight.updated': 'Post « À la une » modifié',
   'highlight.deleted': 'Post « À la une » supprimé',
+  'classified.created': 'Annonce créée',
+  'classified.updated': 'Annonce modifiée',
+  'classified.deleted': 'Annonce supprimée',
 }
 
 const ENTITY_PATHS: Record<string, string> = {
@@ -36,6 +41,7 @@ const ENTITY_PATHS: Record<string, string> = {
   news: '/admin/actualites/',
   partner: '/admin/partenaires/',
   highlight: '/admin/a-la-une/',
+  classified: '/admin/annonces/',
 }
 
 export function auditEntityHref(entityType: string, entityId: string | null): string | null {

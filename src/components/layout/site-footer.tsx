@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { site } from '@/config/site'
 import { whatsappUrl } from '@/lib/whatsapp'
+import { TownToggle } from '@/components/town/town-toggle'
 import { Logo } from './logo'
 
 const LINKS = [
@@ -8,6 +9,7 @@ const LINKS = [
   { href: '/partenaires', label: 'Partenaires' },
   { href: '/adherer', label: 'Adhérer' },
   { href: '/actualites', label: 'Actualités' },
+  { href: '/annonces', label: 'Annonces' },
   { href: '/contact', label: 'Contact' },
   { href: '/mentions-legales', label: 'Mentions légales' },
   { href: '/confidentialite', label: 'Données personnelles' },
@@ -82,10 +84,14 @@ export function SiteFooter() {
           )}
         </div>
       </div>
-      <div className="border-t border-blue-800">
-        <p className="mx-auto max-w-page px-4 py-5 text-caption text-line sm:px-6 lg:px-8">
-          © {new Date().getFullYear()} {site.legalName} · {site.legal.legalForm}
-        </p>
+      {/* Marge basse : laisse la place aux petits personnages qui se promènent en bas de l'écran. */}
+      <div className="border-t border-blue-800 pb-12">
+        <div className="mx-auto flex max-w-page flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-5 text-caption text-line sm:px-6 lg:px-8">
+          <p>
+            © {new Date().getFullYear()} {site.legalName} · {site.legal.legalForm}
+          </p>
+          <TownToggle className="underline underline-offset-4 hover:text-white" />
+        </div>
       </div>
     </footer>
   )

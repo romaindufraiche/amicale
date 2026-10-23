@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Alert } from '@/components/ui/alert'
 import { Eyebrow, PageHeader } from '@/components/ui/page-header'
 import { JoinLink } from '@/features/settings/components/join-link'
+import { MemberCount } from '@/features/settings/components/member-count'
 import { getSiteSettings } from '@/features/settings/queries'
 
 export const metadata: Metadata = {
@@ -47,7 +48,12 @@ export default async function JoinPage() {
         eyebrow="Adhérer"
         title="Rejoindre l’Amicale"
         lead={`L’${site.shortName} rassemble les personnels de police du ${site.department.name}. L’adhésion et la cotisation se font en ligne, sur HelloAsso.`}
-        actions={membershipUrl ? <JoinLink>Adhérer en ligne</JoinLink> : null}
+        actions={
+          <div className="flex flex-col items-start gap-3 md:items-end">
+            {membershipUrl ? <JoinLink>Adhérer en ligne</JoinLink> : null}
+            <MemberCount className="text-ink-muted" />
+          </div>
+        }
       />
       {!membershipOpen ? (
         <Alert tone="info" title="Les adhésions sont actuellement fermées.">

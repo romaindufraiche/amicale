@@ -10,11 +10,13 @@ import { saveSettingsAction } from '../actions'
 export function SettingsForm({
   membershipUrl,
   membershipOpen,
+  memberCount,
   ordersEmail,
   defaultOrdersEmail,
 }: {
   membershipUrl: string | null
   membershipOpen: boolean
+  memberCount: number | null
   ordersEmail: string | null
   /** Adresse utilisée tant que le champ est vide (variable `BUREAU_EMAIL`). */
   defaultOrdersEmail: string
@@ -37,6 +39,16 @@ export function SettingsForm({
           HelloAsso sont masqués, et la page « Adhérer » indique que les adhésions sont fermées.
         </p>
       </div>
+      <TextField
+        name="memberCount"
+        type="number"
+        inputMode="numeric"
+        min={0}
+        label="Nombre d’adhérents"
+        hint="Affiché sous les boutons « Adhérer » du site. À mettre à jour à la main quand vous le souhaitez. Vide : non affiché."
+        defaultValue={v?.memberCount ?? (memberCount === null ? '' : String(memberCount))}
+        error={e?.memberCount}
+      />
       <TextField
         name="membershipUrl"
         type="url"

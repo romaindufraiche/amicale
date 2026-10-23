@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { WhatsAppButton } from '@/components/layout/whatsapp-button'
+import { PoliceTown } from '@/components/town/police-town'
 import { VisitBeacon } from '@/features/visits/components/visit-beacon'
 
 export default function SiteLayout({ children }: { children: ReactNode }) {
@@ -13,6 +14,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
       </main>
       <SiteFooter />
       <WhatsAppButton />
+      <PoliceTown />
       <VisitBeacon />
     </>
   )

@@ -9,6 +9,8 @@ export type SiteSettingsValues = {
   ordersEmail: string | null
   /** Faux : adhésions fermées, boutons « Adhérer en ligne » masqués. */
   membershipOpen: boolean
+  /** Nombre d'adhérents saisi par le bureau ; `null` : non affiché. */
+  memberCount: number | null
 }
 
 /** Réglages du site ; valeurs vides tant que le bureau ne les a pas renseignés. Lus une fois par requête. */
@@ -18,6 +20,7 @@ export const getSiteSettings = cache(async (): Promise<SiteSettingsValues> => {
       membershipUrl: siteSettings.membershipUrl,
       ordersEmail: siteSettings.ordersEmail,
       membershipOpen: siteSettings.membershipOpen,
+      memberCount: siteSettings.memberCount,
     })
     .from(siteSettings)
     .where(eq(siteSettings.id, 1))
@@ -26,5 +29,6 @@ export const getSiteSettings = cache(async (): Promise<SiteSettingsValues> => {
     membershipUrl: row?.membershipUrl ?? null,
     ordersEmail: row?.ordersEmail ?? null,
     membershipOpen: row?.membershipOpen ?? true,
+    memberCount: row?.memberCount ?? null,
   }
 })

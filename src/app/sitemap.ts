@@ -11,6 +11,7 @@ const STATIC_PATHS = [
   '/partenaires',
   '/adherer',
   '/actualites',
+  '/annonces',
   '/contact',
   '/mentions-legales',
   '/confidentialite',
