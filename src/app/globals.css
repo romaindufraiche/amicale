@@ -302,6 +302,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .town .town-alarm,
   .town .town-step-a,
   .town .town-blink-a,
   .town .town-beacon-glow,
@@ -314,4 +315,29 @@
     animation: none;
     visibility: hidden;
   }
+}
+
+.town .town-run .town-step-a {
+  animation-duration: 0.2s;
+}
+
+.town .town-run .town-step-b {
+  animation-duration: 0.2s;
+  animation-delay: -0.1s;
+}
+
+@keyframes town-alarm {
+  0%,
+  100% {
+    background-color: rgb(239 68 68);
+    box-shadow: 0 0 6px 2px rgb(239 68 68 / 0.9);
+  }
+  50% {
+    background-color: rgb(127 29 29);
+    box-shadow: none;
+  }
+}
+
+.town .town-alarm {
+  animation: town-alarm 0.5s infinite;
 }

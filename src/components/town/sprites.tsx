@@ -17,7 +17,7 @@ const GOLD = '#d9a520'
 type Look = { hair?: string; ponytail?: boolean; kepi?: boolean; coat?: boolean; skin?: string }
 
 /** Policier ou policière en tenue, debout, 9 × 18. */
-function Officer({ x = 0, look = {} }: { x?: number; look?: Look }) {
+export function Officer({ x = 0, look = {} }: { x?: number; look?: Look }) {
   const skin = look.skin ?? SKIN
   return (
     <g transform={`translate(${x} 0)`}>
@@ -70,7 +70,7 @@ function Officer({ x = 0, look = {} }: { x?: number; look?: Look }) {
 }
 
 /** Chien de patrouille (berger malinois), 12 × 8. */
-function Dog({ x = 0, y = 0 }: { x?: number; y?: number }) {
+export function Dog({ x = 0, y = 0 }: { x?: number; y?: number }) {
   const FUR = '#c58d4b'
   const MASK = '#3a2614'
   return (
@@ -218,6 +218,225 @@ export function PoliceStation() {
       <rect x="18" y="26" width="10" height="12" fill={NAVY} />
       <rect x="22" y="26" width="1" height="12" fill={NAVY_DARK} />
       <rect x="20" y="32" width="1" height="1" fill={GOLD} />
+    </svg>
+  )
+}
+
+/* ─── Personnages des petites histoires ──────────────────────────────────── */
+
+type CivilianLook = {
+  head: 'beanie' | 'hood' | 'hair'
+  headColor: string
+  shirt: string
+  pants: string
+  stripes?: boolean
+  mask?: boolean
+  longCoat?: boolean
+  armsUp?: boolean
+  bag?: 'hand' | 'money'
+  skin?: string
+}
+
+/** Passant, brigand ou voleur, 9 × 18 (même gabarit que les policiers). */
+function Civilian({ x = 0, look }: { x?: number; look: CivilianLook }) {
+  const skin = look.skin ?? SKIN
+  const torsoHeight = look.longCoat ? 7 : 5
+  return (
+    <g transform={`translate(${x} 0)`}>
+      {look.head === 'hood' ? <rect x="1" y="1" width="7" height="6" fill={look.headColor} /> : null}
+      {look.head === 'hair' ? (
+        <>
+          <rect x="2" y="1" width="5" height="2" fill={look.headColor} />
+          <rect x="1" y="2" width="2" height="5" fill={look.headColor} />
+        </>
+      ) : null}
+      {look.head === 'beanie' ? <rect x="2" y="0" width="5" height="3" fill={look.headColor} /> : null}
+      <rect
+        x={look.head === 'hood' ? 3 : 2}
+        y="3"
+        width={look.head === 'hood' ? 4 : 5}
+        height="3"
+        fill={skin}
+      />
+      {look.mask ? (
+        <>
+          <rect x="2" y="4" width="5" height="1" fill={BOOT} />
+          <rect x="5" y="4" width="1" height="1" fill={WHITE} />
+        </>
+      ) : (
+        <rect x="5" y="4" width="1" height="1" fill={BOOT} />
+      )}
+      <rect x="1" y="6" width="7" height={torsoHeight} fill={look.shirt} />
+      {look.stripes ? (
+        <>
+          <rect x="1" y="7" width="7" height="1" fill={WHITE} />
+          <rect x="1" y="9" width="7" height="1" fill={WHITE} />
+        </>
+      ) : null}
+      {look.armsUp ? (
+        <>
+          <rect x="0" y="1" width="1" height="6" fill={look.shirt} />
+          <rect x="8" y="1" width="1" height="6" fill={look.shirt} />
+          <rect x="0" y="0" width="1" height="1" fill={skin} />
+          <rect x="8" y="0" width="1" height="1" fill={skin} />
+        </>
+      ) : (
+        <>
+          <rect x="4" y="7" width="2" height="4" fill={look.stripes ? BOOT : look.shirt} />
+          <rect x="4" y="11" width="2" height="1" fill={skin} />
+        </>
+      )}
+      {look.bag === 'hand' ? <rect x="5" y="11" width="3" height="3" fill="#7c2d12" /> : null}
+      {look.bag === 'money' ? (
+        <>
+          <rect x="5" y="10" width="4" height="4" fill="#c9a227" />
+          <rect x="6" y="9" width="2" height="1" fill="#a16207" />
+          <rect x="6" y="11" width="2" height="1" fill="#713f12" />
+        </>
+      ) : null}
+      <g className="town-step-a">
+        <rect x="1" y={6 + torsoHeight} width="2" height={11 - torsoHeight} fill={look.pants} />
+        <rect x="6" y={6 + torsoHeight} width="2" height={11 - torsoHeight} fill={look.pants} />
+        <rect x="0" y="17" width="3" height="1" fill={BOOT} />
+        <rect x="6" y="17" width="3" height="1" fill={BOOT} />
+      </g>
+      <g className="town-step-b">
+        <rect x="3" y={6 + torsoHeight} width="3" height={11 - torsoHeight} fill={look.pants} />
+        <rect x="3" y="17" width="4" height="1" fill={BOOT} />
+      </g>
+    </g>
+  )
+}
+
+const ROBBER: CivilianLook = {
+  head: 'beanie',
+  headColor: BOOT,
+  shirt: '#1f2937',
+  pants: '#374151',
+  stripes: true,
+  mask: true,
+}
+const ROBBER_2: CivilianLook = { ...ROBBER, skin: SKIN_DARK }
+const LADY: CivilianLook = {
+  head: 'hair',
+  headColor: '#7c4a1e',
+  shirt: '#be123c',
+  pants: '#1e293b',
+  longCoat: true,
+  bag: 'hand',
+}
+const THIEF: CivilianLook = { head: 'hood', headColor: '#6b7280', shirt: '#6b7280', pants: '#1e3a5f' }
+
+/** Deux brigands masqués, 20 × 18 ; avec leurs sacs de billets ou les mains en l'air. */
+export function Robbers({ pose = 'walk' }: { pose?: 'walk' | 'loot' | 'handsUp' }) {
+  const extra = pose === 'loot' ? { bag: 'money' as const } : pose === 'handsUp' ? { armsUp: true } : {}
+  return (
+    <svg width="20" height="18" viewBox="0 0 20 18" shapeRendering="crispEdges">
+      <Civilian x={0} look={{ ...ROBBER, ...extra }} />
+      <Civilian x={11} look={{ ...ROBBER_2, ...extra }} />
+    </svg>
+  )
+}
+
+/** Deux policiers qui ramènent les brigands menottés au commissariat, 42 × 18. */
+export function Escort() {
+  return (
+    <svg width="42" height="18" viewBox="0 0 42 18" shapeRendering="crispEdges">
+      <Officer x={0} />
+      <Civilian x={10} look={ROBBER} />
+      <Civilian x={21} look={ROBBER_2} />
+      <rect x="8" y="11" width="3" height="1" fill="#9ca3af" />
+      <rect x="29" y="11" width="4" height="1" fill="#9ca3af" />
+      <Officer x={32} look={{ ponytail: true, hair: '#6b4423' }} />
+    </svg>
+  )
+}
+
+/** Passante avec son sac à main (ou sans, après le vol), 9 × 18. */
+export function Lady({ withBag = true }: { withBag?: boolean }) {
+  return (
+    <svg width="9" height="18" viewBox="0 0 9 18" shapeRendering="crispEdges">
+      <Civilian look={withBag ? LADY : { ...LADY, bag: undefined }} />
+    </svg>
+  )
+}
+
+/** Voleur à capuche, avec ou sans le sac volé, 9 × 18. */
+export function Thief({ withBag = false, handsUp = false }: { withBag?: boolean; handsUp?: boolean }) {
+  return (
+    <svg width="9" height="18" viewBox="0 0 9 18" shapeRendering="crispEdges">
+      <Civilian look={{ ...THIEF, ...(withBag ? { bag: 'hand' as const } : {}), armsUp: handsUp }} />
+    </svg>
+  )
+}
+
+/** Policier seul, 9 × 18. */
+export function OfficerAlone() {
+  return (
+    <svg width="9" height="18" viewBox="0 0 9 18" shapeRendering="crispEdges">
+      <Officer />
+    </svg>
+  )
+}
+
+/** Chien seul, échappé, 12 × 9. */
+export function DogAlone() {
+  return (
+    <svg width="12" height="9" viewBox="0 -1 12 9" shapeRendering="crispEdges">
+      <Dog />
+    </svg>
+  )
+}
+
+/** Voiture de sport rouge, 32 × 12. */
+export function SportsCar() {
+  return (
+    <svg width="32" height="12" viewBox="0 0 32 12" shapeRendering="crispEdges">
+      <rect x="10" y="1" width="12" height="3" fill="#b91c1c" />
+      <rect x="12" y="2" width="8" height="2" fill="#9cc3e8" />
+      <rect x="1" y="4" width="30" height="4" fill="#dc2626" />
+      <rect x="1" y="6" width="30" height="1" fill="#7f1d1d" />
+      <rect x="30" y="4" width="1" height="1" fill="#fde68a" />
+      <rect x="0" y="3" width="3" height="1" fill={BOOT} />
+      <circle cx="7" cy="9.5" r="2.5" fill={BOOT} />
+      <circle cx="25" cy="9.5" r="2.5" fill={BOOT} />
+      <circle cx="7" cy="9.5" r="1" fill="#9ca3af" />
+      <circle cx="25" cy="9.5" r="1" fill="#9ca3af" />
+    </svg>
+  )
+}
+
+/** Banque : fronton, colonnes, enseigne et gyrophare d'alarme (éteint), 54 × 40. */
+export function Bank() {
+  const STONE = '#efe6d2'
+  return (
+    <svg width="54" height="40" viewBox="0 0 54 40" shapeRendering="crispEdges">
+      <rect x="25" y="0" width="4" height="3" fill="#7f1d1d" />
+      <rect x="23" y="3" width="8" height="2" fill={STONE} />
+      <rect x="15" y="5" width="24" height="2" fill={STONE} />
+      <rect x="6" y="7" width="42" height="2" fill={STONE} />
+      <rect x="2" y="9" width="50" height="2" fill="#d6c7a1" />
+      <rect x="6" y="11" width="42" height="6" fill="#1f2937" />
+      <text
+        x="27"
+        y="15.8"
+        textAnchor="middle"
+        fontSize="5.5"
+        fontWeight="700"
+        fontFamily="Arial, sans-serif"
+        fill={GOLD}
+        letterSpacing="0.4"
+        shapeRendering="geometricPrecision"
+      >
+        BANQUE
+      </text>
+      <rect x="4" y="17" width="46" height="21" fill={STONE} />
+      {[7, 15, 35, 43].map((x) => (
+        <rect key={x} x={x} y="18" width="3" height="19" fill={WHITE} />
+      ))}
+      <rect x="22" y="25" width="10" height="13" fill="#78350f" />
+      <rect x="26" y="25" width="2" height="13" fill="#451a03" />
+      <rect x="2" y="38" width="50" height="2" fill="#cbd5e1" />
     </svg>
   )
 }

@@ -3,7 +3,7 @@
 Plateforme web de l'Amicale, pensée comme un site de CSE. **Les adhérents n'ont pas de compte** : seuls les membres du bureau se connectent, pour administrer le site.
 
 - **site public** : présentation, catalogue des offres (`/offres`, tarifs affichés ou non au choix du bureau pour chaque offre), adhésion, actualités, contact (formulaire et bouton WhatsApp), pages légales ;
-- **espace bureau** : commandes (suivi « traitée » et « réglée », export CSV), annonces entre collègues (vente, location, prêt, don, troc ; épinglage), compteur de visites, réglages (nombre d'adhérents affiché, adhésions ouvertes ou fermées, lien HelloAsso d'adhésion, adresse qui reçoit les commandes), offres et tarifs, posts « À la une », actualités, partenaires, messages, journal d'audit.
+- **espace bureau** : commandes (suivi « traitée » et « réglée », export CSV), annonces entre collègues (vente, location, prêt, don, troc ; épinglage ; annonce épinglée de GLM, créateur du site, aux couleurs de sa charte), compteur de visites, réglages (nombre d'adhérents affiché, adhésions ouvertes ou fermées, lien HelloAsso d'adhésion, adresse qui reçoit les commandes), offres et tarifs, posts « À la une », actualités, partenaires, messages, journal d'audit.
 
 **Adhésion.** Les boutons « Adhérer » mènent à la page HelloAsso d'adhésion renseignée par le bureau
 (**Espace bureau → Réglages**) ; tant qu'elle ne l'est pas, ils mènent à la page « Adhérer » du site.

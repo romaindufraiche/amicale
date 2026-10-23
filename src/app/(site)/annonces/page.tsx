@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/ui/page-header'
 import { ClassifiedCard } from '@/features/classifieds/components/classified-card'
 import { CLASSIFIED_KIND_VALUES, CLASSIFIED_KINDS, parseClassifiedKind } from '@/features/classifieds/labels'
 import { listPublishedClassifieds } from '@/features/classifieds/queries'
+import { GlmShowcase } from '@/features/glm/glm-showcase'
 import { cn } from '@/lib/cn'
 
 export const metadata: Metadata = {
@@ -58,6 +59,9 @@ export default async function ClassifiedsPage({ searchParams }: Props) {
         </ul>
       </nav>
 
+      {/* Annonce épinglée du créateur du site, toujours en tête de l'onglet « Toutes ». */}
+      {kind === null ? <GlmShowcase /> : null}
+
       {items.length > 0 ? (
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
@@ -67,7 +71,7 @@ export default async function ClassifiedsPage({ searchParams }: Props) {
           ))}
         </ul>
       ) : (
-        <EmptyState title="Aucune annonce pour le moment">
+        <EmptyState title={kind ? 'Aucune annonce de ce type' : 'Aucune autre annonce pour le moment'}>
           {kind
             ? 'Aucune annonce de ce type. Consultez les autres onglets.'
             : 'Les annonces des collègues apparaîtront ici.'}
