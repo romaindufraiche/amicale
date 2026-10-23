@@ -1,4 +1,14 @@
-import { ArrowUpRight, Pin } from 'lucide-react'
+import {
+  ArrowUpRight,
+  type LucideIcon,
+  Database,
+  Gauge,
+  Globe,
+  Pin,
+  RefreshCcw,
+  ShieldCheck,
+  Workflow,
+} from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { glmTextFont, glmTitleFont } from './fonts'
 
@@ -17,29 +27,46 @@ const GLM = {
 }
 
 const SITE_URL = 'https://glmprime.com'
+const EMAIL = 'contact@glmprime.com'
 
-const SERVICES = [
-  'Sites web',
-  'Communication',
-  'Développement de logiciels',
-  'Automatisation des processus',
-] as const
-
-/** Situations où un collègue, du gardien de la paix au commissaire, peut avoir besoin de GLM. */
-const USE_CASES = [
+const EXPERTISES: { icon: LucideIcon; title: string; text: string; accent: string }[] = [
   {
+    icon: Database,
+    title: 'Traitement des données',
+    text: 'Fichiers éparpillés, tableaux sans fin : vos données rassemblées, fiables et exploitables.',
     accent: GLM.corail,
-    text: 'Votre association, votre club sportif ou votre événement mérite son propre site ?',
   },
   {
+    icon: ShieldCheck,
+    title: 'Sécurisation des données',
+    text: 'Accès maîtrisés, sauvegardes, bonnes pratiques de cybersécurité.',
     accent: GLM.jade,
-    text: 'Un projet personnel, l’activité de votre conjoint ou votre après-carrière à lancer ?',
   },
   {
+    icon: Workflow,
+    title: 'Automatisation des process',
+    text: 'Ressaisies, relances, comptes rendus : les tâches répétitives tournent toutes seules.',
     accent: GLM.bleu,
-    text: 'Des inscriptions, des plannings ou des relances encore gérés à la main ? On les automatise.',
   },
-] as const
+  {
+    icon: RefreshCcw,
+    title: 'Refonte de logiciels d’entreprise',
+    text: 'Un outil vieillissant ou mal adapté, remis à neuf autour de votre façon de travailler.',
+    accent: GLM.corail,
+  },
+  {
+    icon: Gauge,
+    title: 'Excellence opérationnelle',
+    text: 'Tableaux de bord clairs, process simplifiés, décisions plus rapides.',
+    accent: GLM.jade,
+  },
+  {
+    icon: Globe,
+    title: 'Sites web & communication',
+    text: 'Un site comme celui de l’Amicale, pour votre association, votre club ou votre projet.',
+    accent: GLM.bleu,
+  },
+]
 
 /** Symbole GLM : trois bandes corail, jade et bleu sur fond nuit. */
 function GlmSymbol({ size }: { size: number }) {
@@ -61,73 +88,104 @@ export function GlmShowcase({ className }: { className?: string }) {
       style={{ background: GLM.nuit, color: GLM.ivoire }}
     >
       <div aria-hidden className="flex">
-        <span className="h-1 flex-1" style={{ background: GLM.corail }} />
-        <span className="h-1 flex-1" style={{ background: GLM.jade }} />
-        <span className="h-1 flex-1" style={{ background: GLM.bleu }} />
+        <span className="h-1.5 flex-1" style={{ background: GLM.corail }} />
+        <span className="h-1.5 flex-1" style={{ background: GLM.jade }} />
+        <span className="h-1.5 flex-1" style={{ background: GLM.bleu }} />
       </div>
 
-      <div className="grid items-center gap-8 p-6 sm:p-10 lg:grid-cols-[1.2fr_1fr] lg:gap-12">
-        <div className="flex flex-col gap-5">
-          <p className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="inline-flex items-center gap-2.5">
-              <GlmSymbol size={32} />
-              <span className={cn(glmTitleFont.className, 'text-[1.625rem] leading-none tracking-[0.14em]')}>
-                GLM
+      <div className="flex flex-col gap-10 p-6 sm:p-10 lg:p-12">
+        <header className="grid items-end gap-8 lg:grid-cols-[1.4fr_1fr]">
+          <div className="flex flex-col gap-5">
+            <p className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <span className="inline-flex items-center gap-2.5">
+                <GlmSymbol size={32} />
+                <span
+                  className={cn(glmTitleFont.className, 'text-[1.625rem] leading-none tracking-[0.14em]')}
+                >
+                  GLM
+                </span>
               </span>
-            </span>
-            <span
-              className="inline-flex items-center gap-1.5 text-[0.75rem] font-semibold tracking-[0.14em] uppercase"
-              style={{ color: GLM.ivoireDoux }}
-            >
-              <Pin aria-hidden className="size-3.5" /> Annonce
-            </span>
-          </p>
-
-          <h2
-            id="annonce-glm"
-            className={cn(glmTitleFont.className, 'text-[clamp(2rem,1.5rem+2.4vw,3.5rem)] leading-[1.08]')}
-          >
-            Ce site a été réalisé par GLM.
-            <span className="block" style={{ color: GLM.corail }}>
-              Parlons de votre projet.
-            </span>
-          </h2>
-
-          <ul className="flex flex-wrap gap-2" aria-label="Ce que fait GLM">
-            {SERVICES.map((service) => (
-              <li
-                key={service}
-                className="border px-3 py-1.5 text-[0.9375rem] font-semibold"
-                style={{ borderColor: 'rgb(244 239 228 / 0.35)' }}
+              <span
+                className="inline-flex items-center gap-1.5 text-[0.75rem] font-semibold tracking-[0.14em] uppercase"
+                style={{ color: GLM.ivoireDoux }}
               >
-                {service}
-              </li>
-            ))}
-          </ul>
-
-          <a
-            href={SITE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-12 items-center gap-2 self-start px-6 text-[1.0625rem] font-semibold transition-opacity hover:opacity-90"
-            style={{ background: GLM.ivoire, color: GLM.nuit }}
-          >
-            Découvrir GLM <ArrowUpRight aria-hidden className="size-5" />
-            <span className="sr-only">(glmprime.com, nouvel onglet)</span>
-          </a>
-        </div>
-
-        <ul className="flex flex-col gap-3">
-          {USE_CASES.map((item) => (
-            <li
-              key={item.text}
-              className="border-l-4 py-2 pl-4 text-[1.0625rem] leading-snug"
-              style={{ borderColor: item.accent, background: 'rgb(244 239 228 / 0.05)' }}
+                <Pin aria-hidden className="size-3.5" /> Annonce · Le créateur de ce site
+              </span>
+            </p>
+            <h2
+              id="annonce-glm"
+              className={cn(
+                glmTitleFont.className,
+                'text-[clamp(2.4rem,1.6rem+3.6vw,4.75rem)] leading-[1.02]',
+              )}
             >
-              {item.text}
+              Moins de paperasse.
+              <span className="block" style={{ color: GLM.corail }}>
+                Plus de terrain.
+              </span>
+            </h2>
+            <p className="max-w-[40rem] text-[clamp(1.0625rem,1rem+0.3vw,1.3125rem)] leading-relaxed">
+              Données, sécurité, process, logiciels : GLM conçoit les outils numériques qui font gagner du
+              temps et laissent les équipes se concentrer sur l’essentiel.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-4 lg:items-end lg:text-right">
+            <p style={{ color: GLM.ivoireDoux }}>Ce site a été réalisé par GLM.</p>
+            <a
+              href={SITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-14 items-center justify-center gap-2 px-7 text-[1.125rem] font-semibold transition-opacity hover:opacity-90"
+              style={{ background: GLM.corail, color: GLM.nuit }}
+            >
+              Parlons de votre projet <ArrowUpRight aria-hidden className="size-5" />
+              <span className="sr-only">(glmprime.com, nouvel onglet)</span>
+            </a>
+            <a
+              href={`mailto:${EMAIL}`}
+              className="text-[0.9375rem] underline underline-offset-4 hover:opacity-80"
+            >
+              {EMAIL}
+            </a>
+          </div>
+        </header>
+
+        <ul
+          className="grid gap-px sm:grid-cols-2 lg:grid-cols-3"
+          style={{ background: 'rgb(244 239 228 / 0.14)' }}
+        >
+          {EXPERTISES.map(({ icon: Icon, title, text, accent }) => (
+            <li key={title} className="flex flex-col gap-2 p-5 sm:p-6" style={{ background: GLM.nuit }}>
+              <Icon aria-hidden className="size-7" style={{ color: accent }} strokeWidth={1.75} />
+              <h3 className="text-[1.1875rem] font-semibold">{title}</h3>
+              <p className="leading-snug" style={{ color: GLM.ivoireDoux }}>
+                {text}
+              </p>
             </li>
           ))}
         </ul>
+
+        <a
+          href={SITE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex flex-wrap items-center justify-between gap-4 border p-5 transition-colors hover:bg-white/5 sm:p-6"
+          style={{ borderColor: 'rgb(244 239 228 / 0.35)' }}
+        >
+          <span
+            className={cn(
+              glmTitleFont.className,
+              'text-[clamp(1.375rem,1.2rem+0.8vw,1.875rem)] leading-tight',
+            )}
+          >
+            Un outil qui vous ralentit ? Une idée à concrétiser ?
+          </span>
+          <span className="inline-flex items-center gap-2 font-semibold" style={{ color: GLM.corail }}>
+            Découvrir glmprime.com <ArrowUpRight aria-hidden className="size-5" />
+            <span className="sr-only">(nouvel onglet)</span>
+          </span>
+        </a>
       </div>
     </article>
   )
