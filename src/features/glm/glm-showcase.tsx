@@ -20,9 +20,17 @@ const SITE_URL = 'https://glmprime.com'
 
 const SERVICES = [
   'Traitement et sécurisation des données',
-  'Automatisation des process',
-  'Logiciels sur mesure',
+  'Cybersécurité',
+  'Automatisation des processus',
+  'Intelligence artificielle interne sur mesure',
+  'Logiciels d’entreprise sur mesure',
+  'Applications',
+  'Tableaux de bord',
   'Sites web',
+  'E-commerce',
+  'Campagnes de communication',
+  'Prospection',
+  'Personal branding',
 ] as const
 
 /** Symbole GLM : trois bandes corail, jade et bleu sur fond nuit. */
@@ -76,15 +84,21 @@ export function GlmShowcase({ className }: { className?: string }) {
           >
             Ce site, c’est nous. <span style={{ color: GLM.corail }}>Et votre projet ?</span>
           </h2>
-          <p className="text-[1rem] leading-snug" style={{ color: GLM.ivoireDoux }}>
-            <span style={{ color: GLM.ivoire }}>Moins de paperasse, plus de terrain.</span>{' '}
-            {SERVICES.map((service, index) => (
-              <span key={service}>
-                {index > 0 ? <span aria-hidden> · </span> : null}
-                {service}
-              </span>
-            ))}
+          <p className="text-[1rem] leading-snug">
+            Architectes de la tech : on conçoit et on développe des solutions pour les entreprises, avec les
+            entreprises.
           </p>
+          <ul className="flex flex-wrap gap-1.5 pt-1" aria-label="Domaines de GLM">
+            {SERVICES.map((service) => (
+              <li
+                key={service}
+                className="border px-2 py-0.5 text-[0.8125rem] leading-snug"
+                style={{ borderColor: 'rgb(244 239 228 / 0.3)', color: GLM.ivoireDoux }}
+              >
+                {service}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <a
