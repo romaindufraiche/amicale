@@ -1,9 +1,9 @@
 import 'server-only'
 import { createHash } from 'node:crypto'
-import { gte, sql, sum } from 'drizzle-orm'
+import { and, gte, like, lte, sql, sum } from 'drizzle-orm'
 import { parisDay } from '@/lib/dates'
 import { db } from '@/server/db/client'
-import { siteVisits } from '@/server/db/schema'
+import { rateLimits, siteVisits } from '@/server/db/schema'
 import { consumeRateLimit } from '@/server/rate-limit'
 
 /** Une même personne n'est comptée qu'une fois par période de 30 minutes. */
@@ -21,6 +21,8 @@ export function isBot(userAgent: string | null): boolean {
  */
 export async function recordVisit(clientIp: string, userAgent: string | null): Promise<boolean> {
   if (isBot(userAgent)) return false
+  // Empreintes expirées supprimées tout de suite, sans attendre la maintenance quotidienne.
+  await db.delete(rateLimits).where(and(like(rateLimits.key, 'visit:%'), lte(rateLimits.resetAt, new Date())))
   const fingerprint = createHash('sha256').update(`${clientIp}|${userAgent}`).digest('hex').slice(0, 32)
   const limit = await consumeRateLimit(`visit:${fingerprint}`, 1, VISIT_WINDOW_MS)
   if (!limit.allowed) return false

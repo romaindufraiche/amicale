@@ -57,10 +57,26 @@ export default function LegalNoticePage() {
           </>
         ) : null}
 
+        <h2>Conception et réalisation</h2>
+        <p>
+          Site conçu et réalisé par{' '}
+          <a href={site.creator.url} target="_blank" rel="noopener noreferrer">
+            {site.creator.name}
+          </a>
+          .
+        </p>
+
         <h2>Propriété intellectuelle</h2>
         <p>
           Le nom, le logo et les contenus de ce site sont la propriété de l’{site.shortName}. Toute
           reproduction sans autorisation préalable est interdite.
+        </p>
+
+        <h2>Annonces et offres</h2>
+        <p>
+          Les annonces entre collègues sont publiées par le bureau à la demande de leurs auteurs, qui en
+          restent responsables. L’{site.shortName} n’intervient pas dans les échanges, ventes, locations ou
+          prêts conclus entre particuliers. Pour faire retirer une annonce, écrivez au bureau.
         </p>
 
         <h2>Données personnelles</h2>
@@ -70,7 +86,10 @@ export default function LegalNoticePage() {
         </p>
 
         <h2>Crédits</h2>
-        <p>Polices de caractères Archivo et Source Sans 3, sous licence SIL Open Font License 1.1.</p>
+        <p>
+          Polices de caractères Archivo, Source Sans 3, Libre Caslon Display et IBM Plex Sans, sous licence
+          SIL Open Font License 1.1.
+        </p>
       </Prose>
     </div>
   )

@@ -89,7 +89,18 @@ export function SiteFooter() {
           <p>
             © {new Date().getFullYear()} {site.legalName} · {site.legal.legalForm}
           </p>
-          <TownToggle className="underline underline-offset-4 hover:text-white" />
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <TownToggle className="underline underline-offset-4 hover:text-white" />
+            <a
+              href={site.creator.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4 hover:text-white"
+            >
+              Site créé par {site.creator.name}
+              <span className="sr-only"> (nouvel onglet)</span>
+            </a>
+          </div>
         </div>
       </div>
     </footer>

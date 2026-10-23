@@ -27,7 +27,7 @@ export const site = {
 
   /** Coordonnées publiques (affichées sur la page Contact et les mentions légales). */
   contact: {
-    email: null as string | null,
+    email: 'contact@adpvo.fr' as string | null,
     /** Numéro WhatsApp de l'Amicale, au format international. */
     whatsapp: '+33 7 68 16 98 67' as string | null,
     phone: null as string | null,
@@ -42,8 +42,16 @@ export const site = {
     /** Numéro RNA (W951…) ou SIRET. */
     registrationNumber: null as string | null,
     publicationDirector: null as string | null,
-    host: null as { name: string; address: string; phone: string | null } | null,
+    /** Hébergeur du site (VPS OVHcloud). */
+    host: {
+      name: 'OVH SAS',
+      address: '2 rue Kellermann, 59100 Roubaix, France',
+      phone: '1007 (depuis la France) · +33 9 72 10 10 07',
+    } as { name: string; address: string; phone: string | null } | null,
   },
+
+  /** Conception et réalisation du site. */
+  creator: { name: 'GLM', url: 'https://glmprime.com' },
 
   /** Adhésion : montant et période de la cotisation, tels que fixés par le bureau. */
   membership: {

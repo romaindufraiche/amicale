@@ -26,7 +26,14 @@ export default function PrivacyPage() {
         <h2>Responsable du traitement</h2>
         <p>
           {site.legalName} ({site.legal.legalForm}). Pour toute question relative à vos données, écrivez au
-          bureau via le <Link href="/contact">formulaire de contact</Link>.
+          bureau via le <Link href="/contact">formulaire de contact</Link>
+          {site.contact.email ? (
+            <>
+              {' '}
+              ou à <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+            </>
+          ) : null}
+          .
         </p>
 
         <h2>Données collectées</h2>
@@ -37,6 +44,10 @@ export default function PrivacyPage() {
           </li>
           <li>Messages envoyés via le formulaire de contact : nom, adresse email et contenu du message.</li>
           <li>Comptes des membres du bureau : nom, prénom, adresse email et mot de passe.</li>
+          <li>
+            Annonces entre collègues : le contenu que l’auteur demande au bureau de publier, y compris, s’il
+            le souhaite, un moyen de le contacter. Ces annonces sont visibles par tous les visiteurs.
+          </li>
         </ul>
         <p>
           Les mots de passe ne sont jamais stockés en clair : seule une empreinte irréversible (Argon2id) est
@@ -64,11 +75,26 @@ export default function PrivacyPage() {
           du bureau sont tracées dans un journal d’audit.
         </p>
 
-        <h2>Cookies</h2>
+        <h2>Mesure de fréquentation</h2>
+        <p>
+          Le site compte ses visites pour connaître sa fréquentation, sans cookie et sans outil tiers. Seul un
+          nombre de visites par jour est conservé. Pour ne pas compter deux fois la même personne, une
+          empreinte irréversible calculée à partir de l’adresse IP et du navigateur est gardée 30 minutes au
+          plus, puis supprimée ; ni l’adresse IP ni le navigateur ne sont enregistrés.
+        </p>
+
+        <h2>Cookies et stockage dans le navigateur</h2>
         <p>
           Le site n’utilise un cookie que pour la connexion des membres du bureau ; il est strictement
-          nécessaire et ne contient aucune donnée personnelle. Aucun outil de mesure d’audience ni aucun
-          traceur tiers n’est utilisé : aucun consentement n’est donc requis.
+          nécessaire et ne contient aucune donnée personnelle. Si vous masquez les petits personnages animés,
+          ce choix est mémorisé dans votre navigateur uniquement et n’est jamais transmis. Aucun traceur
+          publicitaire ni outil d’analyse tiers n’est utilisé : aucun consentement n’est donc requis.
+        </p>
+
+        <h2>Hébergement</h2>
+        <p>
+          Le site et ses données sont hébergés par {site.legal.host?.name ?? 'son hébergeur'}. Voir les{' '}
+          <Link href="/mentions-legales">mentions légales</Link>.
         </p>
 
         <h2>Vos droits</h2>
