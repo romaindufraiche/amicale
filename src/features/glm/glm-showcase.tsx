@@ -22,8 +22,8 @@ const SERVICES = [
   'Traitement et sécurisation des données',
   'Cybersécurité',
   'Automatisation des processus',
-  'Intelligence artificielle interne sur mesure',
-  'Logiciels d’entreprise sur mesure',
+  'Intelligence artificielle interne',
+  'Logiciels d’entreprise',
   'Applications',
   'Tableaux de bord',
   'Sites web',
@@ -61,17 +61,9 @@ export function GlmShowcase({ className }: { className?: string }) {
       <div className="flex flex-col gap-5 p-5 sm:p-7 lg:flex-row lg:items-center lg:gap-10">
         <div className="flex shrink-0 items-center gap-3">
           <GlmSymbol size={52} />
-          <div className="flex flex-col gap-1">
-            <span className={cn(glmTitleFont.className, 'text-[2rem] leading-none tracking-[0.14em]')}>
-              GLM
-            </span>
-            <span
-              className="text-[0.6875rem] font-semibold tracking-[0.14em] uppercase"
-              style={{ color: GLM.ivoireDoux }}
-            >
-              Annonce
-            </span>
-          </div>
+          <span className={cn(glmTitleFont.className, 'text-[2rem] leading-none tracking-[0.14em]')}>
+            GLM
+          </span>
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-2">
@@ -101,16 +93,26 @@ export function GlmShowcase({ className }: { className?: string }) {
           </ul>
         </div>
 
-        <a
-          href={SITE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 self-start px-6 text-[1.0625rem] font-semibold transition-opacity hover:opacity-90 lg:self-center"
-          style={{ background: GLM.corail, color: GLM.nuit }}
-        >
-          Parlez-nous de votre projet <ArrowUpRight aria-hidden className="size-5" />
-          <span className="sr-only">(glmprime.com, nouvel onglet)</span>
-        </a>
+        <div className="flex shrink-0 flex-col items-start gap-2 lg:items-center">
+          <a
+            href={SITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-12 items-center justify-center gap-2 px-6 text-[1.0625rem] font-semibold transition-opacity hover:opacity-90"
+            style={{ background: GLM.corail, color: GLM.nuit }}
+          >
+            Parlez-nous de votre projet <ArrowUpRight aria-hidden className="size-5" />
+            <span className="sr-only">(glmprime.com, nouvel onglet)</span>
+          </a>
+          <a
+            href={SITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[1rem] font-semibold tracking-[0.04em] underline underline-offset-4 hover:opacity-80"
+          >
+            glmprime.com<span className="sr-only"> (nouvel onglet)</span>
+          </a>
+        </div>
       </div>
     </aside>
   )
