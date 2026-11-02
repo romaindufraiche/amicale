@@ -21,6 +21,7 @@ export default async function SettingsPage() {
         membershipUrl={settings.membershipUrl}
         membershipOpen={settings.membershipOpen}
         memberCount={settings.memberCount}
+        cardSeason={settings.cardSeason}
         ordersEmail={settings.ordersEmail}
         defaultOrdersEmail={env.BUREAU_EMAIL}
       />

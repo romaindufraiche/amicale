@@ -21,6 +21,10 @@ export default defineConfig({
     locale: 'fr-FR',
     timezoneId: 'Europe/Paris',
     trace: 'retain-on-failure',
+    // Navigateur déjà installé sur la machine (facultatif), au lieu de celui de Playwright.
+    launchOptions: process.env.PLAYWRIGHT_CHROMIUM_PATH
+      ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH }
+      : {},
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },

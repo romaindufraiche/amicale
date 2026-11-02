@@ -17,6 +17,16 @@ export const settingsSchema = z.object({
     .transform((value) => (value ?? '').replace(/\s/g, ''))
     .refine((value) => value === '' || /^\d{1,6}$/.test(value), { error: 'Nombre entier attendu.' })
     .transform((value) => (value === '' ? null : Number(value))),
+  cardSeason: z
+    .string()
+    .optional()
+    .transform((value) => (value ?? '').trim().replace(/\s+/g, ' '))
+    .pipe(
+      z
+        .string()
+        .min(1, { error: 'Indiquez la saison (ex. 2027 ou 2026-2027).' })
+        .max(20, { error: '20 caractères maximum.' }),
+    ),
   membershipOpen: z
     .string()
     .optional()

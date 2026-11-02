@@ -20,6 +20,7 @@ export async function updateSiteSettings(actorId: string, input: SettingsInput):
         ordersEmail: input.ordersEmail,
         membershipOpen: input.membershipOpen,
         memberCount: input.memberCount,
+        cardSeason: input.cardSeason,
       },
     })
   })

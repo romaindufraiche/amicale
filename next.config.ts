@@ -23,6 +23,13 @@ const nextConfig: NextConfig = {
   // La documentation du projet (README, docs/) tient lieu de consignes pour les agents.
   agentRules: false,
   serverExternalPackages: ['@node-rs/argon2', 'sharp'],
+  // Polices et logo des cartes d'adhérent, lus sur le disque au moment de générer PDF et .pkpass.
+  outputFileTracingIncludes: {
+    '/admin/cartes/[id]/pdf': ['./src/features/member-cards/assets/**/*'],
+    '/carte/[token]/pdf': ['./src/features/member-cards/assets/**/*'],
+    '/carte/[token]/apple': ['./src/features/member-cards/assets/**/*'],
+  },
+
   experimental: {
     // Téléversement d'images : 4 Mo maximum par fichier après réduction dans le navigateur
     // (compatible avec la limite de 4,5 Mo des hébergeurs serverless comme Vercel).

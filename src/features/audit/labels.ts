@@ -33,6 +33,11 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   'classified.created': 'Annonce créée',
   'classified.updated': 'Annonce modifiée',
   'classified.deleted': 'Annonce supprimée',
+  'member_card.generated': 'Carte d’adhérent téléchargée (PDF)',
+  'member.created': 'Adhérent ajouté au listing',
+  'member.renewed': 'Carte d’adhérent renouvelée',
+  'member.deleted': 'Adhérent retiré du listing',
+  'members.exported': 'Listing des adhérents exporté',
 }
 
 const ENTITY_PATHS: Record<string, string> = {

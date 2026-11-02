@@ -113,6 +113,13 @@
       "when": 1792739566197,
       "tag": "0015_classifieds_member_count",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1793654265361,
+      "tag": "0016_member_cards",
+      "breakpoints": true
     }
   ]
 }

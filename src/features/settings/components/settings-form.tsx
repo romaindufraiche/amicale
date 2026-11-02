@@ -11,12 +11,14 @@ export function SettingsForm({
   membershipUrl,
   membershipOpen,
   memberCount,
+  cardSeason,
   ordersEmail,
   defaultOrdersEmail,
 }: {
   membershipUrl: string | null
   membershipOpen: boolean
   memberCount: number | null
+  cardSeason: string
   ordersEmail: string | null
   /** Adresse utilisée tant que le champ est vide (variable `BUREAU_EMAIL`). */
   defaultOrdersEmail: string
@@ -48,6 +50,15 @@ export function SettingsForm({
         hint="Affiché sous les boutons « Adhérer » du site. À mettre à jour à la main quand vous le souhaitez. Vide : non affiché."
         defaultValue={v?.memberCount ?? (memberCount === null ? '' : String(memberCount))}
         error={e?.memberCount}
+      />
+      <TextField
+        name="cardSeason"
+        label="Saison des cartes d’adhérent"
+        hint="Imprimée sur les cartes générées dans « Cartes d’adhérent » (ex. 2027 ou 2026-2027)."
+        required
+        maxLength={20}
+        defaultValue={v?.cardSeason ?? cardSeason}
+        error={e?.cardSeason}
       />
       <TextField
         name="membershipUrl"

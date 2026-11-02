@@ -402,6 +402,29 @@ export const classifieds = pgTable(
   (t) => [index('classifieds_published_idx').on(t.published, t.pinned, t.createdAt)],
 )
 
+// ─── Adhérents (cartes d'adhérent) ───────────────────────────────────────────
+
+/**
+ * Listing des adhérents à qui le bureau a remis une carte. Le numéro est attribué
+ * automatiquement à la première carte et conservé lors des renouvellements.
+ */
+export const members = pgTable(
+  'members',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    number: integer().notNull().unique().generatedAlwaysAsIdentity(),
+    lastName: text().notNull(),
+    firstName: text().notNull(),
+    /** Nom et prénom normalisés (minuscules, sans accents) pour retrouver un adhérent. */
+    nameKey: text().notNull(),
+    /** Saison de la dernière carte remise. */
+    season: text().notNull(),
+    createdById: uuid().references(() => users.id, { onDelete: 'set null' }),
+    ...timestamps,
+  },
+  (t) => [index('members_name_key_idx').on(t.nameKey)],
+)
+
 /** Réglages modifiables depuis l'espace bureau ; une seule ligne (id = 1). */
 export const siteSettings = pgTable(
   'site_settings',
@@ -415,6 +438,8 @@ export const siteSettings = pgTable(
     membershipOpen: boolean().notNull().default(true),
     /** Nombre d'adhérents affiché sous le bouton « Adhérer », mis à jour à la main ; vide : masqué. */
     memberCount: integer(),
+    /** Saison imprimée sur les cartes d'adhérent (ex. « 2027 »). */
+    cardSeason: text().notNull().default('2027'),
     updatedById: uuid().references(() => users.id, { onDelete: 'set null' }),
     updatedAt: timestamp({ withTimezone: true })
       .notNull()
@@ -467,6 +492,7 @@ export type Partner = typeof partners.$inferSelect
 export type News = typeof news.$inferSelect
 export type Highlight = typeof highlights.$inferSelect
 export type Classified = typeof classifieds.$inferSelect
+export type Member = typeof members.$inferSelect
 export type ClassifiedKind = (typeof classifiedKind.enumValues)[number]
 export type HighlightTone = (typeof highlightTone.enumValues)[number]
 export type Media = typeof media.$inferSelect

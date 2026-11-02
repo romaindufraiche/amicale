@@ -89,6 +89,7 @@ describe('submitOfferRequest', () => {
       ordersEmail: 'commandes@example.org',
       membershipOpen: true,
       memberCount: null,
+      cardSeason: '2027',
     })
     const created = await createOffer({ title: 'Sortie au zoo' })
     const before = Date.now()
@@ -217,24 +218,28 @@ describe('réglages du site', () => {
       ordersEmail: null,
       membershipOpen: true,
       memberCount: null,
+      cardSeason: '2027',
     })
     await updateSiteSettings(admin.id, {
       membershipUrl: HELLOASSO,
       ordersEmail: null,
       membershipOpen: true,
       memberCount: null,
+      cardSeason: '2027',
     })
     await updateSiteSettings(admin.id, {
       membershipUrl: `${HELLOASSO}/adhesion`,
       ordersEmail: 'tresorier@example.org',
       membershipOpen: false,
       memberCount: 412,
+      cardSeason: '2027-2028',
     })
     expect(await getSiteSettings()).toEqual({
       membershipUrl: `${HELLOASSO}/adhesion`,
       ordersEmail: 'tresorier@example.org',
       membershipOpen: false,
       memberCount: 412,
+      cardSeason: '2027-2028',
     })
   })
 })

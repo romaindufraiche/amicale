@@ -45,6 +45,10 @@ export default function PrivacyPage() {
           <li>Messages envoyés via le formulaire de contact : nom, adresse email et contenu du message.</li>
           <li>Comptes des membres du bureau : nom, prénom, adresse email et mot de passe.</li>
           <li>
+            Listing des adhérents à qui le bureau remet une carte : nom, prénom, numéro d’adhérent et saison.
+            Le lien personnel envoyé à l’adhérent ne contient aucune de ces informations.
+          </li>
+          <li>
             Annonces entre collègues : le contenu que l’auteur demande au bureau de publier, y compris, s’il
             le souhaite, un moyen de le contacter. Ces annonces sont visibles par tous les visiteurs.
           </li>
