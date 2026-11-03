@@ -2,18 +2,13 @@ import { Download, Printer } from 'lucide-react'
 import type { Metadata } from 'next'
 import { z } from 'zod'
 import { ActionForm } from '@/components/ui/action-form'
-import { Alert } from '@/components/ui/alert'
 import { buttonClasses } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PageHeader } from '@/components/ui/page-header'
 import { Table, Td, Th } from '@/components/ui/table'
 import { deleteMemberAction } from '@/features/member-cards/actions'
-import { appleWalletConfig } from '@/features/member-cards/apple-wallet'
 import { CardGenerator } from '@/features/member-cards/components/card-generator'
 import { CardPreview } from '@/features/member-cards/components/card-preview'
-import { CopyLinkButton } from '@/features/member-cards/components/copy-button'
-import { googleWalletConfig } from '@/features/member-cards/google-wallet'
-import { memberLinkSecret, memberLinkUrl } from '@/features/member-cards/member-link'
 import { formatMemberNumber } from '@/features/member-cards/schemas'
 import { listMembers } from '@/features/member-cards/service'
 import { getSiteSettings } from '@/features/settings/queries'
@@ -28,11 +23,6 @@ export default async function MemberCardsPage({ searchParams }: Props) {
   await requirePermission('cards:generate', '/admin/cartes')
   const params = await searchParams
   const [{ cardSeason }, members] = await Promise.all([getSiteSettings(), listMembers()])
-  const secret = memberLinkSecret()
-  const wallets = [
-    appleWalletConfig() ? 'Apple Wallet' : null,
-    googleWalletConfig() ? 'Google Wallet' : null,
-  ].filter(Boolean)
   const highlighted = z.uuid().safeParse(params.carte)
   const issued = highlighted.success ? members.find((member) => member.id === highlighted.data) : undefined
   const pdfHref = (id: string, format: 'carte' | 'a4') => `/admin/cartes/${id}/pdf?format=${format}`
@@ -42,7 +32,7 @@ export default async function MemberCardsPage({ searchParams }: Props) {
       <PageHeader
         eyebrow="Espace bureau"
         title="Cartes d’adhérent"
-        lead="Saisissez le nom et le prénom de l’adhérent : sa carte reçoit un numéro et rejoint le listing. Téléchargez-la ensuite en PDF ou envoyez-lui son lien personnel."
+        lead="Saisissez le nom et le prénom de l’adhérent : sa carte reçoit un numéro et rejoint le listing. Téléchargez-la ensuite en PDF pour l’imprimer ou l’envoyer à l’adhérent."
         actions={
           <a href="/admin/cartes/export" className={buttonClasses('secondary', 'sm')}>
             <Download aria-hidden className="size-4" /> Exporter le listing (CSV)
@@ -75,16 +65,9 @@ export default async function MemberCardsPage({ searchParams }: Props) {
                 <Printer aria-hidden className="size-4" /> Page A4 à découper
               </a>
             </div>
-            {secret ? (
-              <div className="flex flex-col gap-1">
-                <p className="text-sm">
-                  Lien personnel à envoyer à l’adhérent (email, SMS, WhatsApp) : il y retrouve sa carte
-                  {wallets.length > 0 ? `, le PDF et l’ajout à ${wallets.join(' ou ')}` : ' et le PDF'}.
-                </p>
-                <p className="text-sm break-all text-ink-muted">{memberLinkUrl(issued.id, secret)}</p>
-                <CopyLinkButton url={memberLinkUrl(issued.id, secret)} label="Copier le lien" />
-              </div>
-            ) : null}
+            <p className="text-sm text-ink-muted">
+              Téléchargez la carte puis envoyez-la à l’adhérent (email, WhatsApp…) ou imprimez-la.
+            </p>
           </div>
         </section>
       ) : null}
@@ -95,14 +78,6 @@ export default async function MemberCardsPage({ searchParams }: Props) {
         </h2>
         <CardGenerator season={cardSeason} />
       </section>
-
-      {!secret ? (
-        <Alert tone="info" title="Liens adhérents et Wallet pas encore activés.">
-          Pour envoyer à chaque adhérent un lien vers sa carte (PDF, Apple Wallet, Google Wallet), renseignez
-          WALLET_LINK_SECRET et, au choix, les certificats Apple et Google sur le serveur : voir la
-          documentation d’exploitation.
-        </Alert>
-      ) : null}
 
       <section aria-labelledby="listing" className="flex flex-col gap-5">
         <h2 id="listing" className="text-h3">
@@ -150,13 +125,12 @@ export default async function MemberCardsPage({ searchParams }: Props) {
                           : carte de {member.firstName} {member.lastName}
                         </span>
                       </a>
-                      {secret ? <CopyLinkButton url={memberLinkUrl(member.id, secret)} label="Lien" /> : null}
                       <ActionForm
                         action={deleteMemberAction}
                         fields={{ memberId: member.id }}
                         label="Retirer"
                         variant="danger"
-                        confirm={`Retirer ${member.firstName} ${member.lastName} (N° ${formatMemberNumber(member.number)}) du listing ? Son lien personnel ne fonctionnera plus.`}
+                        confirm={`Retirer ${member.firstName} ${member.lastName} (N° ${formatMemberNumber(member.number)}) du listing ?`}
                       />
                     </div>
                   </Td>

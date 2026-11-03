@@ -2,12 +2,6 @@ import 'server-only'
 import { z } from 'zod'
 import { MISSING_DATABASE_URL, resolveAppUrl, resolveDatabaseUrl } from '@/lib/database-url'
 
-/** Variable facultative : une ligne vide dans le fichier .env vaut « non renseignée ». */
-const optionalText = z
-  .string()
-  .optional()
-  .transform((value) => (value?.trim() ? value.trim() : undefined))
-
 /**
  * Variables d'environnement validées par un schéma : toute valeur manquante ou
  * invalide produit une erreur explicite listant les variables à corriger.
@@ -47,46 +41,8 @@ const schema = z
       .default('false')
       .transform((value) => value === 'true'),
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
-    /*
-     * Apple Wallet (facultatif) : cartes d'adhérent ajoutables au Cartes de l'iPhone.
-     * Certificats encodés en base64 (fichiers PEM), fournis par le compte Apple Developer.
-     */
-    APPLE_WALLET_PASS_TYPE_ID: optionalText,
-    APPLE_WALLET_TEAM_ID: optionalText,
-    APPLE_WALLET_CERTIFICATE: optionalText,
-    APPLE_WALLET_PRIVATE_KEY: optionalText,
-    APPLE_WALLET_PRIVATE_KEY_PASSPHRASE: optionalText,
-    APPLE_WALLET_WWDR_CERTIFICATE: optionalText,
-    /*
-     * Google Wallet (facultatif) : identifiant d'émetteur et clé JSON du compte de service
-     * Google Cloud (fichier encodé en base64).
-     */
-    GOOGLE_WALLET_ISSUER_ID: optionalText,
-    GOOGLE_WALLET_SERVICE_ACCOUNT: optionalText,
-    /**
-     * Secret qui signe les liens personnels envoyés aux adhérents (carte en ligne, PDF,
-     * Wallet), 32 caractères minimum. Sans lui, pas de lien adhérent.
-     */
-    WALLET_LINK_SECRET: optionalText.pipe(z.string().min(32).optional()),
   })
   .superRefine((env, ctx) => {
-    const groups = {
-      'Apple Wallet': [
-        'APPLE_WALLET_PASS_TYPE_ID',
-        'APPLE_WALLET_TEAM_ID',
-        'APPLE_WALLET_CERTIFICATE',
-        'APPLE_WALLET_PRIVATE_KEY',
-        'APPLE_WALLET_WWDR_CERTIFICATE',
-      ],
-      'Google Wallet': ['GOOGLE_WALLET_ISSUER_ID', 'GOOGLE_WALLET_SERVICE_ACCOUNT'],
-    } as const
-    for (const [label, keys] of Object.entries(groups)) {
-      const provided = keys.filter((key) => env[key])
-      if (provided.length === 0) continue
-      for (const key of [...keys, 'WALLET_LINK_SECRET' as const].filter((name) => !env[name])) {
-        ctx.addIssue({ code: 'custom', path: [key], message: `requis pour activer ${label}` })
-      }
-    }
     if (env.MAIL_TRANSPORT === 'smtp' && !env.SMTP_HOST) {
       ctx.addIssue({ code: 'custom', path: ['SMTP_HOST'], message: 'requis lorsque MAIL_TRANSPORT=smtp' })
     }

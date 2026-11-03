@@ -23,11 +23,9 @@ const nextConfig: NextConfig = {
   // La documentation du projet (README, docs/) tient lieu de consignes pour les agents.
   agentRules: false,
   serverExternalPackages: ['@node-rs/argon2', 'sharp'],
-  // Polices et logo des cartes d'adhérent, lus sur le disque au moment de générer PDF et .pkpass.
+  // Polices et logo des cartes d'adhérent, lus sur le disque au moment de générer le PDF.
   outputFileTracingIncludes: {
     '/admin/cartes/[id]/pdf': ['./src/features/member-cards/assets/**/*'],
-    '/carte/[token]/pdf': ['./src/features/member-cards/assets/**/*'],
-    '/carte/[token]/apple': ['./src/features/member-cards/assets/**/*'],
   },
 
   experimental: {
