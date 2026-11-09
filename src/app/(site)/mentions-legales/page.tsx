@@ -79,6 +79,12 @@ export default function LegalNoticePage() {
           prêts conclus entre particuliers. Pour faire retirer une annonce, écrivez au bureau.
         </p>
 
+        <h2>Offres réservées aux adhérents</h2>
+        <p>{site.notices.membersOnly}</p>
+
+        <h2>Emails et messages</h2>
+        <p>{site.notices.messages}</p>
+
         <h2>Données personnelles</h2>
         <p>
           Le traitement des données personnelles est décrit dans la page{' '}

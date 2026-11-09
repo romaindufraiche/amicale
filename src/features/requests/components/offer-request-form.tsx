@@ -2,6 +2,7 @@
 
 import { Minus, Plus } from 'lucide-react'
 import Link from 'next/link'
+import { site } from '@/config/site'
 import { useActionState, useId, useState } from 'react'
 import { Alert } from '@/components/ui/alert'
 import { TextField } from '@/components/ui/fields'
@@ -93,7 +94,8 @@ export function OfferRequestForm({ offerId, tariffs }: { offerId: string; tariff
   if (state.status === 'success') {
     return (
       <Alert tone="success" title="Commande envoyée.">
-        Merci ! Le bureau de l’Amicale a bien reçu votre commande et vous recontactera par email.
+        Merci ! Le bureau de l’Amicale a bien reçu votre commande et vous recontactera par email.{' '}
+        {site.notices.orderHours}
       </Alert>
     )
   }
@@ -113,15 +115,18 @@ export function OfferRequestForm({ offerId, tariffs }: { offerId: string; tariff
       }}
     >
       <FormMessage state={state} />
+      <Alert tone="info" title={site.notices.membersOnly}>
+        {site.notices.orderHours}
+      </Alert>
       <input type="hidden" name="offerId" value={offerId} />
       <fieldset className="flex flex-col gap-3">
         <legend className="mb-2 font-semibold">Nombre de billets</legend>
-        {tariffs.map((tariff, index) => (
+        {tariffs.map((tariff) => (
           <QuantityStepper
             key={tariff.id}
             tariff={tariff}
             label={tariffs.length === 1 ? 'Billets' : tariff.label}
-            defaultValue={Number(v?.[`qty.${tariff.id}`] ?? (index === 0 ? 1 : 0))}
+            defaultValue={Number(v?.[`qty.${tariff.id}`] ?? 0)}
           />
         ))}
         {e?.quantities ? <p className="text-sm font-semibold text-danger-700">{e.quantities}</p> : null}
@@ -165,7 +170,8 @@ export function OfferRequestForm({ offerId, tariffs }: { offerId: string; tariff
       </SubmitButton>
       {!complete ? (
         <p id={hintId} className="-mt-3 text-sm text-ink-muted">
-          Renseignez votre prénom, votre nom et votre email pour envoyer la commande.
+          Choisissez au moins un billet et renseignez votre prénom, votre nom et votre email pour envoyer la
+          commande.
         </p>
       ) : null}
       <p className="text-caption text-ink-muted">

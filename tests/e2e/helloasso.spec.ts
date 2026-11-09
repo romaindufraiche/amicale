@@ -35,10 +35,19 @@ test('adhésion via HelloAsso, commande d’une offre et suivi par le bureau', a
   await page.getByRole('link', { name: 'Commander : Aquarium et tunnel des requins' }).click()
   await expect(page).toHaveURL(/\/offres\/aquarium#commander$/)
   await expect(page.getByText('Indiquez vos coordonnées')).toHaveCount(0)
+  // Mentions : offres réservées aux adhérents (bandeau du site), horaires de traitement.
+  await expect(
+    page.getByText('Toutes les offres du site s’adressent uniquement aux adhérents').first(),
+  ).toBeVisible()
+  await expect(
+    page.getByText('Les commandes sont traitées du lundi au vendredi de 8 h à 18 h.'),
+  ).toBeVisible()
+  // Compteurs à 0 au départ ; bouton inactif tant qu'il manque un billet, le prénom, le nom ou l'email.
+  await expect(page.getByRole('spinbutton').first()).toHaveValue('0')
   await page.getByRole('button', { name: /Ajouter un billet \(Adulte/ }).click()
-  // Bouton inactif tant que prénom, nom et email ne sont pas remplis.
+  await page.getByRole('button', { name: /Ajouter un billet \(Adulte/ }).click()
   await expect(page.getByRole('button', { name: 'Envoyer ma commande' })).toBeDisabled()
-  await expect(page.getByText('Renseignez votre prénom, votre nom et votre email')).toBeVisible()
+  await expect(page.getByText('Choisissez au moins un billet et renseignez votre prénom')).toBeVisible()
   await page.getByLabel('Prénom').fill('Camille')
   await page.getByLabel('Nom', { exact: true }).fill(lastName)
   await page.getByLabel('Adresse email').fill('camille@example.fr')

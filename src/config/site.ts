@@ -50,6 +50,18 @@ export const site = {
     } as { name: string; address: string; phone: string | null } | null,
   },
 
+  /** Mentions importantes, affichées telles quelles à plusieurs endroits du site. */
+  notices: {
+    /** Bandeau en haut de chaque page, page Offres et formulaire de commande. */
+    membersOnly: 'Toutes les offres du site s’adressent uniquement aux adhérents à jour de cotisation.',
+    /** Formulaire « Commander » et confirmation de commande. */
+    orderHours:
+      'Les commandes sont traitées du lundi au vendredi de 8 h à 18 h. Aucune commande ne sera traitée le week-end.',
+    /** Pied de page et mentions légales. */
+    messages:
+      'L’Amicale n’est pas responsable de la redirection, du transfert ou de la diffusion par des tiers des emails, messages WhatsApp ou autres messages qu’elle envoie.',
+  },
+
   /** Conception et réalisation du site. */
   creator: { name: 'GLM', url: 'https://glmprime.com' },
 

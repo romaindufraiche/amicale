@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { SiteFooter } from '@/components/layout/site-footer'
+import { MembersOnlyBanner } from '@/components/layout/members-only-banner'
 import { SiteHeader } from '@/components/layout/site-header'
 import { WhatsAppButton } from '@/components/layout/whatsapp-button'
 import { PoliceTown } from '@/components/town/police-town'
@@ -8,6 +9,7 @@ import { VisitBeacon } from '@/features/visits/components/visit-beacon'
 export default function SiteLayout({ children }: { children: ReactNode }) {
   return (
     <>
+      <MembersOnlyBanner />
       <SiteHeader />
       <main id="contenu" tabIndex={-1} className="flex-1 focus:outline-none">
         {children}

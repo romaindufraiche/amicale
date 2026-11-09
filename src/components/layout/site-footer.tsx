@@ -86,9 +86,12 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-blue-800">
         <div className="mx-auto flex max-w-page flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-5 text-caption text-line sm:px-6 lg:px-8">
-          <p>
-            © {new Date().getFullYear()} {site.legalName} · {site.legal.legalForm}
-          </p>
+          <div className="flex flex-col gap-1">
+            <p>
+              © {new Date().getFullYear()} {site.legalName} · {site.legal.legalForm}
+            </p>
+            <p>{site.notices.messages}</p>
+          </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <TownToggle className="underline underline-offset-4 hover:text-white" />
             <a
