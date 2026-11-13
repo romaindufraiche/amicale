@@ -11,7 +11,15 @@ export default async function NewClassifiedPage() {
     <>
       <PageHeader eyebrow="Annonces" title="Nouvelle annonce" />
       <ClassifiedForm
-        initial={{ kind: '', title: '', description: '', imageId: null, pinned: false, published: true }}
+        initial={{
+          kind: '',
+          title: '',
+          description: '',
+          imageId: null,
+          image2Id: null,
+          pinned: false,
+          published: true,
+        }}
       />
     </>
   )

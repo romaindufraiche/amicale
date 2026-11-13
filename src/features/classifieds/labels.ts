@@ -1,5 +1,13 @@
 import type { ClassifiedKind } from '@/server/db/schema'
 
+/** Durée de vie d'une annonce : elle est supprimée automatiquement au-delà (voir service). */
+export const CLASSIFIED_LIFETIME_DAYS = 45
+
+/** Date de suppression automatique d'une annonce. */
+export function classifiedExpiresAt(createdAt: Date): Date {
+  return new Date(createdAt.getTime() + CLASSIFIED_LIFETIME_DAYS * 24 * 60 * 60 * 1000)
+}
+
 /** Types d'annonce, dans l'ordre du menu déroulant. */
 export const CLASSIFIED_KINDS: Record<ClassifiedKind, { label: string; slug: string; tone: string }> = {
   VENTE: { label: 'Vente', slug: 'vente', tone: 'bg-blue-600 text-white' },

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { site } from '@/config/site'
 import { ButtonLink } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PageHeader } from '@/components/ui/page-header'
@@ -27,7 +28,7 @@ export default async function ClassifiedsPage({ searchParams }: Props) {
       <PageHeader
         eyebrow="Entre collègues"
         title="Annonces"
-        lead="Vente, location, prêt de matériel, don ou troc : les annonces des collègues. Pour publier la vôtre, écrivez au bureau."
+        lead={`Vente, location, prêt de matériel, don ou troc : les annonces des collègues. Pour publier la vôtre, écrivez au bureau. ${site.notices.classifiedLifetime}`}
         actions={
           <ButtonLink href="/contact" variant="secondary">
             Proposer une annonce

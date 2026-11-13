@@ -394,12 +394,37 @@ export const classifieds = pgTable(
     title: text().notNull(),
     description: text().notNull(),
     imageId: uuid().references(() => media.id, { onDelete: 'set null' }),
+    /** Seconde photo, facultative. */
+    image2Id: uuid().references(() => media.id, { onDelete: 'set null' }),
     /** Épinglée : affichée en tête de la rubrique. */
     pinned: boolean().notNull().default(false),
     published: boolean().notNull().default(true),
     ...timestamps,
   },
   (t) => [index('classifieds_published_idx').on(t.published, t.pinned, t.createdAt)],
+)
+
+/**
+ * « Cette annonce m'intéresse » : coordonnées d'un adhérent intéressé. Le bureau vérifie
+ * qu'il est adhérent puis lui transmet les coordonnées du vendeur.
+ */
+export const classifiedInterests = pgTable(
+  'classified_interests',
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    classifiedId: uuid()
+      .notNull()
+      .references(() => classifieds.id, { onDelete: 'cascade' }),
+    firstName: text().notNull(),
+    lastName: text().notNull(),
+    email: text().notNull(),
+    phone: text().notNull(),
+    /** Coordonnées du vendeur transmises par le bureau. */
+    processedAt: timestamp({ withTimezone: true }),
+    processedById: uuid().references(() => users.id, { onDelete: 'set null' }),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('classified_interests_classified_idx').on(t.classifiedId, t.createdAt)],
 )
 
 // ─── Adhérents (cartes d'adhérent) ───────────────────────────────────────────
@@ -492,6 +517,7 @@ export type Partner = typeof partners.$inferSelect
 export type News = typeof news.$inferSelect
 export type Highlight = typeof highlights.$inferSelect
 export type Classified = typeof classifieds.$inferSelect
+export type ClassifiedInterest = typeof classifiedInterests.$inferSelect
 export type Member = typeof members.$inferSelect
 export type ClassifiedKind = (typeof classifiedKind.enumValues)[number]
 export type HighlightTone = (typeof highlightTone.enumValues)[number]

@@ -5,6 +5,7 @@ import { Alert } from '@/components/ui/alert'
 import { PageHeader } from '@/components/ui/page-header'
 import { countPendingMessages } from '@/features/contact/service'
 import { countUnpaidRequests, countUnprocessedRequests } from '@/features/requests/queries'
+import { countPendingInterests } from '@/features/classifieds/queries'
 import { getSiteSettings } from '@/features/settings/queries'
 import { getVisitStats } from '@/features/visits/service'
 import { requirePermission } from '@/server/auth/guards'
@@ -20,12 +21,13 @@ function plural(count: number, singular: string, pluralForm: string) {
 
 export default async function AdminHomePage() {
   const user = await requirePermission('admin:access', '/admin')
-  const [unprocessedRequests, unpaidRequests, messages, settings, visits] = await Promise.all([
+  const [unprocessedRequests, unpaidRequests, messages, settings, visits, interests] = await Promise.all([
     countUnprocessedRequests(),
     countUnpaidRequests(),
     countPendingMessages(),
     getSiteSettings(),
     getVisitStats(),
+    countPendingInterests(),
   ])
 
   const visitTiles = [
@@ -57,6 +59,13 @@ export default async function AdminHomePage() {
       action: 'Lire',
       urgent: messages > 0,
     },
+    {
+      value: interests,
+      label: plural(interests, 'demande d’annonce à traiter', 'demandes d’annonces à traiter'),
+      href: '/admin/annonces',
+      action: 'Voir',
+      urgent: interests > 0,
+    },
   ]
 
   return (
@@ -77,7 +86,7 @@ export default async function AdminHomePage() {
         <h2 id="a-traiter" className="text-h3">
           À traiter
         </h2>
-        <ul className="grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-3">
+        <ul className="grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
           {todo.map((tile) => (
             <li key={tile.href} className="bg-surface">
               <Link href={tile.href} className="group flex h-full flex-col gap-3 p-6 hover:bg-sunken">

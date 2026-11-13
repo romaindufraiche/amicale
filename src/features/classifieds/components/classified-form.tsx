@@ -5,6 +5,7 @@ import { CheckboxField, SelectField, TextareaField, TextField } from '@/componen
 import { FormMessage } from '@/components/ui/form-message'
 import { SubmitButton } from '@/components/ui/submit-button'
 import { ImageDropzone } from '@/features/media/components/image-dropzone'
+import { site } from '@/config/site'
 import { idleState } from '@/lib/form-state'
 import { saveClassifiedAction } from '../actions'
 import { CLASSIFIED_KIND_VALUES, CLASSIFIED_KINDS } from '../labels'
@@ -15,6 +16,7 @@ export type ClassifiedFormValues = {
   title: string
   description: string
   imageId: string | null
+  image2Id: string | null
   pinned: boolean
   published: boolean
 }
@@ -62,13 +64,22 @@ export function ClassifiedForm({ initial }: { initial: ClassifiedFormValues }) {
         defaultValue={value('description')}
         error={e?.description}
       />
-      <ImageDropzone
-        name="imageId"
-        label="Photo"
-        hint="Facultative : une photo du bien ou de l’objet."
-        defaultMediaId={v ? v.imageId || null : initial.imageId}
-        error={e?.imageId}
-      />
+      <div className="grid gap-6 sm:grid-cols-2">
+        <ImageDropzone
+          name="imageId"
+          label="Photo 1"
+          hint="Photo principale, affichée dans la liste des annonces."
+          defaultMediaId={v ? v.imageId || null : initial.imageId}
+          error={e?.imageId}
+        />
+        <ImageDropzone
+          name="image2Id"
+          label="Photo 2"
+          hint="Seconde photo, visible sur la page de l’annonce."
+          defaultMediaId={v ? v.image2Id || null : initial.image2Id}
+          error={e?.image2Id}
+        />
+      </div>
       <CheckboxField
         name="pinned"
         label="Épingler en tête de la rubrique"
@@ -79,6 +90,7 @@ export function ClassifiedForm({ initial }: { initial: ClassifiedFormValues }) {
         label="Publier cette annonce"
         defaultChecked={v ? v.published === 'on' : initial.published}
       />
+      <p className="text-sm text-ink-muted">{site.notices.classifiedLifetime}</p>
       <SubmitButton pendingLabel="Enregistrement…" className="self-start">
         {initial.id ? 'Enregistrer les modifications' : 'Publier l’annonce'}
       </SubmitButton>

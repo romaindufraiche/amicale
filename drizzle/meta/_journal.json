@@ -120,6 +120,13 @@
       "when": 1793654265361,
       "tag": "0016_member_cards",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1794568398532,
+      "tag": "0017_classified_interests",
+      "breakpoints": true
     }
   ]
 }

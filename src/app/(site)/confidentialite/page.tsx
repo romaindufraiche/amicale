@@ -49,7 +49,12 @@ export default function PrivacyPage() {
           </li>
           <li>
             Annonces entre collègues : le contenu que l’auteur demande au bureau de publier, y compris, s’il
-            le souhaite, un moyen de le contacter. Ces annonces sont visibles par tous les visiteurs.
+            le souhaite, un moyen de le contacter. Ces annonces sont visibles par tous les visiteurs et
+            supprimées automatiquement au bout de 45 jours.
+          </li>
+          <li>
+            « Cette annonce m’intéresse » : nom, prénom, adresse email et téléphone, transmis au bureau pour
+            vérifier votre adhésion et vous communiquer les coordonnées du vendeur ; supprimés avec l’annonce.
           </li>
         </ul>
         <p>

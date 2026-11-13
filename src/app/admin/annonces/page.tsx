@@ -7,7 +7,7 @@ import { ButtonLink } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PageHeader } from '@/components/ui/page-header'
 import { Table, Td, Th } from '@/components/ui/table'
-import { CLASSIFIED_KINDS } from '@/features/classifieds/labels'
+import { CLASSIFIED_KINDS, classifiedExpiresAt } from '@/features/classifieds/labels'
 import { listClassifiedsForAdmin } from '@/features/classifieds/queries'
 import { formatShortDate } from '@/lib/dates'
 import { requirePermission } from '@/server/auth/guards'
@@ -26,7 +26,7 @@ export default async function AdminClassifiedsPage({ searchParams }: Props) {
       <PageHeader
         eyebrow="Espace bureau"
         title="Annonces"
-        lead="Petites annonces des collègues : vente, location, prêt, don ou troc. Elles sont visibles par tous dans la rubrique « Annonces » du site."
+        lead="Petites annonces des collègues : vente, location, prêt, don ou troc. Elles sont visibles par tous dans la rubrique « Annonces » du site et supprimées automatiquement au bout de 45 jours."
         actions={
           <ButtonLink href="/admin/annonces/nouveau">
             <Plus aria-hidden className="size-4" /> Nouvelle annonce
@@ -47,7 +47,9 @@ export default async function AdminClassifiedsPage({ searchParams }: Props) {
             <tr>
               <Th>Annonce</Th>
               <Th>Type</Th>
-              <Th>Date</Th>
+              <Th>Publiée le</Th>
+              <Th>Supprimée le</Th>
+              <Th>Intéressés</Th>
               <Th>Statut</Th>
             </tr>
           </thead>
@@ -66,6 +68,16 @@ export default async function AdminClassifiedsPage({ searchParams }: Props) {
                 </Td>
                 <Td>{CLASSIFIED_KINDS[item.kind].label}</Td>
                 <Td className="tabular">{formatShortDate(item.createdAt)}</Td>
+                <Td className="tabular">{formatShortDate(classifiedExpiresAt(item.createdAt))}</Td>
+                <Td>
+                  {item.pendingInterests > 0 ? (
+                    <Badge tone="danger">{item.pendingInterests} à traiter</Badge>
+                  ) : item.interests > 0 ? (
+                    <span className="tabular">{item.interests}</span>
+                  ) : (
+                    <span className="text-ink-muted">—</span>
+                  )}
+                </Td>
                 <Td>
                   {item.published ? (
                     <Badge tone="success">En ligne</Badge>

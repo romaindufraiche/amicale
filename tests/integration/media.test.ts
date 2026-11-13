@@ -1,5 +1,7 @@
 import sharp from 'sharp'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { classifiedSchema } from '@/features/classifieds/schemas'
+import { saveClassified } from '@/features/classifieds/service'
 import { getMedia, purgeOrphanMedia, storeImage } from '@/features/media/service'
 import { db } from '@/server/db/client'
 import { media } from '@/server/db/schema'
@@ -59,5 +61,29 @@ describe('storeImage', () => {
     expect(await purgeOrphanMedia()).toBe(0)
     await db.update(media).set({ createdAt: sql`now() - interval '2 days'` })
     expect(await purgeOrphanMedia()).toBe(1)
+  })
+  it('conserve les photos des annonces (photo 1 et photo 2)', async () => {
+    const admin = await createBureauUser({ role: 'BUREAU' })
+    const upload = async () => {
+      const file = new File([new Uint8Array(await photo(400, 300))], 'photo.jpg', { type: 'image/jpeg' })
+      const result = await storeImage(file, admin.id)
+      if (!result.ok) throw new Error('image refusée')
+      return result.id
+    }
+    const [first, second] = [await upload(), await upload()]
+    await saveClassified(
+      admin.id,
+      null,
+      classifiedSchema.parse({
+        kind: 'VENTE',
+        title: 'Vélo à vendre',
+        description: 'Vélo en bon état.',
+        imageId: first,
+        image2Id: second,
+        published: 'on',
+      }),
+    )
+    await db.update(media).set({ createdAt: sql`now() - interval '2 days'` })
+    expect(await purgeOrphanMedia()).toBe(0)
   })
 })

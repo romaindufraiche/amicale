@@ -57,6 +57,11 @@ export const site = {
     /** Formulaire « Commander » et confirmation de commande. */
     orderHours:
       'Les commandes sont traitées du lundi au vendredi de 8 h à 18 h. Aucune commande ne sera traitée le week-end.',
+    /** Page d'une annonce, sous « Cette annonce m'intéresse ». */
+    classifiedContact:
+      'Après vérification de vos informations, l’Amicale vous enverra les coordonnées du vendeur.',
+    /** Rubrique Annonces (liste, fiche et espace bureau). */
+    classifiedLifetime: 'Les annonces sont automatiquement supprimées au bout de 45 jours.',
     /** Pied de page et mentions légales. */
     messages:
       'L’Amicale n’est pas responsable de la redirection, du transfert ou de la diffusion par des tiers des emails, messages WhatsApp ou autres messages qu’elle envoie.',

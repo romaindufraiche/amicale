@@ -76,6 +76,7 @@ export async function purgeOrphanMedia(): Promise<number> {
       and not exists (select 1 from partners p where p.image_id = m.id)
       and not exists (select 1 from highlights h where h.image_id = m.id)
       and not exists (select 1 from news n where n.image_id = m.id)
+      and not exists (select 1 from classifieds c where c.image_id = m.id or c.image2_id = m.id)
     returning m.id`)
   const files = await db.execute<{ id: string }>(sql`
     delete from documents d
